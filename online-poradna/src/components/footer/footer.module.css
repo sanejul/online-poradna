@@ -1,0 +1,158 @@
+.footerContainer {
+    margin: 1rem;
+    min-height: 60vh;
+    background-attachment: scroll;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#footerContainer {
+    min-height: 100vh;
+    height: 100%;
+}
+
+.section h2 {
+    font-family: "Fabrikant Medium", serif !important;
+    font-size: 1.5rem;
+    color: var(--blue) !important;
+}
+
+.sloganMobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.slogan {
+    display: none;
+}
+
+.slogan img {
+    width: 80px;
+    opacity: .5;
+}
+
+.sloganMobile p {
+    font-size: 3rem;
+    opacity: .5;
+    text-align: center;
+    color: var(--blue) !important;
+}
+
+.footerText {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 0;
+}
+
+.footerContainer ul {
+    padding: 0 !important;
+}
+
+.footerContainer a {
+    margin: 5px 0 !important;
+    line-height: 30px;
+    text-decoration: none;
+}
+
+.navLink {
+    line-height: 30px;
+    text-decoration: none;
+}
+
+.icons {
+    display: flex;
+    flex-direction: column;
+}
+
+.footerCopy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.footerCopy p {
+    margin: .5rem 0;
+}
+
+.footerText img {
+    width: 20px;
+    margin: 1rem .8rem 0 .8rem;
+}
+
+@media only screen and (min-width: 525px) {
+    .sloganMobile {
+        display: none;
+    }
+
+    .slogan {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--blue) !important;
+        opacity: 0.5;
+    }
+
+    .slogan p {
+        font-size: 3rem;
+        margin: 5rem 0 10rem 0;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+
+    #footerContainer {
+        min-height: 90vh;
+        height: 90%;
+    }
+
+    .footerContainer {
+        margin: 0 0 3rem 0;
+        padding: 10px 30px;
+    }
+
+    .footerText {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .footerCopy {
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 3rem;
+        width: 100%;
+    }
+
+    .footerText img {
+        width: 25px;
+    }
+
+    .footerText img:first-child {
+        margin-left: 0;
+    }
+
+    .slogan p {
+        font-size: 5rem;
+    }
+}

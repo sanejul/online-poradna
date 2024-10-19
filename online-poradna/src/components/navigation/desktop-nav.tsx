@@ -9,7 +9,7 @@ export class DesktopNav extends Component {
           <header>
               <nav id={styles.navbar} className={styles.navContainer}>
                   <p data-link="HAARO-BLOG">
-                      <span>HAARO-BLOG</span>
+                      <span>HAARO-PORADNA</span>
                   </p>
                   <a href="https://haarosalon.cz/index.html" className={styles.logo}>
                       <img id={styles.logo} src={logo} alt="Haaro Naturo logo" />

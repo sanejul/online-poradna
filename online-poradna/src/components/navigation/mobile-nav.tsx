@@ -51,7 +51,7 @@ class MobileNav extends Component {
     render() {
         return (
           <header className={styles.container}>
-              <p>HAARO-BLOG</p>
+              <p>HAARO-PORADNA</p>
               <div>
                   <nav id={styles.mobileNavbar} className={styles.mobileNavbar}>
                       <div className={styles.navbarButtons}>

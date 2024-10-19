@@ -33,6 +33,15 @@
   src: url('../fonts/FreightText/FreightTextProSemiboldItalic.ttf') format('opentype');
 }
 
+*{
+  box-sizing: border-box;
+  font-family: Fabrikant, 'Fabrikat', serif;
+}
+
+.freight-semibold {
+    font-family: 'Freight SemiBold', serif !important;
+}
+
 :root {
   --blue: #2057a5;
   --whitesmoke: #F5F5F5FF;
@@ -53,11 +62,6 @@ html{
   scroll-behavior: smooth;
   background-color: var(--whitesmoke);
   min-height: 100vh;
-}
-
-*{
-  box-sizing: border-box;
-  font-family: Fabrikant, 'Fabrikat', serif;
 }
 
 .App{
