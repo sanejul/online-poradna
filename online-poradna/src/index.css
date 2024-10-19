@@ -1,13 +1,80 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@font-face {
+  font-family: 'Fabrikant';
+  src: url('../fonts/Fabrikant/Fabrikat.otf') format('opentype');
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@font-face {
+  font-family: 'Fabrikant Black';
+  src: url('../fonts/Fabrikant/FabrikatBlack.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Fabrikant Bold';
+  src: url('../fonts/Fabrikant/FabrikatBold.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Fabrikant Medium';
+  src: url('../fonts/Fabrikant/FabrikatMedium.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Freight Medium';
+  src: url('../fonts/FreightText/FreightTextMediumItalic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Freight Light';
+  src: url('../fonts/FreightText/FreightTextProLightItalic.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Freight SemiBold';
+  src: url('../fonts/FreightText/FreightTextProSemiboldItalic.ttf') format('opentype');
+}
+
+:root {
+  --blue: #2057a5;
+  --whitesmoke: #F5F5F5FF;
+  --black: #111111;
+}
+
+::-moz-selection {
+  color: var(--whitesmoke);
+  background: rgba(32, 87, 165, 0.47);
+}
+
+::selection {
+  color: var(--whitesmoke);
+  background: rgba(32, 87, 165, 0.47);
+}
+
+html{
+  scroll-behavior: smooth;
+  background-color: var(--whitesmoke);
+  min-height: 100vh;
+}
+
+*{
+  box-sizing: border-box;
+  font-family: Fabrikant, 'Fabrikat', serif;
+}
+
+.App{
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.main-container{
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+a{
+  color: var(--black);
+}
+
+.main-container {
+  margin-top: 65px;
 }

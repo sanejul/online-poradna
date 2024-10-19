@@ -1,0 +1,99 @@
+#navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 50px;
+    transition: all 0.5s;
+    z-index: 9999;
+}
+
+.navLink {
+    display: inline-flex;
+    text-decoration: none;
+    color: black;
+    margin-left: 20px;
+    line-height: 20px;
+    position: relative;
+    transition: transform 0.6s cubic-bezier(0.25, 0.74, 0.22, 0.99);
+    overflow: hidden;
+}
+
+.navLink span {
+    display: inline-block;
+    white-space: nowrap;
+    transition: transform 0.6s cubic-bezier(0.25, 0.74, 0.22, 0.99);
+}
+
+.navLink:after {
+    content: attr(data-link);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% + 25px));
+    white-space: nowrap;
+    transition: transform 0.6s cubic-bezier(0.25, 0.74, 0.22, 0.99);
+}
+
+.navLink:hover span {
+    transform: translateY(-25px);
+}
+
+.navLink:hover:after {
+    transform: translate(-50%, calc(-50% + 0px));
+}
+
+.lightNavbar * {
+    color: #f5f5f5ff !important;
+}
+
+#logo,
+#mockup {
+    transition: all 0.3s;
+    height: 55px !important;
+}
+
+.shrinkedLogo {
+    height: 50px !important;
+}
+
+li {
+    list-style: none;
+}
+
+#navbar p span {
+    line-height: 20px;
+    font-family: "Fabrikant Medium", serif !important;
+}
+
+.navContainer ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.navContainer .logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 10%;
+}
+
+.logo2,
+.mobileNavbar,
+.overlayMenu,
+.overlay {
+    display: none;
+}
+
+@media only screen and (min-width: 1920px) {
+    #navbar {
+        max-width: 1280px;
+        margin: auto;
+    }
+}
