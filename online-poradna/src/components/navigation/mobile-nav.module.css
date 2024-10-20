@@ -20,6 +20,22 @@
     z-index: 9999;
 }
 
+.navLink {
+    display: block;
+    position: relative;
+    z-index: 9999;
+    color: var(--whitesmoke);
+    text-decoration: none;
+    overflow: hidden;
+    transition: all 0.4s;
+    font-size: 1.5rem;
+    line-height: 1.55rem;
+    margin-left: 0 !important;
+    background: none; /* přidáno pro button */
+    border: none; /* přidáno pro button */
+    cursor: pointer; /* přidáno pro button */
+}
+
 button {
     background: none;
     border: none;
@@ -104,6 +120,9 @@ button:focus {
     height: 100%;
     padding: 3rem;
     max-height: 100vh;
+    display: flex;
+flex-direction: column;
+justify-content: space-between;
 }
 
 .overlayMenu ul {
@@ -112,8 +131,16 @@ button:focus {
     justify-content: space-around;
     align-items: center;
     height: 100%;
-    max-height: 70vh;
+    max-height: 60vh;
     padding: 0 !important;
+}
+
+.overlayMenu ul:nth-child(2) {
+    height: auto;
+}
+
+.overlayMenu ul button {
+    margin: 0;
 }
 
 .overlay nav {

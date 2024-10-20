@@ -1,10 +1,70 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth, db } from '../../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import styles from './mobile-nav.module.css';
 import logo2 from '../../assets/haaro_logo_light.png';
 
-class MobileNav extends Component {
-    closeOverlay = (): void => {
+const MobileNav: React.FC = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // odhlášení uživatele
+    const from = (location.state as { from: string })?.from || "/";
+    const handleLogout = () => {
+        signOut(auth)
+          .then(() => {
+              setIsAuthenticated(false);
+              setIsAdmin(false);
+              navigate(from);
+              closeOverlay();
+          })
+          .catch((error) => {
+              console.error("Chyba při odhlašování:", error);
+          });
+    };
+
+    // Načítání stavu přihlášení a ověření role
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                setIsAuthenticated(true);
+
+                // Načteme data uživatele z Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    if (userData.role === 'admin') {
+                        setIsAdmin(true);
+                    }
+                }
+            } else {
+                setIsAuthenticated(false);
+                setIsAdmin(false);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setIsAuthenticated(true);
+            } else {
+                setIsAuthenticated(false);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const closeOverlay = (): void => {
         const overlay = document.querySelector(`.${styles.overlay}`) as HTMLElement;
         const contain = document.querySelector(`.${styles.contain}`) as HTMLElement;
 
@@ -14,31 +74,7 @@ class MobileNav extends Component {
         }
     };
 
-    componentDidMount() {
-        const toggleButton = document.querySelector(`.${styles.contain}`);
-        if (toggleButton) {
-            toggleButton.addEventListener('click', this.toggleClasses);
-        }
-
-        const navLinks = document.querySelectorAll(`.${styles.navLink}`);
-        navLinks.forEach((link) => {
-            link.addEventListener('click', this.closeOverlay);
-        });
-    }
-
-    componentWillUnmount() {
-        const toggleButton = document.querySelector(`.${styles.contain}`);
-        if (toggleButton) {
-            toggleButton.removeEventListener('click', this.toggleClasses);
-        }
-
-        const navLinks = document.querySelectorAll(`.${styles.navLink}`);
-        navLinks.forEach((link) => {
-            link.removeEventListener('click', this.closeOverlay);
-        });
-    }
-
-    toggleClasses = () => {
+    const toggleClasses = () => {
         const overlay = document.querySelector(`.${styles.overlay}`);
         const contain = document.querySelector(`.${styles.contain}`);
 
@@ -48,97 +84,129 @@ class MobileNav extends Component {
         }
     };
 
-    render() {
-        return (
-          <header className={styles.container}>
-              <p>HAARO-PORADNA</p>
-              <div>
-                  <nav id={styles.mobileNavbar} className={styles.mobileNavbar}>
-                      <div className={styles.navbarButtons}>
-                          <button className={styles.contain}>
-                              <span className={styles.bar1}></span>
-                              <span className={styles.bar2}></span>
-                              <span className={styles.bar3}></span>
-                          </button>
-                      </div>
-                  </nav>
+    useEffect(() => {
+        const toggleButton = document.querySelector(`.${styles.contain}`);
+        if (toggleButton) {
+            toggleButton.addEventListener('click', toggleClasses);
+        }
 
-                  <nav className={styles.overlay}>
-                      <div className={styles.overlayMenu}>
-                          <ul>
-                              <li>
-                                  <a href="https://haarosalon.cz/index.html" className={styles.logo2}>
-                                      <img id={styles.logo2} src={logo2} alt="Haaro Naturo logo" />
-                                  </a>
-                              </li>
-                              <li>
-                                  <a
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    href="https://www.haaro-naturo.cz/"
-                                    data-link="e-shop"
-                                    className={styles.navLink}
-                                  >
-                                      <span>e-shop</span>
-                                  </a>
-                              </li>
-                              <li>
-                                  <Link to="/" data-link="blog" className={styles.navLink}>
-                                      <span>blog</span>
-                                  </Link>
-                              </li>
-                              <li>
-                                  <a
-                                    href="https://haarosalon.cz/index.html"
-                                    data-link="úvod"
-                                    className={styles.navLink}
-                                  >
-                                      <span>úvod</span>
-                                  </a>
-                              </li>
-                              <li>
-                                  <a
-                                    href="https://haarosalon.cz/pages/oHaaro.html"
-                                    data-link="o haaro"
-                                    className={styles.navLink}
-                                  >
-                                      <span>o haaro</span>
-                                  </a>
-                              </li>
-                              <li>
-                                  <a
-                                    href="https://haarosalon.cz/pages/vyroba.html"
-                                    data-link="výroba"
-                                    className={styles.navLink}
-                                  >
-                                      <span>výroba</span>
-                                  </a>
-                              </li>
-                              <li>
-                                  <a
-                                    href="https://haarosalon.cz/pages/kadernictvi.html"
-                                    data-link="kadeřnictví"
-                                    className={styles.navLink}
-                                  >
-                                      <span>kadeřnictví</span>
-                                  </a>
-                              </li>
-                              <li>
-                                  <a
-                                    href="https://haarosalon.cz/pages/kontakt.html"
-                                    data-link="kontakt"
-                                    className={styles.navLink}
-                                  >
-                                      <span>kontakt</span>
-                                  </a>
-                              </li>
-                          </ul>
-                      </div>
-                  </nav>
-              </div>
-          </header>
-        );
-    }
-}
+        // Zajištění zavření overlay při kliknutí na všechny odkazy i tlačítka
+        const navLinks = document.querySelectorAll(`.${styles.navLink}, button.${styles.navLink}`);
+        navLinks.forEach((link) => {
+            link.addEventListener('click', closeOverlay);
+        });
+
+        return () => {
+            const navLinks = document.querySelectorAll(`.${styles.navLink}, button.${styles.navLink}`);
+            navLinks.forEach((link) => {
+                link.removeEventListener('click', closeOverlay);
+            });
+        };
+    }, []);
+
+    return (
+      <header className={styles.container}>
+          <p>HAARO-PORADNA</p>
+          <div>
+              <nav id={styles.mobileNavbar} className={styles.mobileNavbar}>
+                  <div className={styles.navbarButtons}>
+                      <button className={styles.contain}>
+                          <span className={styles.bar1}></span>
+                          <span className={styles.bar2}></span>
+                          <span className={styles.bar3}></span>
+                      </button>
+                  </div>
+              </nav>
+
+              <nav className={styles.overlay}>
+                  <div className={styles.overlayMenu}>
+                      <ul>
+                          <li>
+                              <Link to="/" className={styles.logo2}>
+                                  <img id={styles.logo2} src={logo2} alt="Haaro Naturo logo" />
+                              </Link>
+                          </li>
+                          <li>
+                              <Link to="/" data-link="poradna" className={styles.navLink}>
+                                  <span>poradna</span>
+                              </Link>
+                          </li>
+                          <li>
+                              <Link to="/newQuestionPage" data-link="nový dotaz" className={styles.navLink}>
+                                  <span>nový dotaz</span>
+                              </Link>
+                          </li>
+                          <li>
+                              <Link to="/archivePage" data-link="archiv dotazů" className={styles.navLink}>
+                                  <span>archiv dotazů</span>
+                              </Link>
+                          </li>
+                          {isAuthenticated && (
+                            <li>
+                                <Link to="/profilePage" data-link="váš profil" className={styles.navLink}
+                                      onClick={closeOverlay}>
+                                    <span>váš profil</span>
+                                </Link>
+                            </li>
+                          )}
+                          {isAdmin && (
+                            <li>
+                                <Link to="/usersList" data-link="seznam uživatelů" className={styles.navLink}
+                                      onClick={closeOverlay}>
+                                    <span>seznam uživatelů</span>
+                                </Link>
+                            </li>
+                          )}
+                          <li>
+                              <a
+                                target="_blank"
+                                rel="noreferrer"
+                                href="https://blog.haarosalon.cz/"
+                                data-link="blog"
+                                className={styles.navLink}
+                              >
+                                  <span>blog</span>
+                              </a>
+                          </li>
+                          <li>
+                              <a
+                                target="_blank"
+                                rel="noreferrer"
+                                href="https://www.haaro-naturo.cz/"
+                                data-link="e-shop"
+                                className={styles.navLink}
+                              >
+                                  <span>e-shop</span>
+                              </a>
+                          </li>
+                      </ul>
+                      <ul>
+                          {!isAuthenticated ? (
+                            <>
+                                <li>
+                                    <Link to="/login" data-link="přihlásit se" className={styles.navLink} onClick={closeOverlay}>
+                                        <span>přihlásit se</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/registration" data-link="registrovat se" className={styles.navLink} onClick={closeOverlay}>
+                                        <span>registrovat se</span>
+                                    </Link>
+                                </li>
+                            </>
+                          ) : (
+                            <li>
+                                <button onClick={handleLogout} className={styles.navLink}>
+                                    <span>odhlásit se</span>
+                                </button>
+                            </li>
+                          )}
+                      </ul>
+                  </div>
+              </nav>
+          </div>
+      </header>
+    );
+};
 
 export default MobileNav;
