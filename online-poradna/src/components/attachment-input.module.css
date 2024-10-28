@@ -1,0 +1,86 @@
+.fileInputContainer {
+    display: flex;
+    flex-direction: column;
+    width: 99%;
+    margin: 1rem auto;
+}
+
+.previewContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+}
+
+.previewItem {
+    position: relative;
+    width: calc((100% - 2rem) / 3); /* Tři náhledy vedle sebe s mezerou */
+    aspect-ratio: 1 / 1; /* Poměr stran 1:1 pro čtvercový tvar */
+    overflow: hidden;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.previewImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+    /*border: 1px solid rgba(32, 87, 165, 0.5);;*/
+}
+
+.removeButton {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--blue);
+    color: var(--whitesmoke);
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    line-height: 1rem;
+    padding: 0.5rem;
+    margin: 0;
+}
+
+.removeButton:hover {
+    background-color: var(--blue-darker);
+}
+
+.fileName {
+    font-size: 12px;
+    margin-top: 5px;
+    word-break: break-word;
+    max-width: 100px;
+}
+
+.input {
+    display: none;
+}
+
+.customFileInput {
+    color: var(--blue);
+    background-color: var(--whitesmoke);
+    padding: 0.5rem 2rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(32, 87, 165, 0.6);
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: Fabrikant, 'Fabrikat', serif;
+    text-align: center;
+    display: inline-block;
+}
+
+.customFileInput:active:hover {
+    background-color: var(--blue);
+    color: var(--whitesmoke);
+}

@@ -1,0 +1,45 @@
+.listItem {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    border: 1px solid rgba(32, 87, 165, 0.5);
+    margin-bottom: 1rem;
+    margin-left: 0;
+}
+
+.listItem h2,
+.listItem a{
+    margin: 0;
+    text-decoration: none;
+}
+
+.info {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.info > div{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.info p {
+    margin: 0;
+}
+
+.info .button {
+    font-size: 1rem;
+    width: 60%;
+    margin: 0 auto;
+    padding: 0.5rem 2rem;
+    border: 1px solid rgba(32, 87, 165, 0.6);
+    cursor: pointer;
+/*    background-color: var(--whitesmoke);
+    color: var(--blue);*/
+    background-color: var(--blue);
+    color: var(--whitesmoke);
+}

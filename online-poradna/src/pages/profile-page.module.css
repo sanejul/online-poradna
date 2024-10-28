@@ -1,0 +1,54 @@
+
+.listItemContainer {
+    padding: 0;
+}
+
+.profileContainer label {
+    display: block;
+    margin-top: 1rem;
+    margin-left: 5px;
+    width: 100%;
+    text-align: left;
+}
+
+.profileContainer input {
+    margin-top: 0.2rem;
+}
+
+.profileContainer Button {
+    margin-top: 1rem;
+}
+
+.profileContainer .link {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    color: var(--blue);
+}
+
+.profileContainer .h2 {
+    margin-top: 3rem;
+}
+
+.profileInfo p {
+    text-align: left;
+}
+
+/*.profileInfo p {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.profileInfo p strong {
+    width: 50%;
+    display: block;
+    text-align: right;
+}
+
+.profileInfo p span {
+    display: block;
+    margin-right: auto; !* Zarovná span vlevo *!
+    text-align: left; !* V případě, že by span obsahoval delší text *!
+}*/
