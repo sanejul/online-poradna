@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { auth, db } from "../../firebase";
-import { collection, getDocs, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import React, { useEffect, useState } from 'react';
+import { auth, db } from '../../firebase';
+import { collection, getDocs, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import Modal from '../../components/modal/modal';
+import styles from './users-list-page.module.css'
+import LoadingSpinner from '../../components/loading-spinner';
+import Button from '../../components/buttons/button';
 
 const UsersListPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -17,14 +20,14 @@ const UsersListPage = () => {
     const checkAdminRole = async (user: any) => {
       try {
         setLoading(true);
-        const userDocRef = doc(db, "users", user.uid);
+        const userDocRef = doc(db, 'users', user.uid);
         const userDocSnap = await getDoc(userDocRef);
 
         if (userDocSnap.exists()) {
           const currentUserData = userDocSnap.data();
-          if (currentUserData?.role === "admin") {
+          if (currentUserData?.role === 'admin') {
             setIsAdmin(true);
-            const usersCollectionRef = collection(db, "users");
+            const usersCollectionRef = collection(db, 'users');
             const usersSnapshot = await getDocs(usersCollectionRef);
             const allUsers = usersSnapshot.docs.map((doc) => ({
               id: doc.id,
@@ -32,13 +35,13 @@ const UsersListPage = () => {
             }));
             setUsers(allUsers);
           } else {
-            setError("Nemáte oprávnění přistupovat k této stránce.");
+            setError('Nemáte oprávnění přistupovat k této stránce.');
           }
         } else {
-          setError("Dokument pro aktuálního uživatele nebyl nalezen.");
+          setError('Dokument pro aktuálního uživatele nebyl nalezen.');
         }
       } catch (e) {
-        setError("Chyba při načítání dat z Firestore.");
+        setError('Chyba při načítání dat z Firestore.');
       } finally {
         setLoading(false);
       }
@@ -48,7 +51,7 @@ const UsersListPage = () => {
       if (user) {
         checkAdminRole(user);
       } else {
-        setError("Není přihlášený žádný uživatel.");
+        setError('Není přihlášený žádný uživatel.');
         setLoading(false);
       }
     });
@@ -61,32 +64,32 @@ const UsersListPage = () => {
     try {
       const { id, ...dataToUpdate } = updatedUserData;
 
-      const userDocRef = doc(db, "users", userId);
+      const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, dataToUpdate);
-      console.log("Uživatel úspěšně aktualizován:", dataToUpdate);
+      console.log('Uživatel úspěšně aktualizován:', dataToUpdate);
 
-      // Aktualizuj uživatele v seznamu
+      // update uživatele v seznamu
       setUsers(users.map(user => (user.id === userId ? { ...user, ...dataToUpdate } : user)));
       setEditingUser(null);
     } catch (e) {
-      console.error("Chyba při ukládání dat:", e);
-      setError("Chyba při ukládání dat.");
+      console.error('Chyba při ukládání dat:', e);
+      setError('Chyba při ukládání dat.');
     }
   };
 
   // mazání uživatele
   const deleteUser = async (userId: string) => {
     try {
-      const userDocRef = doc(db, "users", userId);
+      const userDocRef = doc(db, 'users', userId);
       await deleteDoc(userDocRef);
-      console.log("Uživatel úspěšně smazán:", userId);
+      console.log('Uživatel úspěšně smazán:', userId);
 
       // Aktualizujeme seznam uživatelů po smazání
       setUsers(users.filter(user => user.id !== userId));
       setShowModal(false);
     } catch (e) {
-      console.error("Chyba při mazání uživatele:", e);
-      setError("Chyba při mazání uživatele.");
+      console.error('Chyba při mazání uživatele:', e);
+      setError('Chyba při mazání uživatele.');
     }
   };
 
@@ -101,56 +104,68 @@ const UsersListPage = () => {
   };
 
   if (loading) {
-    return <p>Načítání...</p>;
+    return <LoadingSpinner></LoadingSpinner>;
   }
 
   if (!isAdmin) {
     return (
       <div>
-        <p>{error ? error : "Nemáte oprávnění přistupovat k této stránce."}</p>
+        <p>{error ? error : 'Nemáte oprávnění přistupovat k této stránce.'}</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h2>Admin Stránka - Seznam uživatelů</h2>
+    <div className={styles.container}>
+      <h1>Seznam uživatelů</h1>
       <ul>
         {users.map((user) => (
           <li key={user.id}>
             {editingUser?.id === user.id ? (
               <div>
-                {/* Formulář pro úpravu uživatele */}
-                <p><strong>Jméno:</strong> <input type="text" defaultValue={user.firstName} onChange={(e) => setEditingUser({ ...editingUser, firstName: e.target.value })} /></p>
-                <p><strong>Příjmení:</strong> <input type="text" defaultValue={user.lastName} onChange={(e) => setEditingUser({ ...editingUser, lastName: e.target.value })} /></p>
-                <p><strong>Email:</strong> <input type="text" defaultValue={user.email} onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })} /></p>
+                <h2>Editace uživatele</h2>
+                <p><strong>Jméno:</strong> <input type="text" defaultValue={user.firstName}
+                                                  onChange={(e) => setEditingUser({
+                                                    ...editingUser,
+                                                    firstName: e.target.value,
+                                                  })} /></p>
+                <p><strong>Příjmení:</strong> <input type="text" defaultValue={user.lastName}
+                                                     onChange={(e) => setEditingUser({
+                                                       ...editingUser,
+                                                       lastName: e.target.value,
+                                                     })} /></p>
+                <p><strong>Email:</strong> <input type="text" defaultValue={user.email}
+                                                  onChange={(e) => setEditingUser({
+                                                    ...editingUser,
+                                                    email: e.target.value,
+                                                  })} /></p>
                 <p><strong>Role:</strong>
-                  <select defaultValue={user.role} onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
+                  <select defaultValue={user.role}
+                          onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                   </select>
                 </p>
-                <button onClick={() => saveUser(user.id, editingUser)}>Uložit</button>
-                <button onClick={() => setEditingUser(null)}>Zrušit</button>
+                <Button variant={"primary"} type={"submit"} onClick={() => saveUser(user.id, editingUser)}>Uložit</Button>
+                <Button variant={"secondary"} type={"button"} onClick={() => setEditingUser(null)}>Zrušit</Button>
               </div>
             ) : (
-              <div>
+              <div className={styles.userItem}>
                 <p><strong>Jméno:</strong> {user.firstName} {user.lastName}</p>
                 <p><strong>Email:</strong> {user.email}</p>
                 <p><strong>Role:</strong> {user.role}</p>
-                <button onClick={() => setEditingUser(user)}>Upravit</button>
-                <button onClick={() => openDeleteModal(user)}>Smazat</button>
+                <Button variant={"edit"} type={"button"} onClick={() => setEditingUser(user)}>Upravit</Button>
+                <Button variant={"delete"} type={"button"} onClick={() => openDeleteModal(user)}>Smazat</Button>
               </div>
             )}
-            <hr />
           </li>
         ))}
       </ul>
 
       <Modal isOpen={showModal} onClose={closeModal}>
         <p>Opravdu chcete smazat uživatele {userToDelete?.firstName} {userToDelete?.lastName}?</p>
-        <button onClick={() => deleteUser(userToDelete.id)}>Ano, smazat</button>
-        <button onClick={closeModal}>Zrušit</button>
+        <Button variant={"delete"} type={"button"} onClick={() => deleteUser(userToDelete.id)}>Ano, smazat</Button>
+        <Button variant={"secondary"} type={"button"} onClick={closeModal}>Zrušit</Button>
       </Modal>
     </div>
   );

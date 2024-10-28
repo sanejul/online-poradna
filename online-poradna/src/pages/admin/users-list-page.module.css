@@ -1,0 +1,15 @@
+.container ul {
+    padding: 0;
+}
+
+.userItem {
+    border-bottom: 1px solid rgba(32, 87, 165, 0.1);
+}
+
+.userItem p {
+    text-align: left;
+}
+
+.container Button {
+    margin-bottom: 1rem;
+}

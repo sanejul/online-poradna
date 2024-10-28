@@ -13,6 +13,7 @@ import NewQuestionPage from './pages/questions/new-question-page';
 import ArchivePage from './pages/questions/archive-page';
 import ProfilePage from './pages/profile-page';
 import ResetPasswordPage from './pages/reset-psswd-page';
+import QuestionDetailPage from './pages/questions/question-detail-page';
 
 function App() {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -46,11 +47,11 @@ function App() {
           <Route path="/archivePage" element={<ArchivePage />} />
           <Route path="/profilePage" element={<ProfilePage />} />
           <Route path="/resetPassword" element={<ResetPasswordPage />} />
+          <Route path="/questions/:id" element={<QuestionDetailPage />} />
         </Routes>
       </div>
-<div>
-  <Footer></Footer>
-</div>
+      <div>
+      </div>
     </div>
   );
 }

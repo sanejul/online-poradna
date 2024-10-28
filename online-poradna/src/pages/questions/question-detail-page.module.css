@@ -1,0 +1,124 @@
+.marginBottom {
+    margin-bottom: 5rem;
+}
+
+.container p {
+    line-height: 1.4rem;
+}
+
+.bubbleContainer{
+    margin-top: 3rem;
+}
+
+.bubble {
+    padding: 10px;
+    margin: 3px 0;
+    max-width: 90%;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.leftBubble {
+    /*background-color: #e0f7fa;*/
+    margin-right: auto;
+    text-align: left;
+    border: 1px solid var(--blue);
+    border-radius: 8px 8px 8px 0;
+}
+
+.rightBubble {
+   /* background-color: #c8e6c9;*/
+    margin-left: auto;
+    text-align: right;
+    border: 1px solid var(--blue);
+    border-radius: 8px 8px 0 8px;
+}
+
+.bubbleInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 90%;
+}
+
+.bubbleInfo p {
+    margin: 0 5px;
+}
+
+.bubble p {
+    margin: 0;
+}
+
+.rightBubbleInfo{
+    flex-direction: row-reverse;
+    margin-left: auto;
+}
+
+.leftBubbleInfo {
+    flex-direction: row;
+    margin-right: auto;
+}
+
+.author {
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.date {
+    font-size: 0.9em;
+    color: gray;
+}
+
+.answerContainer {
+    margin-top: 5rem;
+}
+
+.attachments {
+    margin-top: 15px;
+}
+
+.formattedText {
+    white-space: pre-wrap;
+}
+
+/* image preview */
+.attachmentPreviews {
+    margin-top: 1rem;
+}
+
+.previewContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.leftPreviewContainer{
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.previewImage {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.previewImage:hover {
+    transform: scale(1.05);
+}
+
+/* answer list */
+.answerList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.timestamp {
+    font-size: 0.8rem;
+    color: #555;
+    margin-top: 5px;
+    text-align: right;
+}

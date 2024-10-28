@@ -1,3 +1,5 @@
+/* index.css */
+
 @font-face {
   font-family: 'Fabrikant';
   src: url('../fonts/Fabrikant/Fabrikat.otf') format('opentype');
@@ -44,8 +46,12 @@
 
 :root {
   --blue: #2057a5;
+  --blue-darker: #194785;
   --whitesmoke: #F5F5F5FF;
+  --whitesmoke-hover: #ececec;
   --black: #111111;
+  --orange: #E67E23;
+  --red: #E74B3B;
 }
 
 ::-moz-selection {
@@ -70,15 +76,35 @@ html{
 }
 
 .main-container{
-  min-height: 100vh;
+  margin-top: 65px;
+  min-height: calc(100vh - 65px);
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 a{
   color: var(--black);
 }
 
-.main-container {
-  margin-top: 65px;
+h1{
+  font-family: "Fabrikant Medium", serif !important;
+  font-size: 3rem;
+  text-align: center;
+}
+
+input[type="text"], textarea, input[type="email"], input[type="password"] {
+  margin-top: 1rem;
+  width: 99%;
+  max-width: 99%;
+  min-width: 99%;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid rgba(32, 87, 165, 0.6);
+  color: var(--blue);
+  background-color: var(--whitesmoke);
+  font-size: 1rem;
+}
+
+input[type="text"]:focus-visible, textarea:focus-visible {
+  outline: 1px solid var(--blue-darker);
+  border-radius: 0;
 }
