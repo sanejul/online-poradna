@@ -17,6 +17,7 @@
 .bubble {
     padding: 10px;
     margin: 3px 0;
+    width: 90%;
     max-width: 90%;
     position: relative;
     word-wrap: break-word;
@@ -93,6 +94,10 @@
 
 .leftPreviewContainer {
     display: flex;
+    flex-direction: row;
+}
+
+.rightPreviewContainer {
     flex-direction: row-reverse;
 }
 
@@ -129,15 +134,16 @@
     align-items: center;
 }
 
-.left .bubbleEditContainer {
+.left .bubbleEditContainer,
+.left .bubbleEditQuestion{
     display: flex;
     flex-direction: row-reverse;
 }
 
-.bubbleEditQuestion {
+/*.bubbleEditQuestion {
     display: flex;
     flex-direction: row-reverse;
-}
+}*/
 
 .options Button {
     margin-top: 1rem;
@@ -192,6 +198,10 @@ h1 Button[type="submit"]:not {
     margin-top: 2rem;
 }
 
+.container h1 {
+    margin-bottom: 3rem;
+}
+
 .container select {
     width: 100%;
 }
@@ -202,7 +212,12 @@ h1 Button[type="submit"]:not {
     color: var(--blue-light);
 }
 
+.categoryList {
+    margin-top: 2rem;
+}
+
 .categorySection,
+.categoryList,
 .addCategoryButton {
     margin-bottom: 2rem;
 }

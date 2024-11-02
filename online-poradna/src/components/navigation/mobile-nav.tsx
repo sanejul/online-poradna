@@ -127,8 +127,8 @@ const MobileNav: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/" data-link="poradna" className={styles.navLink}>
-                  <span>poradna</span>
+                <Link to="/" data-link="o poradně" className={styles.navLink}>
+                  <span>o poradně</span>
                 </Link>
               </li>
               <li>
@@ -143,9 +143,9 @@ const MobileNav: React.FC = () => {
               </li>
               {isAuthenticated && (
                 <li>
-                  <Link to="/profilePage" data-link="váš profil" className={styles.navLink}
+                  <Link to="/profilePage" data-link="můj profil" className={styles.navLink}
                         onClick={closeOverlay}>
-                    <span>váš profil</span>
+                    <span>můj profil</span>
                   </Link>
                 </li>
               )}

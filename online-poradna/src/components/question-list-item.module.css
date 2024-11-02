@@ -41,6 +41,7 @@
     margin: 0 auto;
     padding: 0.5rem 2rem;
     border: 1px solid rgba(32, 87, 165, 0.6);
+    border-radius: 2px;
     cursor: pointer;
 /*    background-color: var(--whitesmoke);
     color: var(--blue);*/

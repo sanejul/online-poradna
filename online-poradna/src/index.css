@@ -107,7 +107,15 @@ input[type="text"], textarea, input[type="email"], input[type="password"] {
   font-size: 1rem;
 }
 
-input[type="text"]:focus-visible, textarea:focus-visible {
+input[type="text"]:focus-visible,
+textarea:focus-visible,
+input[type="email"]:focus-visible,
+input[type="password"]:focus-visible{
   outline: 1px solid var(--blue-darker);
   border-radius: 0;
+}
+
+button {
+  border-radius: 2px;
+  text-transform: lowercase;
 }

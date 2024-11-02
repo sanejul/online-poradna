@@ -125,9 +125,9 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
               </div>
 
               <div
-                className={`${isAdmin || answer.author.uid === currentUserUid ? styles.bubbleEditContainer : ''}`}
+                className={`${isAdmin ? styles.bubbleEditContainer : ''}`}
               >
-                {(isAdmin || answer.author.uid === currentUserUid) && (
+                {isAdmin && (
                   <div className={styles.answerActions}>
                     {editingAnswerId === answer.id ? (
                       <div className={styles.actionButtonsContainer}>
@@ -178,9 +178,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                 <div className={styles.attachmentPreviews}>
                   <div
                     className={`${styles.previewContainer} ${
-                      answer.author.uid === questionAuthorUid ||
-                      (questionAuthorUid === currentUserUid ||
-                        isAdmin && answer.author.uid !== currentUserUid)
+                      (answer.author.uid !== currentUserUid && currentUserUid !== undefined) || (currentUserUid === undefined && answer.author.uid === questionAuthorUid)
                         ? styles.leftPreviewContainer
                         : styles.rightPreviewContainer
                     }`}

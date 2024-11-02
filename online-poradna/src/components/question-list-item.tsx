@@ -33,7 +33,7 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
           <p className={styles.isAnswered}>{isAnswered ? 'Zodpovězeno' : 'Nezodpovězeno'}</p>
         </div>
         <Link to={`/questions/${id}`} className={styles.button}>
-          Prohlédnout
+          prohlédnout
         </Link>
       </div>
     </li>

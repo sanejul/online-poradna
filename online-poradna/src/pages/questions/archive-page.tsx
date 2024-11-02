@@ -6,6 +6,7 @@ import QuestionListItem from "../../components/question-list-item";
 import styles from "./archive-page.module.css";
 import SearchBar from '../../components/navigation/search-bar';
 import Button from '../../components/buttons/button';
+import Pagination from '@mui/material/Pagination';
 
 // Definice rozhraní pro otázky
 interface Question {
@@ -30,6 +31,8 @@ const ArchivePage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["all"]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     // Fetch categories as objects with id and name
@@ -54,6 +57,8 @@ const ArchivePage = () => {
         const data = { id: doc.id, ...doc.data() } as Question;
         questionsList.push(data);
       });
+
+      questionsList.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
 
       setQuestions(questionsList);
       setFilteredQuestions(questionsList);
@@ -114,6 +119,20 @@ const ArchivePage = () => {
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredQuestions.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  const totalPages = Math.ceil(filteredQuestions.length / itemsPerPage);
+
   return (
     <div className={styles.archiveContainer}>
       <h1>Všechny dotazy</h1>
@@ -151,25 +170,39 @@ const ArchivePage = () => {
       ) : filteredQuestions.length === 0 ? (
         <p>Zatím nejsou žádné dotazy.</p>
       ) : (
-        <ul className={styles.listItemContainer}>
-          {filteredQuestions.map((question) => (
-            <QuestionListItem
-              key={question.id}
-              id={question.id}
-              title={question.title}
-              text={question.questionText}
-              createdAt={new Date(question.createdAt.seconds * 1000)}
-              isAnswered={question.isAnswered}
-              category={
-                Array.isArray(question.category)
-                  ? question.category
-                    .map((catId) => categories.find(cat => cat.id === catId)?.name || catId)
-                    .join(' ')
-                  : ('Žádná kategorie')
-              }
+        <>
+          <ul className={styles.listItemContainer}>
+            {currentItems.map((question) => (
+              <QuestionListItem
+                key={question.id}
+                id={question.id}
+                title={question.title}
+                text={question.questionText}
+                createdAt={new Date(question.createdAt.seconds * 1000)}
+                isAnswered={question.isAnswered}
+                category={
+                  Array.isArray(question.category)
+                    ? question.category
+                      .map((catId) => categories.find(cat => cat.id === catId)?.name || catId)
+                      .join(' ')
+                    : ('Žádná kategorie')
+                }
+              />
+            ))}
+          </ul>
+
+          <div className={`${styles.pagination} custom-pagination`}>
+            <Pagination
+              shape="rounded"
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              showFirstButton
+              showLastButton
             />
-          ))}
-        </ul>
+          </div>
+        </>
       )}
     </div>
   );
