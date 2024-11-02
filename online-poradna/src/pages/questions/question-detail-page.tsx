@@ -62,6 +62,8 @@ const QuestionDetailPage = () => {
       }
     };
 
+    console.warn('user:', user);
+
     checkAdminRole();
   }, [user]);
 
@@ -258,31 +260,6 @@ const QuestionDetailPage = () => {
         </div>
       )}
 
-      <h1>
-        {editingField === 'title' ? (
-          <>
-            <input
-              type="text"
-              value={tempQuestion?.title || ''}
-              onChange={(e) => setTempQuestion({ ...tempQuestion, title: e.target.value })}
-            />
-            <div className={styles.actionButtonsContainer}>
-              <Button type={'submit'} onClick={saveChanges} variant="primary">Uložit název</Button>
-              <Button type={'button'} onClick={cancelChanges} variant="secondary">Zrušit</Button>
-            </div>
-          </>
-        ) : (
-          <>
-            {question.title}
-            {isAdmin && (
-              <button className={styles.editIconBtn}>
-              <img src={editPen} alt="Edit title" onClick={() => setEditingField('title')} />
-              </button>
-            )}
-          </>
-        )}
-      </h1>
-
       <div className={styles.categoryList}>
         {selectedCategoryNames.length > 0 ? (
           selectedCategoryNames.map((name, index) => (
@@ -301,7 +278,8 @@ const QuestionDetailPage = () => {
             onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
           >
             {showCategoryDropdown ? 'Skrýt kategorie' : 'Zobrazit kategorie'}
-            <span className={`${archiveStyles.arrowIcon} ${showCategoryDropdown ? archiveStyles.arrowUp : archiveStyles.arrowDown}`}></span>
+            <span
+              className={`${archiveStyles.arrowIcon} ${showCategoryDropdown ? archiveStyles.arrowUp : archiveStyles.arrowDown}`}></span>
           </Button>
           {showCategoryDropdown && (
             <div className={archiveStyles.categoryDropdown}>
@@ -331,16 +309,43 @@ const QuestionDetailPage = () => {
           </div>
         </div>
       ) : (
-        <button
-          className={styles.editIconBtn}
-          onClick={() => {
-            setEditingField('category');
-            setShowCategoryDropdown(true);
-          }}
-        >
-          <img src={editPen} alt="Edit category" />
-        </button>
+        isAdmin && (
+          <button
+            className={styles.editIconBtn}
+            onClick={() => {
+              setEditingField('category');
+              setShowCategoryDropdown(true);
+            }}
+          >
+            <img src={editPen} alt="Edit category" />
+          </button>
+        )
       )}
+
+      <h1>
+        {editingField === 'title' ? (
+          <>
+            <input
+              type="text"
+              value={tempQuestion?.title || ''}
+              onChange={(e) => setTempQuestion({ ...tempQuestion, title: e.target.value })}
+            />
+            <div className={styles.actionButtonsContainer}>
+              <Button type={'submit'} onClick={saveChanges} variant="primary">Uložit název</Button>
+              <Button type={'button'} onClick={cancelChanges} variant="secondary">Zrušit</Button>
+            </div>
+          </>
+        ) : (
+          <>
+            {question.title}
+            {isAdmin && (
+              <button className={styles.editIconBtn}>
+                <img src={editPen} alt="Edit title" onClick={() => setEditingField('title')} />
+              </button>
+            )}
+          </>
+        )}
+      </h1>
 
       <div className={`${styles.bubbleInfo} ${isAuthor ? styles.rightBubbleInfo : styles.leftBubbleInfo}`}>
         <p className={styles.author}>{firstName}</p>
@@ -357,38 +362,40 @@ const QuestionDetailPage = () => {
         </p>
       </div>
 
-      <div className={`${isAdmin ? styles.bubbleEditQuestion : ''} ${isAuthor ? styles.left : styles.right}`}>
-        {isAdmin && (
-          <div className={`${isAdmin ? styles.bubbleEditQuestion : ''} ${isAuthor ? styles.left : styles.right}`}>
-            {isAdmin && (
-              <div className={styles.answerActions}>
-                {editingField === 'text' ? (
-                  <div className={styles.actionButtonsContainer}>
-                    <Button variant="primary" type="submit" onClick={saveChanges}>Uložit změny</Button>
-                    <Button variant="secondary" type="button" onClick={cancelChanges}>Zrušit</Button>
-                  </div>
-                ) : (
-                  <button className={styles.editIconBtn} type="button" onClick={() => setEditingField('text')}>
-                    <img src={editPen} alt="Edit text" />
-                  </button>
-                )}
-              </div>
+      <div className={`${isAuthor || isAdmin ? styles.left : styles.right}`}>
+        <div className={`${isAdmin ? styles.bubbleEditQuestion : ''}`}>
+          {isAdmin && (
+            <div className={`${isAdmin ? styles.bubbleEditQuestionInner : ''} ${isAuthor || isAdmin ? styles.left : styles.right}`}>
+              {isAdmin && (
+                <div className={styles.answerActions}>
+                  {editingField === 'text' ? (
+                    <div className={styles.actionButtonsContainer}>
+                      <Button variant="primary" type="submit" onClick={saveChanges}>Uložit změny</Button>
+                      <Button variant="secondary" type="button" onClick={cancelChanges}>Zrušit</Button>
+                    </div>
+                  ) : (
+                    <button className={styles.editIconBtn} type="button" onClick={() => setEditingField('text')}>
+                      <img src={editPen} alt="Edit text" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div
+            className={`${styles.bubble} ${isAuthor ? styles.rightBubble : styles.leftBubble}
+          ${editingField === 'text' ? styles.bubbleEditMode : ''}`}
+          >
+            {editingField === 'text' ? (
+              <textarea
+                value={tempQuestion?.questionText || ''}
+                onChange={(e) => setTempQuestion({ ...tempQuestion, questionText: e.target.value })}
+              />
+            ) : (
+              <p className={styles.formattedText} dangerouslySetInnerHTML={{ __html: question.questionText }} />
             )}
           </div>
-        )}
-
-        <div
-          className={`${styles.bubble} ${isAuthor ? styles.rightBubble : styles.leftBubble}
-          ${editingField === 'text' ? styles.bubbleEditMode : ''}`}
-        >
-          {editingField === 'text' ? (
-            <textarea
-              value={tempQuestion?.questionText || ''}
-              onChange={(e) => setTempQuestion({ ...tempQuestion, questionText: e.target.value })}
-            />
-          ) : (
-            <p className={styles.formattedText} dangerouslySetInnerHTML={{ __html: question.questionText }} />
-          )}
         </div>
       </div>
 
@@ -396,7 +403,7 @@ const QuestionDetailPage = () => {
       {question.files && question.files.length > 0 && (
         <div className={styles.attachmentPreviews}>
           <div
-            className={`${styles.previewContainer} ${isAuthor ? styles.leftPreviewContainer : styles.rightPreviewContainer}`}>
+            className={`${styles.previewContainer} ${isAuthor ? styles.rightPreviewContainer : styles.leftPreviewContainer}`}>
             {question.files.map((file: string, index: number) => (
               <img
                 key={index}
@@ -430,7 +437,7 @@ const QuestionDetailPage = () => {
 
       <AnswerList questionId={id!} />
 
-      {user !== undefined && (
+      {user !== null && (
         <div className={styles.answerContainer}>
           {error && <p style={{ color: 'red' }}>{error}</p>}
 

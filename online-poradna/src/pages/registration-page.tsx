@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+import Button from '../components/buttons/button';
+import styles from './login.module.css'
 
 const RegisterPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -49,56 +51,69 @@ const RegisterPage = () => {
 
   return (
     <div>
-      <h2>Registrace</h2>
+      <h1>Registrace</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleRegister}>
-        <div>
-          <label>Jméno:</label>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
+      <div className={styles.formContainer}>
+        <form className={styles.form} onSubmit={handleRegister}>
+          <div>
+            <label>Jméno:</label>
+            <input
+              placeholder={"Jméno"}
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Příjmení:</label>
+            <input
+              placeholder={"Příjmení"}
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Email:</label>
+            <input
+              placeholder={"E-mail"}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Heslo:</label>
+            <input
+              placeholder={"Heslo"}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Potvrdit heslo:</label>
+            <input
+              placeholder={"Zadejte znovu stejné heslo"}
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+          <Button type="submit" variant={"primary"}>Registrovat</Button>
+        </form>
+
+        <div className={styles.questionContainer}>
+          <p>Už máte založený účet?</p>
+          <Link to="/login">Přihlaste se</Link>
         </div>
-        <div>
-          <label>Příjmení:</label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Heslo:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Potvrdit heslo:</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Registrovat</button>
-      </form>
+      </div>
+
     </div>
   );
 };

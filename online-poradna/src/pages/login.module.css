@@ -1,0 +1,24 @@
+.questionContainer {
+    margin: 3rem 0;
+}
+
+.questionContainer a {
+    color: var(--blue);
+}
+
+.questionContainer p {
+    margin-bottom: .5rem;
+}
+
+.form Button {
+    width: 99%;
+    margin: 1rem 0;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 80vh;
+}
+

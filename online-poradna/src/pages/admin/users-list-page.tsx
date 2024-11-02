@@ -6,6 +6,15 @@ import Modal from '../../components/modal/modal';
 import styles from './users-list-page.module.css'
 import LoadingSpinner from '../../components/loading-spinner';
 import Button from '../../components/buttons/button';
+import SearchBar from '../../components/navigation/search-bar';
+
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+}
 
 const UsersListPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -15,6 +24,8 @@ const UsersListPage = () => {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [userToDelete, setUserToDelete] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const checkAdminRole = async (user: any) => {
@@ -29,11 +40,16 @@ const UsersListPage = () => {
             setIsAdmin(true);
             const usersCollectionRef = collection(db, 'users');
             const usersSnapshot = await getDocs(usersCollectionRef);
-            const allUsers = usersSnapshot.docs.map((doc) => ({
+            const allUsers: User[] = usersSnapshot.docs.map((doc) => ({
               id: doc.id,
               ...doc.data(),
-            }));
+            } as User)); // Přetypování na User
+
+            // Sort users alphabetically by `firstName`
+            allUsers.sort((a, b) => a.firstName.localeCompare(b.firstName));
+
             setUsers(allUsers);
+            setFilteredUsers(allUsers);
           } else {
             setError('Nemáte oprávnění přistupovat k této stránce.');
           }
@@ -58,6 +74,16 @@ const UsersListPage = () => {
 
     return () => unsubscribe();
   }, []);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const lowerCaseQuery = query.toLowerCase();
+    const filtered = users.filter((user) =>
+      `${user.firstName} ${user.lastName}`.toLowerCase().includes(lowerCaseQuery) ||
+      user.email.toLowerCase().includes(lowerCaseQuery)
+    );
+    setFilteredUsers(filtered);
+  };
 
   // uložení upravených údajů
   const saveUser = async (userId: string, updatedUserData: any) => {
@@ -118,11 +144,12 @@ const UsersListPage = () => {
   return (
     <div className={styles.container}>
       <h1>Seznam uživatelů</h1>
+      <SearchBar onSearch={handleSearch} placeholder="Vyhledat uživatele..." />
       <ul>
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
           <li key={user.id}>
             {editingUser?.id === user.id ? (
-              <div>
+              <div className={styles.userItemEdit}>
                 <h2>Editace uživatele</h2>
                 <p><strong>Jméno:</strong> <input type="text" defaultValue={user.firstName}
                                                   onChange={(e) => setEditingUser({

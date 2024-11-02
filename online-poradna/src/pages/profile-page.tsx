@@ -118,7 +118,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className={styles.profileContainer}>
-      <h1>Váš profil</h1>
+      <h1>Můj profil</h1>
       {message && <p style={{ color: "green" }}>{message}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 

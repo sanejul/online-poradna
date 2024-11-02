@@ -2,7 +2,8 @@
     padding: 0;
 }
 
-.userItem {
+.userItem,
+.userItemEdit {
     border-bottom: 1px solid rgba(32, 87, 165, 0.1);
 }
 
@@ -12,4 +13,8 @@
 
 .container Button {
     margin-bottom: 1rem;
+}
+
+.container > div > input {
+    margin-bottom: 2rem;
 }

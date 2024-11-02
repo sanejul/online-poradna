@@ -55,6 +55,8 @@ const ArchivePage = () => {
         questionsList.push(data);
       });
 
+      questionsList.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+
       setQuestions(questionsList);
       setFilteredQuestions(questionsList);
       setLoading(false);
