@@ -82,3 +82,25 @@
     transform: rotate(-45deg);
     top: .4rem;
 }
+
+:global(.custom-pagination .MuiPagination-ul) {
+    justify-content: center;
+}
+
+:global(.custom-pagination .MuiPaginationItem-root) {
+    color: var(--blue);
+    background-color: transparent;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+:global(.custom-pagination .MuiPaginationItem-root:hover) {
+    background-color: var(--whitesmoke-hover);
+}
+
+:global(.custom-pagination .Mui-selected) {
+    background-color: transparent !important;
+    color: var(--blue) !important;
+    border: 1px solid var(--blue);;
+    border-radius: 2px;
+}

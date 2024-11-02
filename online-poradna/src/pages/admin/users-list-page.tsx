@@ -4,9 +4,11 @@ import { collection, getDocs, doc, getDoc, updateDoc, deleteDoc } from 'firebase
 import { onAuthStateChanged } from 'firebase/auth';
 import Modal from '../../components/modal/modal';
 import styles from './users-list-page.module.css'
+import paginationStyles from '../questions/archive-page.module.css'
 import LoadingSpinner from '../../components/loading-spinner';
 import Button from '../../components/buttons/button';
 import SearchBar from '../../components/navigation/search-bar';
+import Pagination from '@mui/material/Pagination';
 
 interface User {
   id: string;
@@ -24,8 +26,10 @@ const UsersListPage = () => {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [userToDelete, setUserToDelete] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
 
   useEffect(() => {
     const checkAdminRole = async (user: any) => {
@@ -43,11 +47,9 @@ const UsersListPage = () => {
             const allUsers: User[] = usersSnapshot.docs.map((doc) => ({
               id: doc.id,
               ...doc.data(),
-            } as User)); // Přetypování na User
+            } as User));
 
-            // Sort users alphabetically by `firstName`
             allUsers.sort((a, b) => a.firstName.localeCompare(b.firstName));
-
             setUsers(allUsers);
             setFilteredUsers(allUsers);
           } else {
@@ -83,7 +85,23 @@ const UsersListPage = () => {
       user.email.toLowerCase().includes(lowerCaseQuery)
     );
     setFilteredUsers(filtered);
+    setCurrentPage(1);
   };
+
+  // Výpočet položek pro aktuální stránku
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({
+      top: 0, // Posune stránku na vrchol
+      behavior: 'smooth', // Plynulý přechod
+    });
+  };
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
   // uložení upravených údajů
   const saveUser = async (userId: string, updatedUserData: any) => {
@@ -146,48 +164,81 @@ const UsersListPage = () => {
       <h1>Seznam uživatelů</h1>
       <SearchBar onSearch={handleSearch} placeholder="Vyhledat uživatele..." />
       <ul>
-        {filteredUsers.map((user) => (
+        {currentItems.map((user) => (
           <li key={user.id}>
             {editingUser?.id === user.id ? (
               <div className={styles.userItemEdit}>
                 <h2>Editace uživatele</h2>
-                <p><strong>Jméno:</strong> <input type="text" defaultValue={user.firstName}
-                                                  onChange={(e) => setEditingUser({
-                                                    ...editingUser,
-                                                    firstName: e.target.value,
-                                                  })} /></p>
-                <p><strong>Příjmení:</strong> <input type="text" defaultValue={user.lastName}
-                                                     onChange={(e) => setEditingUser({
-                                                       ...editingUser,
-                                                       lastName: e.target.value,
-                                                     })} /></p>
-                <p><strong>Email:</strong> <input type="text" defaultValue={user.email}
-                                                  onChange={(e) => setEditingUser({
-                                                    ...editingUser,
-                                                    email: e.target.value,
-                                                  })} /></p>
-                <p><strong>Role:</strong>
-                  <select defaultValue={user.role}
-                          onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
+                <p>
+                  <strong>Jméno:</strong>
+                  <input
+                    type="text"
+                    defaultValue={user.firstName}
+                    onChange={(e) => setEditingUser({
+                      ...editingUser,
+                      firstName: e.target.value,
+                    })}
+                  />
+                </p>
+                <p>
+                  <strong>Příjmení:</strong>
+                  <input
+                    type="text"
+                    defaultValue={user.lastName}
+                    onChange={(e) => setEditingUser({
+                      ...editingUser,
+                      lastName: e.target.value,
+                    })}
+                  />
+                </p>
+                <p>
+                  <strong>Email:</strong>
+                  <input
+                    type="text"
+                    defaultValue={user.email}
+                    onChange={(e) => setEditingUser({
+                      ...editingUser,
+                      email: e.target.value,
+                    })}
+                  />
+                </p>
+                <p>
+                  <strong>Role:</strong>
+                  <select
+                    defaultValue={user.role}
+                    onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                  >
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                   </select>
                 </p>
-                <Button variant={"primary"} type={"submit"} onClick={() => saveUser(user.id, editingUser)}>Uložit</Button>
-                <Button variant={"secondary"} type={"button"} onClick={() => setEditingUser(null)}>Zrušit</Button>
+                <Button variant="primary" type="submit" onClick={() => saveUser(user.id, editingUser)}>Uložit</Button>
+                <Button variant="secondary" type="button" onClick={() => setEditingUser(null)}>Zrušit</Button>
               </div>
             ) : (
               <div className={styles.userItem}>
                 <p><strong>Jméno:</strong> {user.firstName} {user.lastName}</p>
                 <p><strong>Email:</strong> {user.email}</p>
                 <p><strong>Role:</strong> {user.role}</p>
-                <Button variant={"edit"} type={"button"} onClick={() => setEditingUser(user)}>Upravit</Button>
-                <Button variant={"delete"} type={"button"} onClick={() => openDeleteModal(user)}>Smazat</Button>
+                <Button variant="edit" type="button" onClick={() => setEditingUser(user)}>Upravit</Button>
+                <Button variant="delete" type="button" onClick={() => openDeleteModal(user)}>Smazat</Button>
               </div>
             )}
           </li>
         ))}
       </ul>
+
+      <div className={`${paginationStyles.pagination} custom-pagination`}>
+        <Pagination
+          shape="rounded"
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+          showFirstButton
+          showLastButton
+        />
+      </div>
 
       <Modal isOpen={showModal} onClose={closeModal}>
         <p>Opravdu chcete smazat uživatele {userToDelete?.firstName} {userToDelete?.lastName}?</p>

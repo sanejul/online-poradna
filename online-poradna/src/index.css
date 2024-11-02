@@ -117,4 +117,5 @@ input[type="password"]:focus-visible{
 
 button {
   border-radius: 2px;
+  text-transform: lowercase;
 }
