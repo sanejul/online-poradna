@@ -47,11 +47,14 @@
 :root {
   --blue: #2057a5;
   --blue-darker: #194785;
+  --blue-light: rgba(32, 87, 165, 0.6);
   --whitesmoke: #F5F5F5FF;
   --whitesmoke-hover: #ececec;
   --black: #111111;
+  --gray: rgba(17, 17, 17, 0.6);
   --orange: #E67E23;
   --red: #E74B3B;
+  --green: #24AE60;
 }
 
 ::-moz-selection {

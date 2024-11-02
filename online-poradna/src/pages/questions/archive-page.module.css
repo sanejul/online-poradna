@@ -1,3 +1,84 @@
-.listItemContainer{
+.archiveContainer .searchBar {
+    margin-bottom: 1rem;
+}
+
+.listItemContainer {
     padding: 0;
+    width: 99%;
+    margin: 2rem auto;
+}
+
+.categoryContainer Button {
+    padding: 0.5rem 1rem;
+    text-align: left;
+    width: 99%;
+    position: relative;
+}
+
+.categoryDropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    width: 99%;
+    margin: auto;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--blue-light);
+    border-left: 1px solid var(--blue-light);
+    border-right: 1px solid var(--blue-light);
+}
+
+.categoryDropdown label {
+    padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+    margin-left: 1rem;
+    cursor: pointer;
+    position: relative;
+    text-transform: lowercase;
+    color: var(--black);
+}
+
+.categoryDropdown label:before {
+    border: 1px solid #2057a599;
+    content: "";
+    height: 10px;
+    left: 2%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-2%, -50%);
+    transition: background-color .2s;
+    width: 10px;
+    z-index: -1;
+}
+
+.categoryDropdown input[type="checkbox"]:checked + label::before {
+    background-color: #2057a5 !important;
+}
+
+.categoryDropdown input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    opacity: 0;
+    position: absolute;
+}
+
+.arrowIcon {
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    border-left: 2px solid var(--blue-light);
+    border-bottom: 2px solid var(--blue-light);
+    transition: transform 0.3s ease;
+    position: absolute;
+    right: 1rem;
+}
+
+.arrowUp {
+    transform: rotate(135deg);
+    top: .9rem;
+}
+
+.arrowDown {
+    transform: rotate(-45deg);
+    top: .4rem;
 }

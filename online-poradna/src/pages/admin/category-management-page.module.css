@@ -1,0 +1,26 @@
+.container ul {
+    padding: 0;
+    margin: 0;
+}
+
+.newCategory {
+    margin-bottom: 3rem;
+}
+
+.newCategory input {
+    margin-bottom: 1rem;
+}
+
+.newCategory Button {
+    width: 99%;
+}
+
+.categoryList Button,
+.categoryList li {
+    margin-top: 1rem;
+}
+
+.categoryList li {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(32, 87, 165, 0.1);
+}

@@ -26,12 +26,11 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
       <Link to={`/questions/${id}`} className={styles.title}>
         <h2>{title}</h2>
       </Link>
-      {/*<p className={styles.text}>{text}</p>*/}
-      <p>Kategorie: <strong>{category}</strong>{' '}</p>
+      <p className={styles.category}>{category}{' '}</p>
       <div className={styles.info}>
         <div>
-          <p>{createdAt.toLocaleDateString('cs-CZ')}{' '}</p>
-          <p>{isAnswered ? 'Zodpovězeno' : 'Nezodpovězeno'}</p>
+          <p className={styles.date}>{createdAt.toLocaleDateString('cs-CZ')}{' '}</p>
+          <p className={styles.isAnswered}>{isAnswered ? 'Zodpovězeno' : 'Nezodpovězeno'}</p>
         </div>
         <Link to={`/questions/${id}`} className={styles.button}>
           Prohlédnout

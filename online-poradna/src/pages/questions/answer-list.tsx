@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../../firebase';
-import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, onSnapshot, orderBy, updateDoc, doc, getDoc } from 'firebase/firestore';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import CustomCloseIcon from '../../components/icons/close-icon';
-import CustomPrevIcon from '../../components/icons/prev-icon';
-import CustomNextIcon from '../../components/icons/next-icon';
-/*import styles from './answer-list.module.css';*/
+import Button from '../../components/buttons/button';
 import styles from './question-detail-page.module.css';
+import editPen from '../../assets/icons/edit-pen.png';
 
 interface AnswerListProps {
   questionId: string;
-  isAuthor: boolean;
 }
 
 interface Answer {
@@ -22,12 +20,40 @@ interface Answer {
   attachments?: string[];
 }
 
-const AnswerList: React.FC<AnswerListProps> = ({ questionId, isAuthor }) => {
+const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [currentAttachments, setCurrentAttachments] = useState<string[]>([]);
+  const [editingAnswerId, setEditingAnswerId] = useState<string | null>(null);
+  const [editedAnswerText, setEditedAnswerText] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [questionAuthorUid, setQuestionAuthorUid] = useState<string | null>(null);
   const currentUserUid = auth.currentUser?.uid;
+
+  // Kontrola role administrátora
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (currentUserUid) {
+        const userRef = doc(db, 'users', currentUserUid);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data();
+        setIsAdmin(userData?.role === 'admin');
+      }
+    };
+    fetchUserRole();
+  }, [currentUserUid]);
+
+  // Načtení ID autora dotazu
+  useEffect(() => {
+    const fetchQuestionAuthor = async () => {
+      const questionRef = doc(db, 'questions', questionId);
+      const questionSnap = await getDoc(questionRef);
+      const questionData = questionSnap.data();
+      setQuestionAuthorUid(questionData?.user?.uid || null);
+    };
+    fetchQuestionAuthor();
+  }, [questionId]);
 
   useEffect(() => {
     const q = query(collection(db, 'questions', questionId, 'answers'), orderBy('createdAt'));
@@ -36,17 +62,32 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId, isAuthor }) => {
       querySnapshot.forEach((doc) => {
         answersList.push({ ...doc.data(), id: doc.id } as Answer);
       });
-      setAnswers(answersList); // Zobrazení bez reverzního řazení
+      setAnswers(answersList);
     });
 
     return () => unsubscribe();
   }, [questionId]);
 
-
   const handleAttachmentClick = (attachments: string[], index: number) => {
     setCurrentAttachments(attachments);
     setLightboxIndex(index);
     setIsLightboxOpen(true);
+  };
+
+  const handleEditAnswer = (answerId: string, currentText: string) => {
+    setEditingAnswerId(answerId);
+    setEditedAnswerText(currentText);
+  };
+
+  const handleSaveAnswer = async (answerId: string) => {
+    const answerRef = doc(db, 'questions', questionId, 'answers', answerId);
+    await updateDoc(answerRef, { text: editedAnswerText });
+    setEditingAnswerId(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAnswerId(null);
+    setEditedAnswerText('');
   };
 
   return (
@@ -56,11 +97,23 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId, isAuthor }) => {
       ) : (
         <div className={styles.answerList}>
           {answers.map((answer) => (
-            <div key={answer.id} className={styles.bubbleContainer}>
+            <div
+              key={answer.id}
+              className={`${styles.bubbleContainer} ${
+                (answer.author.uid !== currentUserUid && currentUserUid !== undefined) || (currentUserUid === undefined && answer.author.uid === questionAuthorUid)
+                  ? styles.left
+                  : styles.right
+              }`}
+            >
               <div
-                className={`${styles.bubbleInfo} ${answer.author.uid !== currentUserUid ? styles.leftBubbleInfo : styles.rightBubbleInfo}`}>
+                className={`${styles.bubbleInfo} ${
+                  (answer.author.uid !== currentUserUid && currentUserUid !== undefined) || (currentUserUid === undefined && answer.author.uid === questionAuthorUid)
+                    ? styles.leftBubbleInfo
+                    : styles.rightBubbleInfo
+                }`}
+              >
                 <p>{answer.author.displayName.split(' ')[0]}</p>
-                <p className={styles.timestamp}>
+                <p className={styles.date}>
                   {new Date(answer.createdAt.seconds * 1000).toLocaleString('cs-CZ', {
                     day: '2-digit',
                     month: '2-digit',
@@ -70,36 +123,80 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId, isAuthor }) => {
                   })}
                 </p>
               </div>
-              <div
-                className={`${styles.bubble} 
-                  ${answer.author.uid !== currentUserUid
-                  ? styles.leftBubble // Pokud je odpověď od aktuálně přihlášeného uživatele, zobrazí se vpravo
-                  : styles.rightBubble // Pokud je odpověď od někoho jiného, zobrazí se vlevo
-                }`}
-              >
-                <p
-                  className={styles.formattedText}
-                  dangerouslySetInnerHTML={{ __html: answer.text }}
-                />
-              </div>
 
-              <div key={answer.id}>
-                {answer.attachments && answer.attachments.length > 0 && (
-                  <div className={styles.attachmentPreviews}>
-                    <div className={`${styles.previewContainer} ${answer.author.uid !== currentUserUid ? styles.rightPreviewContainer : styles.leftPreviewContainer}`}>
-                      {answer.attachments.map((file: string, index: number) => (
-                        <img
-                          key={index}
-                          src={file}
-                          alt={`Příloha ${index + 1}`}
-                          className={styles.previewImage}
-                          onClick={() => handleAttachmentClick(answer.attachments!, index)}
-                        />
-                      ))}
-                    </div>
+              <div
+                className={`${isAdmin || answer.author.uid === currentUserUid ? styles.bubbleEditContainer : ''}`}
+              >
+                {(isAdmin || answer.author.uid === currentUserUid) && (
+                  <div className={styles.answerActions}>
+                    {editingAnswerId === answer.id ? (
+                      <div className={styles.actionButtonsContainer}>
+                        <Button variant="primary" type="submit" onClick={() => handleSaveAnswer(answer.id)}>
+                          Uložit změny
+                        </Button>
+                        <Button variant="secondary" type="button" onClick={handleCancelEdit}>
+                          Zrušit
+                        </Button>
+                      </div>
+                    ) : (
+                      <button
+                        className={styles.editIconBtn}
+                        type="button"
+                        onClick={() => handleEditAnswer(answer.id, answer.text)}
+                      >
+                        <img src={editPen} alt="edit-pen" />
+                      </button>
+                    )}
                   </div>
                 )}
+
+                <div
+                  className={`${styles.bubble} 
+                    ${
+                    (answer.author.uid !== currentUserUid && currentUserUid !== undefined) || (currentUserUid === undefined && answer.author.uid === questionAuthorUid)
+                      ? styles.leftBubble
+                      : styles.rightBubble
+                  } 
+                    ${editingAnswerId === answer.id ? styles.bubbleEditMode : ''}`}
+                >
+                  {editingAnswerId === answer.id ? (
+                    <textarea
+                      value={editedAnswerText}
+                      onChange={(e) => setEditedAnswerText(e.target.value)}
+                      className={styles.textInput}
+                    />
+                  ) : (
+                    <p
+                      className={styles.formattedText}
+                      dangerouslySetInnerHTML={{ __html: answer.text }}
+                    />
+                  )}
+                </div>
               </div>
+
+              {answer.attachments && answer.attachments.length > 0 && (
+                <div className={styles.attachmentPreviews}>
+                  <div
+                    className={`${styles.previewContainer} ${
+                      answer.author.uid === questionAuthorUid ||
+                      (questionAuthorUid === currentUserUid ||
+                        isAdmin && answer.author.uid !== currentUserUid)
+                        ? styles.leftPreviewContainer
+                        : styles.rightPreviewContainer
+                    }`}
+                  >
+                    {answer.attachments.map((file: string, index: number) => (
+                      <img
+                        key={index}
+                        src={file}
+                        alt={`Příloha ${index + 1}`}
+                        className={styles.previewImage}
+                        onClick={() => handleAttachmentClick(answer.attachments!, index)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -119,12 +216,6 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId, isAuthor }) => {
           }}
           render={{
             buttonClose: () => <CustomCloseIcon onClick={() => setIsLightboxOpen(false)} />,
-            /*       buttonPrev: () => (
-                     <CustomPrevIcon onClick={() => setLightboxIndex((lightboxIndex - 1 + currentAttachments.length) % currentAttachments.length)} />
-                   ),
-                   buttonNext: () => (
-                     <CustomNextIcon onClick={() => setLightboxIndex((lightboxIndex + 1) % currentAttachments.length)} />
-                   ),*/
           }}
         />
       )}

@@ -12,7 +12,7 @@ import LoadingSpinner from '../../components/loading-spinner';
 const NewQuestionPage = () => {
   const [title, setTitle] = useState('');
   const [questionText, setQuestionText] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(['']);
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
