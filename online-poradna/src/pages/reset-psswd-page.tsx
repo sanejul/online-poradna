@@ -1,43 +1,59 @@
 import React, { useState } from "react";
 import { auth } from "../firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
+import { validateEmail } from '../helpers/validation-helper';
+import Button from '../components/buttons/button';
 
 const ResetPasswordPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [fieldError, setFieldError] = useState<string>("");
+  const [isValid, setIsValid] = useState<boolean>(false);
+
+  const handleBlur = () => {
+    const emailError = validateEmail(email);
+    setFieldError(emailError);
+    setIsValid(!emailError);
+  };
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (fieldError || !isValid) {
+      setError("Zadejte prosím platný e-mail.");
+      return;
+    }
 
     try {
-      // Firebase funkce pro odeslání e-mailu s odkazem na reset hesla
       await sendPasswordResetEmail(auth, email);
       setMessage(`Odkaz na obnovu hesla byl odeslán na adresu ${email}`);
       setError(null);
     } catch (error) {
-      setError("Chyba při odesílání e-mailu: " + (error as Error).message);
+      setError("Nastala chyba při odesílání e-mailu, zkuste to prosím znovu.");
       setMessage(null);
     }
   };
 
   return (
     <div>
-      <h2>Obnova hesla</h2>
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <h1>Obnova hesla</h1>
+
       <form onSubmit={handlePasswordReset}>
-        <div>
-          <label>Email:</label>
+        <div className={`input-container ${fieldError ? 'error' : isValid ? 'valid' : ''}`}>
+          <label>Email *</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onBlur={handleBlur}
             required
           />
+          {fieldError && <p className="errorText">{fieldError}</p>}
         </div>
-        <button type="submit">Odeslat odkaz na obnovu hesla</button>
+        <Button variant={"primary"} type="submit" disabled={!isValid}>Odeslat odkaz na obnovu hesla</Button>
       </form>
+      {message && <p style={{ color: 'green' }}>{message}</p>}
+      {error && <p className="errorText">{error}</p>}
     </div>
   );
 };

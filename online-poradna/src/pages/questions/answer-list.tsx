@@ -4,6 +4,7 @@ import { collection, query, onSnapshot, orderBy, updateDoc, doc, getDoc } from '
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import CustomCloseIcon from '../../components/icons/close-icon';
+import { validateQuestionText } from '../../helpers/validation-helper';
 import Button from '../../components/buttons/button';
 import styles from './question-detail-page.module.css';
 import editPen from '../../assets/icons/edit-pen.png';
@@ -29,6 +30,8 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
   const [editedAnswerText, setEditedAnswerText] = useState<string>('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [questionAuthorUid, setQuestionAuthorUid] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [fieldValid, setFieldValid] = useState<{ [key: string]: boolean }>({});
   const currentUserUid = auth.currentUser?.uid;
 
   // Kontrola role administrátora
@@ -68,6 +71,24 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     return () => unsubscribe();
   }, [questionId]);
 
+  useEffect(() => {
+    if (questionId && answers) {
+      updateIsAnsweredStatus();
+    }
+  }, [answers, questionId]);
+
+  const updateIsAnsweredStatus = async () => {
+    if (!questionId) return;
+    const questionRef = doc(db, 'questions', questionId);
+
+    try {
+      await updateDoc(questionRef, { isAnswered: answers.length > 0 });
+      console.log(`Question ${questionId} marked as answered: ${answers.length > 0}`);
+    } catch (error) {
+      console.error('Error updating isAnswered field:', error);
+    }
+  };
+
   const handleAttachmentClick = (attachments: string[], index: number) => {
     setCurrentAttachments(attachments);
     setLightboxIndex(index);
@@ -79,7 +100,20 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     setEditedAnswerText(currentText);
   };
 
+  const handleAnswerBlur = (answerId: string) => {
+    const error = validateQuestionText(editedAnswerText);
+    const isValid = !error;
+
+    setFieldErrors(prev => ({ ...prev, [answerId]: error }));
+    setFieldValid(prev => ({ ...prev, [answerId]: isValid }));
+  };
+
   const handleSaveAnswer = async (answerId: string) => {
+    if (fieldErrors[answerId]) {
+      console.error('Prázdnou odpověď nelze uložit.');
+      return;
+    }
+
     const answerRef = doc(db, 'questions', questionId, 'answers', answerId);
     await updateDoc(answerRef, { text: editedAnswerText });
     setEditingAnswerId(null);
@@ -131,7 +165,8 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                   <div className={styles.answerActions}>
                     {editingAnswerId === answer.id ? (
                       <div className={styles.actionButtonsContainer}>
-                        <Button variant="primary" type="submit" onClick={() => handleSaveAnswer(answer.id)}>
+                        <Button variant="primary" type="submit" onClick={() => handleSaveAnswer(answer.id)}
+                                disabled={!fieldValid[answer.id] || !editedAnswerText.trim()}>
                           Uložit změny
                         </Button>
                         <Button variant="secondary" type="button" onClick={handleCancelEdit}>
@@ -160,11 +195,17 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                     ${editingAnswerId === answer.id ? styles.bubbleEditMode : ''}`}
                 >
                   {editingAnswerId === answer.id ? (
-                    <textarea
-                      value={editedAnswerText}
-                      onChange={(e) => setEditedAnswerText(e.target.value)}
-                      className={styles.textInput}
-                    />
+                    <div
+                      className={`input-container ${fieldErrors[answer.id] ? 'error' : fieldValid[answer.id] ? 'valid' : ''}`}>
+                      <textarea
+                        value={editedAnswerText}
+                        onChange={(e) => setEditedAnswerText(e.target.value)}
+                        onBlur={() => handleAnswerBlur(answer.id)}
+                        required
+                        className={styles.textInput}
+                      />
+                      {fieldErrors[answer.id] && <p className="errorText">{fieldErrors[answer.id]}</p>}
+                    </div>
                   ) : (
                     <p
                       className={styles.formattedText}

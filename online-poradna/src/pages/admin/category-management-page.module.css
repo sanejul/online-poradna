@@ -4,7 +4,7 @@
 }
 
 .newCategory {
-    margin-bottom: 3rem;
+    margin: 3rem 0;
 }
 
 .newCategory input {
@@ -23,4 +23,8 @@
 .categoryList li {
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(32, 87, 165, 0.1);
+}
+
+.categoryList p {
+    margin-top: .2rem !important;
 }

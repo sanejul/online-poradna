@@ -29,21 +29,21 @@ const AttachmentInput: React.FC<AttachmentInputProps> = ({ files, onFilesSelecte
   };
 
   const handleRemoveFile = (fileToRemove: FileWithPreview) => {
+    onFilesSelected(filePreviews.map((fwp) => fwp.file).filter((file) => file !== fileToRemove.file));
     setFilePreviews((prev) => prev.filter((file) => file !== fileToRemove));
     URL.revokeObjectURL(fileToRemove.preview);
-    onFilesSelected(filePreviews.map((fwp) => fwp.file).filter((file) => file !== fileToRemove.file));
   };
 
   useEffect(() => {
     if (files.length === 0) {
-      setFilePreviews([]); // Clear previews
+      setFilePreviews([]);
     }
   }, [files]);
 
   return (
     <div className={styles.fileInputContainer}>
       <label htmlFor="file-input" className={styles.customFileInput}>
-        Vložit fotky
+        vložit fotky
       </label>
       <input
         id="file-input"

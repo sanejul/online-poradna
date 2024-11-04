@@ -15,8 +15,10 @@ import CustomCloseIcon from '../../components/icons/close-icon';
 import Button from '../../components/buttons/button';
 import Modal from '../../components/modal/modal';
 import AttachmentInput from '../../components/attachment-input';
+import { validateQuestionTitle, validateQuestionText } from '../../helpers/validation-helper';
 import editPen from '../../assets/icons/edit-pen.png';
-import { ArchiveContext } from './archive-context';
+import Notification from '../../components/notification';
+import { useNotification } from '../../contexts/notification-context';
 
 interface Category {
   id: string;
@@ -33,12 +35,14 @@ const QuestionDetailPage = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  const [fieldErrors, setFieldErrors] = useState({ title: '', questionText: '', answerText: '' });
+  const [fieldValid, setFieldValid] = useState({ title: false, questionText: false, answerText: false });
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { showNotification } = useNotification();
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
   const user = auth.currentUser;
 
@@ -47,8 +51,8 @@ const QuestionDetailPage = () => {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [allCategories, setAllCategories] = useState<Category[]>([]);
 
-/*  const archiveContext = useContext(ArchiveContext);
-  const categories = archiveContext?.categories || [];*/
+  /*  const archiveContext = useContext(ArchiveContext);
+    const categories = archiveContext?.categories || [];*/
 
   useEffect(() => {
     // Check if user is admin
@@ -103,6 +107,29 @@ const QuestionDetailPage = () => {
     }
   }, [question]);
 
+  const handleAnswerBlur = () => {
+    const error = validateQuestionText(answerText);
+    const isValid = !error;
+    setFieldErrors(prev => ({ ...prev, answerText: error }));
+    setFieldValid(prev => ({ ...prev, answerText: isValid }));
+  };
+
+  const handleBlur = (field: 'title' | 'questionText', value: string) => {
+    let error = '';
+    let isValid = false;
+
+    if (field === 'title') {
+      error = validateQuestionTitle(value);
+      isValid = !error;
+    } else if (field === 'questionText') {
+      error = validateQuestionText(value);
+      isValid = !error;
+    }
+
+    setFieldErrors(prev => ({ ...prev, [field]: error }));
+    setFieldValid(prev => ({ ...prev, [field]: isValid }));
+  };
+
   const saveCategoryChanges = async () => {
     if (!id) return;
     try {
@@ -121,10 +148,9 @@ const QuestionDetailPage = () => {
     setSelectedCategoryIds((prevSelected) =>
       prevSelected.includes(categoryId)
         ? prevSelected.filter((id) => id !== categoryId)
-        : [...prevSelected, categoryId]
+        : [...prevSelected, categoryId],
     );
   };
-
 
   const cancelChanges = () => {
     setSelectedCategoryIds(question.category || []);
@@ -138,17 +164,18 @@ const QuestionDetailPage = () => {
 
   const deleteQuestion = () => {
     setModalContent(
-      <>
-        <p>Opravdu chcete odstranit konverzaci?</p>
-        <div className={styles.modalActions}>
-          <Button type={'button'} variant="secondary" onClick={() => setIsModalOpen(false)}>Ne</Button>
+      <div className={"modalContainer"}>
+        <p>Opravdu chcete odstranit celou konverzaci?</p>
+        <div className={"modalActions"}>
+          <Button type={'button'} variant="secondary" onClick={() => setIsModalOpen(false)}>zrušit</Button>
           <Button type={'button'} variant="delete" onClick={async () => {
             await deleteDoc(doc(db, 'questions', id!));
             setIsModalOpen(false);
+            showNotification(<p>Konverzace byla úspěšně smazána.</p>, 15);
             navigate('/archivePage');
-          }}>Ano</Button>
+          }}>smazat</Button>
         </div>
-      </>,
+      </div>
     );
     setIsModalOpen(true);
   };
@@ -169,20 +196,23 @@ const QuestionDetailPage = () => {
     setEditingField(field);
   };
 
-
   const saveChanges = async () => {
-    if (!id || !tempQuestion) return; // Ensure tempQuestion is not null
+    if (!id || !tempQuestion) return;
+
+    if (fieldErrors.title || fieldErrors.questionText) {
+      console.error('Nelze uložit, dokud nejsou vyřešeny chyby.');
+      return;
+    }
 
     try {
       await updateDoc(doc(db, 'questions', id), {
         title: tempQuestion.title,
         questionText: tempQuestion.questionText,
       });
-
-      setQuestion(tempQuestion); // Reflect changes in the main question state
+      setQuestion(tempQuestion);
       setEditingField(null);
     } catch (error) {
-      console.error('Error while saving:', error);
+      console.error('Chyba při ukládání:', error);
     }
   };
 
@@ -193,6 +223,12 @@ const QuestionDetailPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!fieldValid.answerText) {
+      console.error('Odpověď musí obsahovat nějaký text.');
+      return;
+    }
+
     const user = auth.currentUser;
     if (!user) {
       setError('Musíte být přihlášeni, abyste mohli odpovědět.');
@@ -252,7 +288,7 @@ const QuestionDetailPage = () => {
   const firstName = question.user?.displayName?.split(' ')[0] || 'Anonym';
 
   return (
-    <div className={`${styles.container} ${isAuthorized ? '' : styles.marginBottom}`}>
+    <div className={`${styles.container} ${user ? '' : styles.marginBottom}`}>
 
       {isAdmin && (
         <div className={styles.deleteConversationButton}>
@@ -300,7 +336,7 @@ const QuestionDetailPage = () => {
             </div>
           )}
           <div className={styles.actionButtonsContainer}>
-            <Button type="button" onClick={saveCategoryChanges} variant="primary">
+            <Button type="submit" onClick={saveCategoryChanges} variant="primary">
               Uložit
             </Button>
             <Button type="button" onClick={cancelChanges} variant="secondary">
@@ -322,30 +358,34 @@ const QuestionDetailPage = () => {
         )
       )}
 
-      <h1>
+      <div>
         {editingField === 'title' ? (
           <>
-            <input
-              type="text"
-              value={tempQuestion?.title || ''}
-              onChange={(e) => setTempQuestion({ ...tempQuestion, title: e.target.value })}
-            />
+            <div className={`input-container ${fieldErrors.title ? 'error' : fieldValid.title ? 'valid' : ''}`}>
+              <input
+                type="text"
+                value={tempQuestion?.title || ''}
+                onChange={(e) => setTempQuestion({ ...tempQuestion, title: e.target.value })}
+                onBlur={() => handleBlur('title', tempQuestion?.title || '')}
+                required
+              />
+              {fieldErrors.title && <p className="errorText">{fieldErrors.title}</p>}
+            </div>
             <div className={styles.actionButtonsContainer}>
               <Button type={'submit'} onClick={saveChanges} variant="primary">Uložit název</Button>
               <Button type={'button'} onClick={cancelChanges} variant="secondary">Zrušit</Button>
             </div>
           </>
         ) : (
-          <>
-            {question.title}
+          <h1>{question.title}
             {isAdmin && (
               <button className={styles.editIconBtn}>
                 <img src={editPen} alt="Edit title" onClick={() => setEditingField('title')} />
               </button>
             )}
-          </>
+          </h1>
         )}
-      </h1>
+      </div>
 
       <div className={`${styles.bubbleInfo} ${isAuthor ? styles.rightBubbleInfo : styles.leftBubbleInfo}`}>
         <p className={styles.author}>{firstName}</p>
@@ -365,7 +405,8 @@ const QuestionDetailPage = () => {
       <div className={`${isAuthor || isAdmin ? styles.left : styles.right}`}>
         <div className={`${isAdmin ? styles.bubbleEditQuestion : ''}`}>
           {isAdmin && (
-            <div className={`${isAdmin ? styles.bubbleEditQuestionInner : ''} ${isAuthor || isAdmin ? styles.left : styles.right}`}>
+            <div
+              className={`${isAdmin ? styles.bubbleEditQuestionInner : ''} ${isAuthor || isAdmin ? styles.left : styles.right}`}>
               {isAdmin && (
                 <div className={styles.answerActions}>
                   {editingField === 'text' ? (
@@ -388,10 +429,16 @@ const QuestionDetailPage = () => {
           ${editingField === 'text' ? styles.bubbleEditMode : ''}`}
           >
             {editingField === 'text' ? (
+              <div
+                className={`input-container ${fieldErrors.questionText ? 'error' : fieldValid.questionText ? 'valid' : ''}`}>
               <textarea
                 value={tempQuestion?.questionText || ''}
                 onChange={(e) => setTempQuestion({ ...tempQuestion, questionText: e.target.value })}
+                onBlur={() => handleBlur('questionText', tempQuestion?.questionText || '')}
+                required
               />
+                {fieldErrors.questionText && <p className="errorText">{fieldErrors.questionText}</p>}
+              </div>
             ) : (
               <p className={styles.formattedText} dangerouslySetInnerHTML={{ __html: question.questionText }} />
             )}
@@ -442,17 +489,22 @@ const QuestionDetailPage = () => {
           {error && <p style={{ color: 'red' }}>{error}</p>}
 
           <div>
+            {fieldErrors.answerText && <p className="errorText">{fieldErrors.answerText}</p>}
             <form onSubmit={handleSubmit}>
-            <textarea
-              value={answerText}
-              onChange={(e) => setAnswerText(e.target.value)}
-              required
-              placeholder="Zadejte odpověď..."
-            />
+              <div
+                className={`input-container ${fieldErrors.answerText ? 'error' : fieldValid.answerText ? 'valid' : ''}`}>
+                  <textarea
+                    value={answerText}
+                    onChange={(e) => setAnswerText(e.target.value)}
+                    onBlur={handleAnswerBlur}
+                    required
+                    placeholder="Zadejte odpověď..."
+                  />
+              </div>
               <AttachmentInput files={files} onFilesSelected={setFiles} />
               {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
               <div className={styles.buttonContainer}>
-                <Button variant="primary" type="submit" disabled={isLoading}>
+                <Button variant="primary" type="submit" disabled={isLoading || !fieldValid.answerText}>
                   Odeslat odpověď
                 </Button>
               </div>

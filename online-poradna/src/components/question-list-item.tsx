@@ -30,7 +30,7 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
       <div className={styles.info}>
         <div>
           <p className={styles.date}>{createdAt.toLocaleDateString('cs-CZ')}{' '}</p>
-          <p className={styles.isAnswered}>{isAnswered ? 'Zodpovězeno' : 'Nezodpovězeno'}</p>
+          <p className={`${isAnswered ? styles.isAnswered : ''}`}>{isAnswered ? 'Zodpovězeno' : 'Nezodpovězeno'}</p>
         </div>
         <Link to={`/questions/${id}`} className={styles.button}>
           prohlédnout

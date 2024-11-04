@@ -57,3 +57,7 @@
 .date {
     color: var(--gray);
 }
+
+.isAnswered {
+    color: var(--green);
+}

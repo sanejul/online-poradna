@@ -9,6 +9,7 @@
 
 .userItem p {
     text-align: left;
+    margin-left: .2rem;
 }
 
 .container Button {
@@ -17,4 +18,8 @@
 
 .container > div > input {
     margin-bottom: 2rem;
+}
+
+.container p strong {
+    color: var(--blue);
 }

@@ -1,0 +1,39 @@
+.notificationContainer {
+    position: fixed;
+    bottom: .5rem;
+    left: .7rem;
+    right: .7rem;
+    background-color: var(--whitesmoke);
+    border: 1px solid var(--green);
+    border-radius: 1px;
+    padding: 1rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+.closeButton svg {
+    margin: -3rem 0 0 0;
+    padding: 0;
+}
+
+.content {
+    margin-bottom: 1rem;
+    color: var(--green);
+}
+
+.timerBar {
+    height: 4px;
+    background-color: var(--green);
+    transition: width 0.1s linear;
+}

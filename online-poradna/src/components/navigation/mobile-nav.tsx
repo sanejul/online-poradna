@@ -5,12 +5,14 @@ import { auth, db } from '../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import styles from './mobile-nav.module.css';
 import logo2 from '../../assets/haaro_logo_light.png';
+import { useNotification } from '../../contexts/notification-context';
 
 const MobileNav: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { showNotification } = useNotification();
 
   // odhlášení uživatele
   const from = (location.state as { from: string })?.from || '/';
@@ -21,6 +23,7 @@ const MobileNav: React.FC = () => {
         setIsAdmin(false);
         navigate(from);
         closeOverlay();
+        showNotification(<p>Uživatel odhlášen.</p>, 5);
       })
       .catch((error) => {
         console.error('Chyba při odhlašování:', error);

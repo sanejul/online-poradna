@@ -74,3 +74,7 @@
     width: calc(100% - 1rem); /* Přizpůsobení šířky s 1rem odsazením od okrajů */
     margin: 0 auto;
 }
+
+.infoText {
+    margin-bottom: 2rem;
+}

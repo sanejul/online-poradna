@@ -16,6 +16,7 @@ import ResetPasswordPage from './pages/reset-psswd-page';
 import QuestionDetailPage from './pages/questions/question-detail-page';
 import CategoryManagementPage from './pages/admin/category-management-page';
 import ProtectedRoute from './components/navigation/protected-route';
+import { NotificationProvider } from './contexts/notification-context';
 
 function App() {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -35,26 +36,28 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      {!isDesktop ? <MobileNav /> : <DesktopNav />}
-      <div className="main-container">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/registration" element={<Registration />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/usersList" element={<UsersListPage />} />
-          <Route path="/categoryManagement" element={<ProtectedRoute><CategoryManagementPage /></ProtectedRoute>} />
-          <Route path="/newQuestionPage" element={<NewQuestionPage />} />
-          <Route path="/archivePage" element={<ArchivePage />} />
-          <Route path="/profilePage" element={<ProfilePage />} />
-          <Route path="/resetPassword" element={<ResetPasswordPage />} />
-          <Route path="/questions/:id" element={<QuestionDetailPage />} />
-        </Routes>
+    <NotificationProvider>
+      <div className="App">
+        {!isDesktop ? <MobileNav /> : <DesktopNav />}
+        <div className="main-container">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/registration" element={<Registration />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/usersList" element={<UsersListPage />} />
+            <Route path="/categoryManagement" element={<ProtectedRoute><CategoryManagementPage /></ProtectedRoute>} />
+            <Route path="/newQuestionPage" element={<NewQuestionPage />} />
+            <Route path="/archivePage" element={<ArchivePage />} />
+            <Route path="/profilePage" element={<ProfilePage />} />
+            <Route path="/resetPassword" element={<ResetPasswordPage />} />
+            <Route path="/questions/:id" element={<QuestionDetailPage />} />
+          </Routes>
+        </div>
+        <div>
+        </div>
       </div>
-      <div>
-      </div>
-    </div>
+    </NotificationProvider>
   );
 }
 

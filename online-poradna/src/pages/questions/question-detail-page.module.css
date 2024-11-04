@@ -151,6 +151,7 @@
 
 .editIconBtn {
     margin: 0;
+    cursor: pointer;
 }
 
 .bubbleEditMode {
@@ -180,8 +181,7 @@
     background-color: var(--whitesmoke);
 }
 
-.actionButtonsContainer Button[type="submit"],
-h1 Button[type="submit"]:not {
+.actionButtonsContainer Button[type="submit"] {
     margin: 1rem 0;
 }
 
@@ -229,3 +229,5 @@ h1 Button[type="submit"]:not {
 .categorySection > Button {
     margin-top: 1rem;
 }
+
+
