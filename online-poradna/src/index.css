@@ -51,6 +51,7 @@
   --whitesmoke: #F5F5F5FF;
   --whitesmoke-hover: #ececec;
   --black: #111111;
+  --overlay: rgba(17, 17, 17, 0.9);
   --gray: rgba(17, 17, 17, 0.6);
   --orange: #E67E23;
   --red: #E74B3B;
@@ -102,7 +103,7 @@ input[type="text"], textarea, input[type="email"], input[type="password"] {
   min-width: 99%;
   padding: 0.5rem 0.8rem;
   border: 1px solid rgba(32, 87, 165, 0.6);
-  color: var(--blue);
+  color: var(--black);
   background-color: var(--whitesmoke);
   font-size: 1rem;
 }
@@ -110,7 +111,8 @@ input[type="text"], textarea, input[type="email"], input[type="password"] {
 input[type="text"]:focus-visible,
 textarea:focus-visible,
 input[type="email"]:focus-visible,
-input[type="password"]:focus-visible{
+input[type="password"]:focus-visible,
+select:focus-visible {
   outline: 1px solid var(--blue-darker);
   border-radius: 0;
 }
@@ -118,4 +120,67 @@ input[type="password"]:focus-visible{
 button {
   border-radius: 2px;
   text-transform: lowercase;
+}
+
+.input-container input,
+.input-container textarea {
+  margin-top: .2rem;
+  margin-bottom: 1rem;
+}
+
+label {
+  text-align: left;
+  display: block;
+  margin-left: .2rem;
+  color: var(--blue);
+}
+
+.errorText{
+  color: var(--red);
+  margin-top: -0.5rem;
+  margin-left: .2rem;
+  text-align: left;
+}
+
+.input-container.error input,
+.input-container.error textarea {
+  border-color: var(--red);
+}
+
+.input-container.valid input,
+.input-container.valid textarea {
+  border-color: var(--green);
+}
+
+.textLeft {
+  text-align: left;
+  margin-left: 0.2rem;
+}
+
+select {
+  width: 99%;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 1rem;
+  margin-top: 0.2rem;
+  border: 1px solid var(--blue-light);
+  background-color: var(--whitesmoke);
+}
+
+option {
+  padding: 0.5rem 0.8rem;
+  background-color: var(--whitesmoke);
+}
+
+/* modal */
+
+.modalContainer p {
+  margin-top: 3rem;
+}
+
+.modalContainer .modalActions button {
+  margin: .5rem 0;
+}
+
+.modalActions {
+  margin-top: 2rem;
 }

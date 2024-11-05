@@ -6,7 +6,7 @@
     position: fixed;
     top: 0;
     right: 0;
-    z-index: 9999;
+    z-index: 99;
     background-color: var(--whitesmoke);
 }
 
@@ -75,7 +75,7 @@ button:focus {
 .light-navbar .bar3,
 .change .bar1,
 .change .bar2,
-.change .bar3{
+.change .bar3 {
     background-color: var(--whitesmoke);
 }
 
@@ -91,13 +91,13 @@ button:focus {
     transform: rotate(45deg) translate(-4px, -3px);
 }
 
-#logo2{
+#logo2 {
     width: 100px;
 }
 
 .overlay {
     position: fixed;
-    z-index: 999;
+    z-index: 99;
     background: var(--black);
     top: 0;
     left: 0;
@@ -122,8 +122,8 @@ button:focus {
     padding: 3rem;
     max-height: 100vh;
     display: flex;
-flex-direction: column;
-justify-content: space-between;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .overlayMenu ul {
@@ -203,9 +203,11 @@ justify-content: space-between;
 .overlay.open li:nth-of-type(7) {
     animation-delay: 0.6s;
 }
+
 .overlay.open li:nth-of-type(8) {
     animation-delay: 0.65s;
 }
+
 /* Animation for menu fade in */
 
 @keyframes fadeInRight {
