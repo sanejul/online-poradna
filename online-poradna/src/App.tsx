@@ -16,48 +16,34 @@ import ResetPasswordPage from './pages/reset-psswd-page';
 import QuestionDetailPage from './pages/questions/question-detail-page';
 import CategoryManagementPage from './pages/admin/category-management-page';
 import ProtectedRoute from './components/navigation/protected-route';
-import { NotificationProvider } from './contexts/notification-context';
+import { useAuthLogic } from './hooks/use-auth';
+import { useWindowSize } from './hooks/use-window-size';
 
 function App() {
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth > 768);
-    };
-
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  const { isAdmin } = useAuthLogic();
+  const { isMobile, isTablet, isDesktop, isBiggerMobile } = useWindowSize();
 
   return (
-    <NotificationProvider>
-      <div className="App">
-        {!isDesktop ? <MobileNav /> : <DesktopNav />}
-        <div className="main-container">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/registration" element={<Registration />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/usersList" element={<UsersListPage />} />
-            <Route path="/categoryManagement" element={<ProtectedRoute><CategoryManagementPage /></ProtectedRoute>} />
-            <Route path="/newQuestionPage" element={<NewQuestionPage />} />
-            <Route path="/archivePage" element={<ArchivePage />} />
-            <Route path="/profilePage" element={<ProfilePage />} />
-            <Route path="/resetPassword" element={<ResetPasswordPage />} />
-            <Route path="/questions/:id" element={<QuestionDetailPage />} />
-          </Routes>
-        </div>
-        <div>
-        </div>
+    <div className="App">
+      {(isTablet || isBiggerMobile || isMobile || isDesktop ) || isAdmin ? <MobileNav /> : <DesktopNav />}
+      <div className="main-container">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/registration" element={<Registration />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/usersList" element={<ProtectedRoute><UsersListPage /></ProtectedRoute>} />
+          <Route path="/categoryManagement" element={<ProtectedRoute><CategoryManagementPage /></ProtectedRoute>} />
+          <Route path="/newQuestionPage" element={<NewQuestionPage />} />
+          <Route path="/archivePage" element={<ArchivePage />} />
+          <Route path="/profilePage" element={<ProfilePage />} />
+          <Route path="/resetPassword" element={<ResetPasswordPage />} />
+          <Route path="/questions/:id" element={<QuestionDetailPage />} />
+        </Routes>
       </div>
-    </NotificationProvider>
+      <div>
+      </div>
+    </div>
   );
 }
 
