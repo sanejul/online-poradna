@@ -6,6 +6,36 @@
     position: relative;
 }
 
+.answerContainer textarea{
+    margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+    .container {
+        width: 70%;
+        margin: 5rem auto;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        width: 60%;
+    }
+
+    .buttonContainer {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .buttonContainer button {
+        margin: 0 .2rem 0 0;
+    }
+
+    .answerContainer textarea{
+        min-height: 10rem;
+    }
+}
+
 .container p {
     line-height: 1.4rem;
 }
@@ -158,6 +188,10 @@
     width: 100%;
 }
 
+.bubbleEditMode textarea {
+    min-height: 20rem;
+}
+
 .bubble .textInput {
     border: none;
     height: 30vh !important;
@@ -190,7 +224,7 @@
     margin-bottom: 1rem;
 }
 
-.category .actionButtonsContainer Button[type="button"] {
+.actionButtonsContainer Button[type="button"] {
     margin-top: 1rem;
 }
 
@@ -222,8 +256,10 @@
     margin-bottom: 2rem;
 }
 
-.categorySection .actionButtonsContainer Button {
+.actionButtonsContainer Button {
     text-align: center;
+    width: 15rem;
+    margin: 1rem;
 }
 
 .categorySection > Button {

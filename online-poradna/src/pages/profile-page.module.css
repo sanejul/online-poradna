@@ -30,13 +30,56 @@
     margin-top: 3rem;
 }
 
+.profileInfo {
+    margin-top: 3rem;
+}
+
 .profileInfo p {
     text-align: left;
+    display: flex;
+    margin-left: .2rem;
 }
 
 .profileInfo p strong {
     color: var(--blue);
     font-weight: bold;
+    display: block;
+    width: 4rem;
+}
+
+.profileInfo span {
+    display: block;
+}
+
+/*.profileInfo > div {
+    display: flex;
+    flex-direction: column;
+}*/
+
+@media (min-width: 768px) {
+    .profileContainer {
+        width: 70%;
+        margin: 5rem auto;
+    }
+
+    .personalInfo {
+        width: max-content;
+        margin: auto;
+    }
+
+    .profileContainer button {
+        margin-right: .5rem;
+        margin-left: .5rem;
+    }
+
+    .profileContainer li {
+        margin: auto;
+    }
+
+    .editMode > div {
+        width: 20rem;
+        margin: auto;
+    }
 }
 
 /*.profileInfo p {

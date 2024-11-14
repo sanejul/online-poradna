@@ -95,6 +95,17 @@ button:focus {
     width: 100px;
 }
 
+#logo {
+    height: 55px !important;
+}
+
+.container .logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 10%;
+}
+
 .overlay {
     position: fixed;
     z-index: 99;

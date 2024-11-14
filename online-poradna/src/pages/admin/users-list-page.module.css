@@ -2,14 +2,14 @@
     padding: 0;
 }
 
-.userItem,
+.profileInfo,
 .userItemEdit {
     border-bottom: 1px solid rgba(32, 87, 165, 0.1);
 }
 
-.userItem p {
-    text-align: left;
-    margin-left: .2rem;
+.container li:first-of-type,
+.userItemEdit:first-of-type {
+    border-top: 1px solid rgba(32, 87, 165, 0.1);
 }
 
 .container Button {
@@ -20,6 +20,76 @@
     margin-bottom: 2rem;
 }
 
-.container p strong {
+.profileInfo p {
+    text-align: left;
+    display: flex;
+    margin-left: 1rem;
+}
+
+.profileInfo p strong {
     color: var(--blue);
+    font-weight: bold;
+    display: block;
+    width: 4rem;
+}
+
+.profileInfo span {
+    display: block;
+}
+
+@media (min-width: 576px) {
+    .container {
+        position: relative;
+    }
+
+    .searchBarContainer {
+        width: 20rem;
+        margin: 2rem auto 5rem auto;
+    }
+
+    .buttonsContainer button {
+        margin-right: .5rem;
+        margin-left: .5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        width: 70%;
+        margin: 5rem auto 0 auto;
+        padding-bottom: 5rem;
+    }
+
+    .profileInfo {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    .personalInfo {
+        width: 25rem;
+    }
+
+    .buttonsContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .buttonsContainer button {
+        margin: .5rem 0;
+    }
+
+    .container li {
+        margin: auto;
+    }
+
+    .userItemEdit {
+        width: 20rem;
+        margin: auto;
+        padding: 1rem 0;
+    }
+
+    .userItemEdit button {
+        width: 100%;
+    }
 }

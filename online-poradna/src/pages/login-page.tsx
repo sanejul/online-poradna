@@ -55,12 +55,12 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <h1>Přihlášení</h1>
       <div className={styles.formContainer}>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}>
-            <label>E-mail*</label>
+            <label>E-mail *</label>
             <input
               type="email"
               value={email}
@@ -72,7 +72,7 @@ const Login = () => {
           </div>
 
           <div className={`input-container ${fieldErrors.password ? 'error' : fieldValid.password ? 'valid' : ''}`}>
-            <label>Heslo*</label>
+            <label>Heslo *</label>
             <input
               type="password"
               value={password}

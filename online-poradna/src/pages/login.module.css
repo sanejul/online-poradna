@@ -22,3 +22,25 @@
     height: 80vh;
 }
 
+@media (min-width: 576px) {
+    .container {
+        width: 20rem;
+        margin: 5rem auto;
+    }
+
+    .formContainer {
+        height: 70vh;
+    }
+}
+
+/*@media (min-width: 768px) {
+    .container {
+        width: 40%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        width: 30%;
+    }
+}*/

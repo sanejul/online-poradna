@@ -37,3 +37,12 @@
     background-color: var(--green);
     transition: width 0.1s linear;
 }
+
+@media (min-width: 768px) {
+    .notificationContainer {
+        position: fixed;
+        bottom: .5rem;
+        left: .7rem;
+        width: 40%;
+    }
+}

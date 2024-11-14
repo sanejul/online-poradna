@@ -9,6 +9,12 @@
     text-transform: lowercase;
 }
 
+@media (min-width: 576px) {
+   .button {
+        width: 15rem;
+    }
+}
+
 .button:disabled {
     cursor: not-allowed;
     opacity: 0.6;

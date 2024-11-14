@@ -8,18 +8,27 @@ import styles from './profile-page.module.css';
 import Button from '../components/buttons/button';
 import { isEmailUnique, validateEmail, validateFirstName, validateLastName } from '../helpers/validation-helper';
 import { useNotification } from '../contexts/notification-context';
+import { useAuthLogic } from '../hooks/use-auth';
+import LoadingSpinner from '../components/loading-spinner';
+
+interface Category {
+  id: string;
+  name: string;
+}
 
 const ProfilePage: React.FC = () => {
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [userId, setUserId] = useState<string | null>(null);
   const [userQuestions, setUserQuestions] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [originalData, setOriginalData] = useState<any>(null);
+  const { handleUserLogout } = useAuthLogic();
 
   const { showNotification } = useNotification();
 
@@ -33,26 +42,26 @@ const ProfilePage: React.FC = () => {
 
   const fetchUserData = async (uid: string) => {
     try {
-      const userDocRef = doc(db, "users", uid);
+      const userDocRef = doc(db, 'users', uid);
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        setFirstName(userData?.firstName || "");
-        setLastName(userData?.lastName || "");
-        setEmail(userData?.email || "");
+        setFirstName(userData?.firstName || '');
+        setLastName(userData?.lastName || '');
+        setEmail(userData?.email || '');
         setOriginalData(userData);
       }
     } catch (error) {
-      setError("Nepodařilo se načíst uživatelská data.");
-      console.error("Chyba při načítání uživatelských dat:", error);
+      setError('Nepodařilo se načíst uživatelská data.');
+      console.error('Chyba při načítání uživatelských dat:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const fetchUserQuestions = (uid: string) => {
-    const questionsQuery = query(collection(db, "questions"), where("user.uid", "==", uid));
+    const questionsQuery = query(collection(db, 'questions'), where('user.uid', '==', uid));
     return onSnapshot(questionsQuery, (querySnapshot) => {
       const questions: any[] = [];
       querySnapshot.forEach((doc) => {
@@ -111,13 +120,12 @@ const ProfilePage: React.FC = () => {
   };
 
 
-
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userId) return;
 
     if (Object.values(fieldErrors).some(err => err) || !Object.values(fieldValid).every(valid => valid)) {
-      setError("Zkontrolujte prosím chyby ve formuláři.");
+      setError('Zkontrolujte prosím chyby ve formuláři.');
       return;
     }
 
@@ -133,7 +141,7 @@ const ProfilePage: React.FC = () => {
         }
       }
 
-      const userDocRef = doc(db, "users", userId);
+      const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, {
         firstName,
         lastName,
@@ -143,8 +151,8 @@ const ProfilePage: React.FC = () => {
       showNotification(<p>Vaše údaje byly úspěšně aktualizovány.</p>, 5);
       setIsEditMode(false);
     } catch (error) {
-      setError("Nepodařilo se aktualizovat údaje.");
-      console.error("Chyba při aktualizaci údajů:", error);
+      setError('Nepodařilo se aktualizovat údaje.');
+      console.error('Chyba při aktualizaci údajů:', error);
     } finally {
       setLoading(false);
     }
@@ -167,15 +175,25 @@ const ProfilePage: React.FC = () => {
         const unsubscribeQuestions = fetchUserQuestions(user.uid);
         return () => unsubscribeQuestions();
       } else {
-        setError("Nejste přihlášeni.");
+        setError('Nejste přihlášeni.');
       }
     });
 
+    const categoriesRef = collection(db, 'categories');
+    const unsubscribeCategories = onSnapshot(categoriesRef, (querySnapshot) => {
+      const categoryList: Category[] = [{ id: 'all', name: 'Všechny kategorie' }];
+      querySnapshot.forEach((doc) => {
+        categoryList.push({ id: doc.id, name: doc.data().name });
+      });
+      setCategories(categoryList);
+    });
+
     return () => unsubscribe();
+    return () => unsubscribeCategories();
   }, []);
 
   if (loading) {
-    return <p>Načítání...</p>;
+    return <LoadingSpinner></LoadingSpinner>;
   }
 
   if (!userId) {
@@ -188,14 +206,17 @@ const ProfilePage: React.FC = () => {
 
       {!isEditMode ? (
         <div className={styles.profileInfo}>
-          <p><strong>Jméno: </strong> <span>{firstName}</span></p>
-          <p><strong>Příjmení: </strong> <span>{lastName}</span></p>
-          <p><strong>Email: </strong> <span>{email}</span></p>
-          <Button onClick={() => setIsEditMode(true)} type={"button"} variant={"edit"}>Upravit osobní údaje</Button>
+          <div className={styles.personalInfo}>
+            <p><strong>Jméno: </strong> <span>{firstName}</span></p>
+            <p><strong>Příjmení: </strong> <span>{lastName}</span></p>
+            <p><strong>Email: </strong> <span>{email}</span></p>
+          </div>
+          <Button onClick={() => setIsEditMode(true)} type={'button'} variant={'edit'}>Upravit osobní údaje</Button>
+          <Button onClick={() => handleUserLogout()} type={'button'} variant={'delete'}>odhlásit se</Button>
           <Link className={styles.link} to="/resetPassword">Zaslat email pro obnovení hesla</Link>
         </div>
       ) : (
-        <form onSubmit={handleUpdate}>
+        <form className={styles.editMode} onSubmit={handleUpdate}>
 
           <div className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}>
             <label>Jméno:</label>
@@ -238,7 +259,7 @@ const ProfilePage: React.FC = () => {
           <Button type="button" onClick={handleCancelEdit} variant={'secondary'}>
             Zrušit
           </Button>
-          <Button type="submit" variant={"primary"} disabled={!isFormValid()}>Uložit změny</Button>
+          <Button type="submit" variant={'primary'} disabled={!isFormValid()}>Uložit změny</Button>
         </form>
       )}
 
@@ -246,7 +267,6 @@ const ProfilePage: React.FC = () => {
       {userQuestions.length === 0 ? (
         <p>Zatím jste nepoložili žádné dotazy.</p>
       ) : (
-        // Úprava mapování dat na ProfilePage
         <ul className={styles.listItemContainer}>
           {userQuestions.map((question) => (
             <QuestionListItem
@@ -256,7 +276,11 @@ const ProfilePage: React.FC = () => {
               text={question.questionText}
               createdAt={new Date(question.createdAt.seconds * 1000)}
               isAnswered={question.isAnswered}
-              category={question.category}
+              category={
+                Array.isArray(question.category)
+                  ? question.category.map((catId: string) => categories.find((cat) => cat.id === catId)?.name || catId)
+                  : ['Žádná kategorie']
+              }
             />
           ))}
         </ul>

@@ -3,8 +3,8 @@ import { auth, db } from '../../firebase';
 import { collection, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import Modal from '../../components/modal/modal';
-import styles from './users-list-page.module.css'
-import paginationStyles from '../questions/archive-page.module.css'
+import styles from './users-list-page.module.css';
+import paginationStyles from '../questions/archive-page.module.css';
 import LoadingSpinner from '../../components/loading-spinner';
 import Button from '../../components/buttons/button';
 import SearchBar from '../../components/navigation/search-bar';
@@ -32,7 +32,7 @@ const UsersListPage = () => {
   const { showNotification } = useNotification();
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
 
@@ -106,7 +106,7 @@ const UsersListPage = () => {
     const lowerCaseQuery = query.toLowerCase();
     const filtered = users.filter((user) =>
       `${user.firstName} ${user.lastName}`.toLowerCase().includes(lowerCaseQuery) ||
-      user.email.toLowerCase().includes(lowerCaseQuery)
+      user.email.toLowerCase().includes(lowerCaseQuery),
     );
     setFilteredUsers(filtered);
     setCurrentPage(1);
@@ -186,7 +186,8 @@ const UsersListPage = () => {
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, dataToUpdate);
       console.log('Uživatel úspěšně aktualizován:', dataToUpdate);
-      showNotification(<p>Osobní údaje {userToDelete?.firstName} {userToDelete?.lastName} byly úspěšně aktualizovány.</p>, 15);
+      showNotification(<p>Osobní údaje {userToDelete?.firstName} {userToDelete?.lastName} byly úspěšně
+        aktualizovány.</p>, 15);
 
       setUsers(users.map(user => (user.id === userId ? { ...user, ...dataToUpdate } : user)));
       await fetchUsers();
@@ -220,16 +221,16 @@ const UsersListPage = () => {
   const openDeleteModal = (user: any) => {
     setUserToDelete(user);
     setModalContent(
-      <div className={"modalContainer"}>
+      <div className={'modalContainer'}>
         <p>Opravdu chcete smazat uživatele {userToDelete?.firstName} {userToDelete?.lastName}?</p>
-        <div className={"modalActions"}>
+        <div className={'modalActions'}>
           <Button type={'button'} variant="secondary" onClick={() => setIsModalOpen(false)}>zrušit</Button>
           <Button type={'button'} variant="delete" onClick={async () => {
-            await deleteUser(userToDelete.id)
+            await deleteUser(userToDelete.id);
             setIsModalOpen(false);
           }}>smazat</Button>
         </div>
-      </div>
+      </div>,
     );
     setIsModalOpen(true);
   };
@@ -254,7 +255,9 @@ const UsersListPage = () => {
   return (
     <div className={styles.container}>
       <h1>Seznam uživatelů</h1>
-      <SearchBar onSearch={handleSearch} placeholder="Vyhledat uživatele..." />
+      <div className={styles.searchBarContainer}>
+        <SearchBar onSearch={handleSearch} placeholder="Vyhledat uživatele..." />
+      </div>
       <ul>
         {currentItems.map((user) => (
           <li key={user.id}>
@@ -296,7 +299,7 @@ const UsersListPage = () => {
                   />
                   {fieldErrors.email && <p className="errorText">{fieldErrors.email}</p>}
                 </div>
-                <div className={"input-container"}>
+                <div className={'input-container'}>
                   <label>Role *</label>
                   <select
                     defaultValue={user.role}
@@ -306,16 +309,21 @@ const UsersListPage = () => {
                     <option value="admin">Admin</option>
                   </select>
                 </div>
-                <Button variant="primary" type="submit" onClick={() => saveUser(user.id, editingUser)} disabled={!isFormValid()}>Uložit</Button>
+                <Button variant="primary" type="submit" onClick={() => saveUser(user.id, editingUser)}
+                        disabled={!isFormValid()}>Uložit</Button>
                 <Button variant="secondary" type="button" onClick={() => setEditingUser(null)}>Zrušit</Button>
               </div>
             ) : (
-              <div className={styles.userItem}>
-                <p><strong>Jméno:</strong> {user.firstName} {user.lastName}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Role:</strong> {user.role}</p>
-                <Button variant="edit" type="button" onClick={() => setEditingUser(user)}>Upravit</Button>
-                <Button variant="delete" type="button" onClick={() => openDeleteModal(user)}>Smazat</Button>
+              <div className={styles.profileInfo}>
+                <div className={styles.personalInfo}>
+                  <p><strong>Jméno:</strong> {user.firstName} {user.lastName}</p>
+                  <p><strong>Email:</strong> {user.email}</p>
+                  <p><strong>Role:</strong> {user.role}</p>
+                </div>
+                <div className={styles.buttonsContainer}>
+                  <Button variant="edit" type="button" onClick={() => setEditingUser(user)}>Upravit</Button>
+                  <Button variant="delete" type="button" onClick={() => openDeleteModal(user)}>Smazat</Button>
+                </div>
               </div>
             )}
           </li>

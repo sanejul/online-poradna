@@ -1,87 +1,103 @@
-import React, { Component } from "react";
+import React from 'react';
 import { Link } from 'react-router-dom';
-import logo from "../../assets/haaro_logo_black.png";
-import styles from "./desktop-nav.module.css";
+import logo from '../../assets/haaro_logo_black.png';
+import styles from './desktop-nav.module.css';
+import { useAuthLogic } from '../../hooks/use-auth';
 
-export class DesktopNav extends Component {
-    render() {
-        return (
-          <header>
-              <nav id={styles.navbar} className={styles.navContainer}>
-                  <p data-link="HAARO-BLOG">
-                      <span>HAARO-PORADNA</span>
-                  </p>
-                  <a href="https://haarosalon.cz/index.html" className={styles.logo}>
-                      <img id={styles.logo} src={logo} alt="Haaro Naturo logo" />
-                  </a>
-                  <span id={styles.mockup}></span>
-                  <ul>
-                      <li>
-                          <a
-                            target="_blank"
-                            rel="noreferrer"
-                            href="https://www.haaro-naturo.cz/"
-                            data-link="e-shop"
-                            className={styles.navLink}
-                          >
-                              <span>e-shop</span>
-                          </a>
-                      </li>
-                      <li>
-                          <Link to="/" data-link="blog" className={styles.navLink}>
-                              <span>blog</span>
-                          </Link>
-                      </li>
-                      <li>
-                          <a
-                            href="https://haarosalon.cz/index.html"
-                            data-link="úvod"
-                            className={styles.navLink}
-                          >
-                              <span>úvod</span>
-                          </a>
-                      </li>
-                      <li>
-                          <a
-                            href="https://haarosalon.cz/pages/oHaaro.html"
-                            data-link="o haaro"
-                            className={styles.navLink}
-                          >
-                              <span>o haaro</span>
-                          </a>
-                      </li>
-                      <li>
-                          <a
-                            href="https://haarosalon.cz/pages/vyroba.html"
-                            data-link="výroba"
-                            className={styles.navLink}
-                          >
-                              <span>výroba</span>
-                          </a>
-                      </li>
-                      <li>
-                          <a
-                            href="https://haarosalon.cz/pages/kadernictvi.html"
-                            data-link="kadeřnictví"
-                            className={styles.navLink}
-                          >
-                              <span>kadeřnictví</span>
-                          </a>
-                      </li>
-                      <li>
-                          <a
-                            href="https://haarosalon.cz/pages/kontakt.html"
-                            data-link="kontakt"
-                            className={styles.navLink}
-                          >
-                              <span>kontakt</span>
-                          </a>
-                      </li>
-                  </ul>
-              </nav>
-          </header>
-        );
-    }
-}
+const DesktopNav: React.FC = () => {
+  const { isAuthenticated, isAdmin, handleUserLogout } = useAuthLogic();
+
+  return (
+    <header>
+      <nav id={styles.navbar} className={styles.navContainer}>
+        <p data-link="HAARO-BLOG">
+          <span>HAARO-PORADNA</span>
+        </p>
+        <Link to="/" className={styles.logo}>
+          <img id={styles.logo} src={logo} alt="Haaro Naturo logo" />
+        </Link>
+        <span id={styles.mockup}></span>
+        <ul>
+          <li>
+            <Link
+              to="/"
+              data-link="o poradně"
+              className={styles.navLink}
+            >
+              <span>o poradně</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/newQuestionPage" data-link="nový dotaz" className={styles.navLink}>
+              <span>nový dotaz</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/archivePage" data-link="prohlédnout dotazy" className={styles.navLink}>
+              <span>prohlédnout dotazy</span>
+            </Link>
+          </li>
+          {isAuthenticated && (
+            <li>
+              <Link to="/profilePage" data-link="můj profil" className={styles.navLink}>
+                <span>můj profil</span>
+              </Link>
+            </li>
+          )}
+          {isAdmin && (
+            <>
+              <li>
+                <Link to="/usersList" data-link="seznam uživatelů" className={styles.navLink}>
+                  <span>seznam uživatelů</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/categoryManagement" data-link="správa kategorií" className={styles.navLink}>
+                  <span>správa kategorií</span>
+                </Link>
+              </li>
+            </>
+          )}
+          {!isAdmin && (
+            <>
+              <li>
+                <a
+                  target="_blank"
+                  rel="noreferrer"
+                  href="https://www.haaro-naturo.cz/"
+                  data-link="e-shop"
+                  className={styles.navLink}
+                >
+                  <span>e-shop</span>
+                </a>
+              </li>
+              <li>
+                <Link to="/" data-link="blog" className={styles.navLink}>
+                  <span>blog</span>
+                </Link>
+              </li>
+            </>
+          )}
+
+          {!isAuthenticated && (
+            <>
+              <li>
+                <Link to="/login" data-link="přihlásit se" className={styles.navLink}>
+                  <span>přihlásit se</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/registration" data-link="registrovat se" className={styles.navLink}>
+                  <span>registrovat se</span>
+                </Link>
+              </li>
+            </>
+          )}
+        </ul>
+      </nav>
+    </header>
+  )
+    ;
+};
 
 export default DesktopNav;

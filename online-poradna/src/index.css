@@ -92,8 +92,14 @@ a{
 
 h1{
   font-family: "Fabrikant Medium", serif !important;
-  font-size: 3rem;
+  font-size: 2.5rem;
   text-align: center;
+}
+
+@media (min-width: 768px) {
+  h1{
+    font-size: 3rem;
+  }
 }
 
 input[type="text"], textarea, input[type="email"], input[type="password"] {
@@ -139,6 +145,7 @@ label {
   color: var(--red);
   margin-top: -0.5rem;
   margin-left: .2rem;
+  margin-bottom: .2rem;
   text-align: left;
 }
 
@@ -155,6 +162,7 @@ label {
 .textLeft {
   text-align: left;
   margin-left: 0.2rem;
+  margin-top: 0;
 }
 
 select {
@@ -183,4 +191,16 @@ option {
 
 .modalActions {
   margin-top: 2rem;
+}
+
+@media (min-width: 576px) {
+  .button {
+    width: 15rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .modalContainer .modalActions button {
+    margin: .5rem;
+  }
 }

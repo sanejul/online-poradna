@@ -54,10 +54,30 @@
     color: var(--blue-light);
 }
 
+.category span:not(:first-child) {
+    margin-right: .5rem;
+}
+
 .date {
     color: var(--gray);
 }
 
 .isAnswered {
     color: var(--green);
+}
+
+@media (min-width: 768px) {
+    .listItem {
+        width: 50rem;
+        margin: 0 auto 1rem auto;
+    }
+}
+
+@media (min-width: 1024px) {
+    .listItem {
+        width: 50rem;
+        margin: 0;
+        margin-left: auto !important;
+        margin-bottom: 1rem;
+    }
 }

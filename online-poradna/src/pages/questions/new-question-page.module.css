@@ -8,7 +8,21 @@
     box-sizing: border-box; /* Zajistí, že tlačítko bude u dolního okraje */
 }
 
+@media (min-width: 768px) {
+    .container {
+        width: 70%;
+        margin: 3rem auto 0 auto;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        width: 60%;
+    }
+}
+
 .formContainer {
+    margin-top: 2rem;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -57,6 +71,7 @@
 .textarea {
     min-height: 30vh;
     width: 100%;
+    margin-bottom: .5rem !important;
     resize: vertical; /* Umožní vertikální roztahování */
     box-sizing: border-box;
     position: relative; /* Kvůli pseudo-elementu */
@@ -73,6 +88,26 @@
     right: .5rem;
     width: calc(100% - 1rem); /* Přizpůsobení šířky s 1rem odsazením od okrajů */
     margin: 0 auto;
+}
+
+@media (min-width: 576px) {
+    .container {
+        margin-bottom: 10rem;
+    }
+
+    .formContainer .buttonContainer {
+        display: flex;
+        justify-content: flex-end;
+        margin-right: 1.2rem;
+    }
+
+    .formContainer .buttonContainer Button {
+        width: 15rem;
+        position: relative;
+       /* margin-top: 5rem;*/
+        margin: 5rem 0 0 0;
+       /* margin-left: auto !important;*/
+    }
 }
 
 .infoText {

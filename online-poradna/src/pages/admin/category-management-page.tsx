@@ -49,7 +49,7 @@ const CategoryManagementPage = () => {
       setCategories([...categories, { id: docRef.id, name: newCategory }]);
       setNewCategory('');
       setNewCategoryError(null);
-      showNotification(<p>Kategorie {newCategory} byla úspěšně přidána.</p>, 8);
+      showNotification(<p>Kategorie {newCategory} byla úspěšně přidána.</p>, 5);
     } catch (e) {
       console.error('Error adding category:', e);
     }
@@ -58,16 +58,16 @@ const CategoryManagementPage = () => {
   const openDeleteModal = (id: string, name: string) => {
     setCategoryToDelete(id);
     setModalContent(
-      <div className={"modalContainer"}>
+      <div className={'modalContainer'}>
         <p>Opravdu chcete smazat kategorii {name}?</p>
-        <div className={"modalActions"}>
+        <div className={'modalActions'}>
           <Button type={'button'} variant="secondary" onClick={() => setIsModalOpen(false)}>zrušit</Button>
           <Button type={'button'} variant="delete" onClick={async () => {
             await handleDeleteCategory(id, name);
             setIsModalOpen(false);
           }}>smazat</Button>
         </div>
-      </div>
+      </div>,
     );
     setIsModalOpen(true);
   };
@@ -77,7 +77,7 @@ const CategoryManagementPage = () => {
     try {
       await deleteDoc(doc(db, 'categories', id));
       setCategories(categories.filter(category => category.id !== id));
-      showNotification(<p>Kategorie {name} byla úspěšně smazána.</p>, 8);
+      showNotification(<p>Kategorie {name} byla úspěšně smazána.</p>, 5);
     } catch (e) {
       console.error('Error deleting category:', e);
     }
@@ -100,7 +100,7 @@ const CategoryManagementPage = () => {
       const docRef = doc(db, 'categories', id);
       await updateDoc(docRef, { name: editedCategoryName });
       setCategories(categories.map(category => category.id === id ? { id, name: editedCategoryName } : category));
-      showNotification(<p>Kategorie {name} byla úspěšně upravena.</p>, 8);
+      showNotification(<p>Kategorie {name} byla úspěšně upravena.</p>, 5);
       setEditingCategory(null);
       setEditedCategoryName('');
     } catch (e) {
@@ -139,7 +139,7 @@ const CategoryManagementPage = () => {
         {categories.map(category => (
           <li key={category.id}>
             {editingCategory === category.id ? (
-              <>
+              <div className={styles.catContainer}>
                 <input
                   type="text"
                   value={editedCategoryName}
@@ -149,15 +149,21 @@ const CategoryManagementPage = () => {
                   required
                 />
                 {editedCategoryError && <p className="errorText">{editedCategoryError}</p>}
-                <Button type="button" onClick={() => handleSaveEdit(category.id, category.name)} variant="primary">Uložit</Button>
-                <Button type="button" onClick={handleCancelEdit} variant="secondary">Zrušit</Button>
-              </>
+                <div className={styles.btnsReverse}>
+                  <Button type="button" onClick={() => handleSaveEdit(category.id, category.name)}
+                          variant="primary">Uložit</Button>
+                  <Button type="button" onClick={handleCancelEdit} variant="secondary">Zrušit</Button>
+                </div>
+              </div>
             ) : (
-              <>
+              <div className={styles.catContainer}>
                 <span>{category.name}</span>
-                <Button type="button" onClick={() => startEditing(category)} variant="edit">Upravit</Button>
-                <Button type="button" onClick={() => openDeleteModal(category.id, category.name)} variant="delete">Smazat</Button>
-              </>
+                <div>
+                  <Button type="button" onClick={() => startEditing(category)} variant="edit">Upravit</Button>
+                  <Button type="button" onClick={() => openDeleteModal(category.id, category.name)}
+                          variant="delete">Smazat</Button>
+                </div>
+              </div>
             )}
           </li>
         ))}

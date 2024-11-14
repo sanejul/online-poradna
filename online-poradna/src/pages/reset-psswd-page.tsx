@@ -3,6 +3,7 @@ import { auth } from "../firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { validateEmail } from '../helpers/validation-helper';
 import Button from '../components/buttons/button';
+import styles from '../pages/login.module.css';
 
 const ResetPasswordPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -35,7 +36,7 @@ const ResetPasswordPage: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <h1>Obnova hesla</h1>
 
       <form onSubmit={handlePasswordReset}>

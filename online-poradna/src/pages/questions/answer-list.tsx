@@ -97,7 +97,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
 
   const handleEditAnswer = (answerId: string, currentText: string) => {
     setEditingAnswerId(answerId);
-    setEditedAnswerText(currentText);
+    setEditedAnswerText(currentText.replace(/<br\s*\/?>/gi, '\n'));
   };
 
   const handleAnswerBlur = (answerId: string) => {
@@ -115,7 +115,8 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     }
 
     const answerRef = doc(db, 'questions', questionId, 'answers', answerId);
-    await updateDoc(answerRef, { text: editedAnswerText });
+    const formattedText = editedAnswerText.replace(/\n/g, '<br />');
+    await updateDoc(answerRef, { text: formattedText });
     setEditingAnswerId(null);
   };
 

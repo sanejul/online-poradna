@@ -6,66 +6,23 @@ import { doc, getDoc } from 'firebase/firestore';
 import styles from './mobile-nav.module.css';
 import logo2 from '../../assets/haaro_logo_light.png';
 import { useNotification } from '../../contexts/notification-context';
+import { handleLogout } from '../../pages/logout-page';
+import { useAuthLogic } from '../../hooks/use-auth';
+import logo from '../../assets/haaro_logo_black.png';
+import { useWindowSize } from '../../hooks/use-window-size';
+
 
 const MobileNav: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  /*  const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);*/
   const navigate = useNavigate();
   const location = useLocation();
   const { showNotification } = useNotification();
+  const { isAuthenticated, isAdmin, handleUserLogout } = useAuthLogic();
+  const { isMobile, isTablet, isDesktop, isLargeDesktop } = useWindowSize();
 
   // odhlášení uživatele
   const from = (location.state as { from: string })?.from || '/';
-  const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        setIsAuthenticated(false);
-        setIsAdmin(false);
-        navigate(from);
-        closeOverlay();
-        showNotification(<p>Uživatel odhlášen.</p>, 5);
-      })
-      .catch((error) => {
-        console.error('Chyba při odhlašování:', error);
-      });
-  };
-
-  // Načítání stavu přihlášení a ověření role
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setIsAuthenticated(true);
-
-        // Načteme data uživatele z Firestore
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          if (userData.role === 'admin') {
-            setIsAdmin(true);
-          }
-        }
-      } else {
-        setIsAuthenticated(false);
-        setIsAdmin(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const closeOverlay = (): void => {
     const overlay = document.querySelector(`.${styles.overlay}`) as HTMLElement;
@@ -110,6 +67,11 @@ const MobileNav: React.FC = () => {
   return (
     <header className={styles.container}>
       <p>HAARO-PORADNA</p>
+      {((isAdmin && !isMobile) || !isMobile) && (
+        <Link to="/" className={styles.logo}>
+          <img id={styles.logo} src={logo} alt="Haaro Naturo logo" />
+        </Link>
+      )}
       <div>
         <nav id={styles.mobileNavbar} className={styles.mobileNavbar}>
           <div className={styles.navbarButtons}>
@@ -124,11 +86,11 @@ const MobileNav: React.FC = () => {
         <nav className={styles.overlay}>
           <div className={styles.overlayMenu}>
             <ul>
-              <li>
-                <Link to="/" className={styles.logo2}>
-                  <img id={styles.logo2} src={logo2} alt="Haaro Naturo logo" />
-                </Link>
-              </li>
+                <li>
+                  <Link to="/" className={styles.logo2}>
+                    <img id={styles.logo2} src={logo2} alt="Haaro Naturo logo" />
+                  </Link>
+                </li>
               <li>
                 <Link to="/" data-link="o poradně" className={styles.navLink}>
                   <span>o poradně</span>
@@ -140,8 +102,8 @@ const MobileNav: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/archivePage" data-link="archiv dotazů" className={styles.navLink}>
-                  <span>archiv dotazů</span>
+                <Link to="/archivePage" data-link="prohlédnout dotazy" className={styles.navLink}>
+                  <span>prohlédnout dotazy</span>
                 </Link>
               </li>
               {isAuthenticated && (
@@ -185,40 +147,41 @@ const MobileNav: React.FC = () => {
                   rel="noreferrer"
                   href="https://www.haaro-naturo.cz/"
                   data-link="e-shop"
-              className={styles.navLink}
-            >
-              <span>e-shop</span>
-            </a>
-          </li>
-        </ul>
-        <ul>
-          {!isAuthenticated ? (
-            <>
-              <li>
-                <Link to="/login" data-link="přihlásit se" className={styles.navLink} onClick={closeOverlay}>
-                  <span>přihlásit se</span>
-                </Link>
+                  className={styles.navLink}
+                >
+                  <span>e-shop</span>
+                </a>
               </li>
-              <li>
-                <Link to="/registration" data-link="registrovat se" className={styles.navLink} onClick={closeOverlay}>
-                  <span>registrovat se</span>
-                </Link>
-              </li>
-            </>
-          ) : (
-            <li>
-              <button onClick={handleLogout} className={styles.navLink}>
-                <span>odhlásit se</span>
-              </button>
-            </li>
-          )}
-        </ul>
+            </ul>
+            <ul>
+              {!isAuthenticated ? (
+                <>
+                  <li>
+                    <Link to="/login" data-link="přihlásit se" className={styles.navLink} onClick={closeOverlay}>
+                      <span>přihlásit se</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/registration" data-link="registrovat se" className={styles.navLink}
+                          onClick={closeOverlay}>
+                      <span>registrovat se</span>
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <button onClick={() => handleUserLogout(closeOverlay)} className={styles.navLink}>
+                    <span>odhlásit se</span>
+                  </button>
+                </li>
+              )}
+            </ul>
+          </div>
+        </nav>
       </div>
-    </nav>
-</div>
-</header>
-)
-  ;
+    </header>
+  )
+    ;
 };
 
 export default MobileNav;

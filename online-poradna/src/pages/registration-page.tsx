@@ -125,7 +125,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <h1>Registrace</h1>
       {error && <p className={"errorText"}>{error}</p>}
       <div className={styles.formContainer}>

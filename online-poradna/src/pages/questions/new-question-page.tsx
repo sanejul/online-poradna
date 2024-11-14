@@ -103,7 +103,7 @@ const NewQuestionPage = () => {
       };
 
       const docRef = await addDoc(collection(db, 'questions'), newQuestion);
-      showNotification(<p>Váš dotaz byl úspěšně odeslán.</p>, 8);
+      showNotification(<p>Váš dotaz byl úspěšně odeslán.</p>, 5);
       navigate(`/questions/${docRef.id}`);
     } catch (error) {
       setError('Chyba při odesílání dotazu: ' + (error as Error).message);
@@ -117,7 +117,7 @@ const NewQuestionPage = () => {
       <h1>Položit nový dotaz</h1>
 
       {!user && (
-        <p className={styles.infoText}>Pokud chcete položit nový dotaz, tak se prosím přihlaste.</p>
+        <p className={styles.infoText}>Pro položení dotazu se prosím přihlaste.</p>
       )}
 
       {isLoading && <LoadingSpinner />}

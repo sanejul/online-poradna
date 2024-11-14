@@ -102,7 +102,7 @@ const QuestionDetailPage = () => {
     if (question) {
       setTempQuestion({
         title: question.title,
-        questionText: question.questionText,
+        questionText: question.questionText.replace(/<br\s*\/?>/gi, '\n'),
       });
     }
   }, [question]);
@@ -207,7 +207,7 @@ const QuestionDetailPage = () => {
     try {
       await updateDoc(doc(db, 'questions', id), {
         title: tempQuestion.title,
-        questionText: tempQuestion.questionText,
+        questionText: tempQuestion.questionText.replace(/\n/g, '<br />'),
       });
       setQuestion(tempQuestion);
       setEditingField(null);
@@ -245,7 +245,7 @@ const QuestionDetailPage = () => {
           uploadTask.on(
             'state_changed',
             (snapshot) => {
-              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
               setUploadProgress(progress);
             },
             (error) => reject(error),
@@ -336,11 +336,11 @@ const QuestionDetailPage = () => {
             </div>
           )}
           <div className={styles.actionButtonsContainer}>
-            <Button type="submit" onClick={saveCategoryChanges} variant="primary">
-              Uložit
-            </Button>
             <Button type="button" onClick={cancelChanges} variant="secondary">
               Zrušit
+            </Button>
+            <Button type="submit" onClick={saveCategoryChanges} variant="primary">
+              Uložit kategorie
             </Button>
           </div>
         </div>
@@ -372,8 +372,8 @@ const QuestionDetailPage = () => {
               {fieldErrors.title && <p className="errorText">{fieldErrors.title}</p>}
             </div>
             <div className={styles.actionButtonsContainer}>
-              <Button type={'submit'} onClick={saveChanges} variant="primary">Uložit název</Button>
               <Button type={'button'} onClick={cancelChanges} variant="secondary">Zrušit</Button>
+              <Button type={'submit'} onClick={saveChanges} variant="primary">Uložit název</Button>
             </div>
           </>
         ) : (
@@ -411,8 +411,8 @@ const QuestionDetailPage = () => {
                 <div className={styles.answerActions}>
                   {editingField === 'text' ? (
                     <div className={styles.actionButtonsContainer}>
-                      <Button variant="primary" type="submit" onClick={saveChanges}>Uložit změny</Button>
                       <Button variant="secondary" type="button" onClick={cancelChanges}>Zrušit</Button>
+                      <Button variant="primary" type="submit" onClick={saveChanges}>Uložit změny</Button>
                     </div>
                   ) : (
                     <button className={styles.editIconBtn} type="button" onClick={() => setEditingField('text')}>

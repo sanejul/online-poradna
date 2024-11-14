@@ -10,7 +10,7 @@ interface QuestionListItemProps {
   text: string;
   createdAt: Date;            // Datum vytvoření dotazu
   isAnswered: boolean;        // Stav zodpovězení dotazu
-  category: string;           // Kategorie dotazu
+  category: string[];           // Kategorie dotazu
 }
 
 const QuestionListItem: React.FC<QuestionListItemProps> = ({
@@ -26,7 +26,13 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
       <Link to={`/questions/${id}`} className={styles.title}>
         <h2>{title}</h2>
       </Link>
-      <p className={styles.category}>{category}{' '}</p>
+      <p className={styles.category}>
+        {category.map((cat, index) => (
+          <span key={index} className={styles.categoryItem}>
+      {cat}{' '}
+    </span>
+        ))}
+      </p>
       <div className={styles.info}>
         <div>
           <p className={styles.date}>{createdAt.toLocaleDateString('cs-CZ')}{' '}</p>
