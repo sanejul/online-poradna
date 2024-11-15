@@ -17,18 +17,38 @@ import Modal from '../../components/modal/modal';
 import AttachmentInput from '../../components/attachment-input';
 import { validateQuestionTitle, validateQuestionText } from '../../helpers/validation-helper';
 import editPen from '../../assets/icons/edit-pen.png';
-import Notification from '../../components/notification';
 import { useNotification } from '../../contexts/notification-context';
+import { uploadAndTransformFiles } from '../../utils/file-utils';
 
 interface Category {
   id: string;
   name: string;
 }
 
+interface FileData {
+  thumbnailUrl: string;
+  fullImageUrl: string;
+  originalUrl: string;
+}
+
+interface QuestionData {
+  title: string;
+  questionText: string;
+  category: string[];
+  createdAt: Timestamp;
+  files?: FileData[];
+  isAnswered: boolean;
+  user: {
+    uid: string;
+    displayName: string;
+    email: string;
+  };
+}
+
 const QuestionDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [question, setQuestion] = useState<any>(null);
+  const [question, setQuestion] = useState<QuestionData | null>(null);
   const [editingField, setEditingField] = useState<null | 'title' | 'category' | 'text' | 'newCategory'>(null);
   const [tempQuestion, setTempQuestion] = useState<any>(null);
   const [answerText, setAnswerText] = useState('');
@@ -37,6 +57,7 @@ const QuestionDetailPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState({ title: '', questionText: '', answerText: '' });
   const [fieldValid, setFieldValid] = useState({ title: false, questionText: false, answerText: false });
+  const [currentAttachments, setCurrentAttachments] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -78,8 +99,18 @@ const QuestionDetailPage = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const questionData = docSnap.data();
-        setQuestion(questionData);
-        // Initialize tempQuestion with the fetched question data
+        console.warn('Fetched question data:', questionData);
+
+        const transformedFiles = questionData.files?.map((file: any) => ({
+          thumbnailUrl: file.thumbnailUrl || '',
+          fullImageUrl: file.fullImageUrl || '',
+          originalUrl: file.originalUrl || '',
+        })) || [];
+
+        setQuestion({
+          ...questionData,
+          files: transformedFiles,
+        } as QuestionData);
         setTempQuestion({ ...questionData });
         setSelectedCategoryIds(questionData.category || []);
       }
@@ -136,7 +167,13 @@ const QuestionDetailPage = () => {
       await updateDoc(doc(db, 'questions', id), {
         category: selectedCategoryIds,
       });
-      setQuestion({ ...question, category: selectedCategoryIds });
+      setQuestion({
+        ...question!,
+        category: selectedCategoryIds,
+        title: question?.title || '',
+        questionText: question?.questionText || '',
+        createdAt: question?.createdAt || Timestamp.now(),
+      });
       setEditingField(null);
       setShowCategoryDropdown(false);
     } catch (error) {
@@ -153,7 +190,7 @@ const QuestionDetailPage = () => {
   };
 
   const cancelChanges = () => {
-    setSelectedCategoryIds(question.category || []);
+    setSelectedCategoryIds(question?.category || []);
     setEditingField(null);
     setShowCategoryDropdown(false);
   };
@@ -164,9 +201,9 @@ const QuestionDetailPage = () => {
 
   const deleteQuestion = () => {
     setModalContent(
-      <div className={"modalContainer"}>
+      <div className={'modalContainer'}>
         <p>Opravdu chcete odstranit celou konverzaci?</p>
-        <div className={"modalActions"}>
+        <div className={'modalActions'}>
           <Button type={'button'} variant="secondary" onClick={() => setIsModalOpen(false)}>zrušit</Button>
           <Button type={'button'} variant="delete" onClick={async () => {
             await deleteDoc(doc(db, 'questions', id!));
@@ -175,12 +212,14 @@ const QuestionDetailPage = () => {
             navigate('/archivePage');
           }}>smazat</Button>
         </div>
-      </div>
+      </div>,
     );
     setIsModalOpen(true);
   };
 
-  const handleFileClick = (index: number) => {
+  const handleFileClick = (files: FileData[], index: number) => {
+    const imageUrls = files.map((file) => file.fullImageUrl || file.originalUrl);
+    setCurrentAttachments(imageUrls);
     setLightboxIndex(index);
     setIsLightboxOpen(true);
   };
@@ -236,26 +275,12 @@ const QuestionDetailPage = () => {
     }
 
     try {
-      const fileURLs: string[] = [];
-      for (const file of files) {
-        const fileRef = ref(storage, `answers/${user?.uid}/${file.name}`);
-        const uploadTask = uploadBytesResumable(fileRef, file);
+      setIsLoading(true);
+      const fileURLs: { thumbnailUrl: string; fullImageUrl: string; originalUrl: string }[] = [];
 
-        await new Promise<void>((resolve, reject) => {
-          uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-              const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-              setUploadProgress(progress);
-            },
-            (error) => reject(error),
-            async () => {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              fileURLs.push(downloadURL);
-              resolve();
-            },
-          );
-        });
+      for (const file of files) {
+        const urls = await uploadAndTransformFiles(file, `answers/${user.uid}`);
+        fileURLs.push(urls);
       }
 
       const formattedAnswerText = answerText.replace(/\n/g, '<br />');
@@ -275,9 +300,12 @@ const QuestionDetailPage = () => {
       setAnswerText('');
       setFiles([]);
       setUploadProgress(0);
+      showNotification(<p>Odpověď byla úspěšně odeslána.</p>, 5);
     } catch (error) {
       console.error('Chyba při odesílání odpovědi:', error);
       setError('Chyba při odesílání odpovědi: ' + (error as Error).message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -451,13 +479,13 @@ const QuestionDetailPage = () => {
         <div className={styles.attachmentPreviews}>
           <div
             className={`${styles.previewContainer} ${isAuthor ? styles.rightPreviewContainer : styles.leftPreviewContainer}`}>
-            {question.files.map((file: string, index: number) => (
+            {question?.files?.map((file: FileData, index: number) => (
               <img
                 key={index}
-                src={file}
+                src={file.thumbnailUrl || file.originalUrl}
                 alt={`Příloha ${index + 1}`}
                 className={styles.previewImage}
-                onClick={() => handleFileClick(index)}
+                onClick={() => handleFileClick(question.files!, index)}
               />
             ))}
           </div>
@@ -466,7 +494,7 @@ const QuestionDetailPage = () => {
 
       {isLightboxOpen && (
         <Lightbox
-          slides={question.files.map((file: string) => ({ src: file }))}
+          slides={currentAttachments.map((url) => ({ src: url }))}
           open={isLightboxOpen}
           close={() => setIsLightboxOpen(false)}
           index={lightboxIndex}

@@ -13,21 +13,27 @@ interface AnswerListProps {
   questionId: string;
 }
 
+interface Attachment {
+  thumbnailUrl: string;
+  fullImageUrl: string;
+  originalUrl: string;
+}
+
 interface Answer {
   id: string;
   text: string;
   author: { displayName: string; uid: string };
   createdAt: { seconds: number; nanoseconds: number };
-  attachments?: string[];
+  attachments?: Attachment[];
 }
 
 const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [currentAttachments, setCurrentAttachments] = useState<string[]>([]);
   const [editingAnswerId, setEditingAnswerId] = useState<string | null>(null);
   const [editedAnswerText, setEditedAnswerText] = useState<string>('');
+  const [currentAttachments, setCurrentAttachments] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [questionAuthorUid, setQuestionAuthorUid] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
@@ -63,8 +69,19 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const answersList: Answer[] = [];
       querySnapshot.forEach((doc) => {
-        answersList.push({ ...doc.data(), id: doc.id } as Answer);
+        const data = doc.data();
+        const transformedAttachments = (data.attachments || []).map((attachment: any) => ({
+          thumbnailUrl: attachment.thumbnailUrl || '',
+          fullImageUrl: attachment.fullImageUrl || '',
+          originalUrl: attachment.originalUrl || '',
+        }));
+        answersList.push({
+          ...data,
+          id: doc.id,
+          attachments: transformedAttachments,
+        } as Answer);
       });
+      console.warn('Transformed answers with attachments:', answersList);
       setAnswers(answersList);
     });
 
@@ -89,8 +106,13 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     }
   };
 
-  const handleAttachmentClick = (attachments: string[], index: number) => {
-    setCurrentAttachments(attachments);
+  const handleAttachmentClick = (attachments: Attachment[], index: number) => {
+    const imageUrls = attachments.map((attachment) =>
+      attachment.fullImageUrl || attachment.originalUrl || attachment.thumbnailUrl
+    );
+    console.warn('Attachments passed to handleAttachmentClick:', attachments);
+    console.warn('imageUrls for Lightbox:', imageUrls);
+    setCurrentAttachments(imageUrls);
     setLightboxIndex(index);
     setIsLightboxOpen(true);
   };
@@ -225,13 +247,13 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                         : styles.rightPreviewContainer
                     }`}
                   >
-                    {answer.attachments.map((file: string, index: number) => (
+                    {answer.attachments.map((file, index) => (
                       <img
                         key={index}
-                        src={file}
+                        src={file.thumbnailUrl || file.originalUrl}
                         alt={`Příloha ${index + 1}`}
                         className={styles.previewImage}
-                        onClick={() => handleAttachmentClick(answer.attachments!, index)}
+                        onClick={() => handleAttachmentClick(answer.attachments || [], index)}
                       />
                     ))}
                   </div>
@@ -244,7 +266,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
 
       {isLightboxOpen && (
         <Lightbox
-          slides={currentAttachments.map((file) => ({ src: file }))}
+          slides={currentAttachments.map((url) => ({ src: url }))}
           open={isLightboxOpen}
           close={() => setIsLightboxOpen(false)}
           index={lightboxIndex}
@@ -259,6 +281,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
           }}
         />
       )}
+
     </div>
   );
 };

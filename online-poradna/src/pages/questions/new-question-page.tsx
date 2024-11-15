@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { db, storage, auth } from '../../firebase';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/buttons/button';
 import styles from './new-question-page.module.css';
@@ -9,6 +8,7 @@ import AttachmentInput from '../../components/attachment-input';
 import LoadingSpinner from '../../components/loading-spinner';
 import { validateQuestionText, validateQuestionTitle } from '../../helpers/validation-helper';
 import { useNotification } from '../../contexts/notification-context';
+import { uploadAndTransformFiles } from '../../utils/file-utils';
 
 const NewQuestionPage = () => {
   const [title, setTitle] = useState('');
@@ -45,55 +45,25 @@ const NewQuestionPage = () => {
     setFieldValid((prev) => ({ ...prev, [field]: isValid }));
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
-    if (Object.values(fieldErrors).some(err => err) || !Object.values(fieldValid).every(valid => valid)) {
-      setError('Zkontrolujte prosím chyby ve formuláři.');
-      setIsLoading(false);
-      return;
-    }
-
     try {
       if (!user) {
-        setError('Pro položení dotazu musíte být přihlášení.');
+        setError('Pro položení dotazu musíte být přihlášeni.');
         setIsLoading(false);
         return;
       }
 
-      const fileURLs: string[] = [];
-      for (const file of files) {
-        const fileRef = ref(storage, `questions/${user.uid}/${file.name}`);
-        const uploadTask = uploadBytesResumable(fileRef, file);
-
-        await new Promise<void>((resolve, reject) => {
-          uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              setUploadProgress(progress);
-            },
-            (error) => reject(error),
-            async () => {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              fileURLs.push(downloadURL);
-              resolve();
-            },
-          );
-        });
-      }
-
-      const formattedQuestionText = questionText.replace(/\n/g, '<br />');
-
+      // Vytvoření nové otázky bez souborů
       const newQuestion = {
         title,
-        questionText: formattedQuestionText,
+        questionText: questionText.replace(/\n/g, '<br />'),
         category,
         createdAt: Timestamp.now(),
-        files: fileURLs,
+        files: [],
         isAnswered: false,
         user: {
           uid: user.uid,
@@ -103,8 +73,18 @@ const NewQuestionPage = () => {
       };
 
       const docRef = await addDoc(collection(db, 'questions'), newQuestion);
+      const questionId = docRef.id;
+
+      const fileDataArray = [];
+      for (const file of files) {
+        const fileData = await uploadAndTransformFiles(file, `questions/${questionId}`);
+        fileDataArray.push(fileData);
+      }
+
+      await updateDoc(docRef, { files: fileDataArray });
+
       showNotification(<p>Váš dotaz byl úspěšně odeslán.</p>, 5);
-      navigate(`/questions/${docRef.id}`);
+      navigate(`/questions/${questionId}`);
     } catch (error) {
       setError('Chyba při odesílání dotazu: ' + (error as Error).message);
     } finally {
@@ -156,7 +136,8 @@ const NewQuestionPage = () => {
         <AttachmentInput files={files} onFilesSelected={setFiles} />
         {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
         <div className={styles.buttonContainer}>
-          <Button variant="primary" type="submit" disabled={!user || isLoading || !Object.values(fieldValid).every(valid => valid)}>
+          <Button variant="primary" type="submit"
+                  disabled={!user || isLoading || !Object.values(fieldValid).every(valid => valid)}>
             Odeslat dotaz
           </Button>
         </div>
