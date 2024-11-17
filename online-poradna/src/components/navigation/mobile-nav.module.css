@@ -29,18 +29,21 @@
     text-decoration: none;
     overflow: hidden;
     transition: all 0.4s;
-    font-size: 1.5rem;
     line-height: 1.55rem;
     margin-left: 0 !important;
-    background: none; /* přidáno pro button */
-    border: none; /* přidáno pro button */
-    cursor: pointer; /* přidáno pro button */
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 button {
     background: none;
     border: none;
     margin: 20px;
+}
+
+button span {
+    font-size: 1.5rem;
 }
 
 button:focus {
@@ -65,7 +68,7 @@ button:focus {
     width: 25px;
     height: 2px;
     background-color: var(--black);
-    border-radius: 2px;
+    border-radius: 1px;
     margin: 4px 0;
     transition: 0.4s;
 }
@@ -218,8 +221,6 @@ button:focus {
 .overlay.open li:nth-of-type(8) {
     animation-delay: 0.65s;
 }
-
-/* Animation for menu fade in */
 
 @keyframes fadeInRight {
     0% {

@@ -43,6 +43,7 @@
     opacity: .5;
     text-align: center;
     color: var(--blue) !important;
+    font-weight: 500;
 }
 
 .footerText {
@@ -114,6 +115,7 @@
 
     .slogan p {
         font-size: 3rem;
+        font-weight: 500;
         margin: 5rem 0 10rem 0;
     }
 }

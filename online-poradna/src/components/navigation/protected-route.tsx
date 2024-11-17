@@ -1,9 +1,9 @@
-// ProtectedRoute.tsx
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { auth, db } from '../../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import LoadingSpinner from '../../components/loading-spinner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -47,7 +47,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // Spinner nebo jiný indikátor načítání
+    return <LoadingSpinner></LoadingSpinner>
   }
 
   return isAdmin ? <>{children}</> : <Navigate to="/login" />;

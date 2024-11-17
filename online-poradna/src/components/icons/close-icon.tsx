@@ -15,14 +15,14 @@ const CustomCloseIcon: React.FC<IconProps> = ({ onClick }) => (
     style={{ cursor: 'pointer', margin: '12px' }}
   >
     <path
-      d="M5 5L25 25" // Adjusted to make the line 25px long
+      d="M5 5L25 25"
       stroke="whitesmoke"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M5 25L25 5" // Adjusted to make the line 25px long
+      d="M5 25L25 5"
       stroke="whitesmoke"
       strokeWidth="2"
       strokeLinecap="round"

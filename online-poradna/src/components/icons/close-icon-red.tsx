@@ -4,7 +4,7 @@ interface IconProps {
   onClick?: () => void;
 }
 
-const CustomCloseIconGreen: React.FC<IconProps> = ({ onClick }) => (
+const CustomCloseIconRed: React.FC<IconProps> = ({ onClick }) => (
   <svg
     onClick={onClick}
     width="30"
@@ -16,14 +16,14 @@ const CustomCloseIconGreen: React.FC<IconProps> = ({ onClick }) => (
   >
     <path
       d="M5 5L25 25"
-      stroke="#24AE60"
+      stroke="#E74B3B"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M5 25L25 5"
-      stroke="#24AE60"
+      stroke="#E74B3B"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -31,4 +31,4 @@ const CustomCloseIconGreen: React.FC<IconProps> = ({ onClick }) => (
   </svg>
 );
 
-export default CustomCloseIconGreen;
+export default CustomCloseIconRed;

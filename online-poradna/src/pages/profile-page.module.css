@@ -1,4 +1,3 @@
-
 .listItemContainer {
     padding: 0;
 }
@@ -51,11 +50,6 @@
     display: block;
 }
 
-/*.profileInfo > div {
-    display: flex;
-    flex-direction: column;
-}*/
-
 @media (min-width: 768px) {
     .profileContainer {
         width: 70%;
@@ -73,7 +67,7 @@
     }
 
     .profileContainer li {
-        margin: auto;
+        margin: 1rem auto;
     }
 
     .editMode > div {
@@ -81,22 +75,3 @@
         margin: auto;
     }
 }
-
-/*.profileInfo p {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 1rem 0;
-}
-
-.profileInfo p strong {
-    width: 50%;
-    display: block;
-    text-align: right;
-}
-
-.profileInfo p span {
-    display: block;
-    margin-right: auto; !* Zarovná span vlevo *!
-    text-align: left; !* V případě, že by span obsahoval delší text *!
-}*/

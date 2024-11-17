@@ -1,9 +1,8 @@
-// src/context/NotificationContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import Notification from '../components/notification';
 
 interface NotificationContextType {
-  showNotification: (message: ReactNode, timeout?: number) => void;
+  showNotification: (message: ReactNode, timeout?: number, type?: 'success' | 'warning') => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -14,12 +13,14 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   /* eslint-disable @typescript-eslint/no-inferrable-types */
   const [timeout, setTimeoutDuration] = useState(5);
   /* eslint-enable @typescript-eslint/no-inferrable-types */
+  const [type, setType] = useState<'success' | 'warning'>('success');
 
 
-  const showNotification = (message: ReactNode, timeoutDuration: number = 5) => {
+  const showNotification = (message: ReactNode, timeoutDuration: number = 5, notificationType: 'success' | 'warning' = 'success') => {
     setNotificationContent(message);
-    setIsVisible(true);
     setTimeoutDuration(timeoutDuration);
+    setType(notificationType);
+    setIsVisible(true);
   };
 
   const handleClose = () => {
@@ -31,7 +32,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     <NotificationContext.Provider value={{ showNotification }}>
       {children}
       {isVisible && (
-        <Notification timeout={timeout} onClose={handleClose}>
+        <Notification timeout={timeout} onClose={handleClose} type={type}>
           {notificationContent}
         </Notification>
       )}

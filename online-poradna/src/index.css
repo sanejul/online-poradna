@@ -1,43 +1,41 @@
-/* index.css */
-
 @font-face {
-  font-family: 'Fabrikant';
-  src: url('../fonts/Fabrikant/Fabrikat.otf') format('opentype');
+    font-family: 'Fabrikant';
+    src: url('../fonts/Fabrikant/Fabrikat.otf') format('opentype');
 }
 
 @font-face {
-  font-family: 'Fabrikant Black';
-  src: url('../fonts/Fabrikant/FabrikatBlack.otf') format('opentype');
+    font-family: 'Fabrikant Black';
+    src: url('../fonts/Fabrikant/FabrikatBlack.otf') format('opentype');
 }
 
 @font-face {
-  font-family: 'Fabrikant Bold';
-  src: url('../fonts/Fabrikant/FabrikatBold.otf') format('opentype');
+    font-family: 'Fabrikant Bold';
+    src: url('../fonts/Fabrikant/FabrikatBold.otf') format('opentype');
 }
 
 @font-face {
-  font-family: 'Fabrikant Medium';
-  src: url('../fonts/Fabrikant/FabrikatMedium.otf') format('opentype');
+    font-family: 'Fabrikant Medium';
+    src: url('../fonts/Fabrikant/FabrikatMedium.otf') format('opentype');
 }
 
 @font-face {
-  font-family: 'Freight Medium';
-  src: url('../fonts/FreightText/FreightTextMediumItalic.ttf') format('opentype');
+    font-family: 'Freight Medium';
+    src: url('../fonts/FreightText/FreightTextMediumItalic.ttf') format('opentype');
 }
 
 @font-face {
-  font-family: 'Freight Light';
-  src: url('../fonts/FreightText/FreightTextProLightItalic.ttf') format('opentype');
+    font-family: 'Freight Light';
+    src: url('../fonts/FreightText/FreightTextProLightItalic.ttf') format('opentype');
 }
 
 @font-face {
-  font-family: 'Freight SemiBold';
-  src: url('../fonts/FreightText/FreightTextProSemiboldItalic.ttf') format('opentype');
+    font-family: 'Freight SemiBold';
+    src: url('../fonts/FreightText/FreightTextProSemiboldItalic.ttf') format('opentype');
 }
 
-*{
-  box-sizing: border-box;
-  font-family: Fabrikant, 'Fabrikat', serif;
+* {
+    box-sizing: border-box;
+    font-family: Fabrikant, 'Fabrikat', serif;
 }
 
 .freight-semibold {
@@ -45,73 +43,92 @@
 }
 
 :root {
-  --blue: #2057a5;
-  --blue-darker: #194785;
-  --blue-light: rgba(32, 87, 165, 0.6);
-  --whitesmoke: #F5F5F5FF;
-  --whitesmoke-hover: #ececec;
-  --black: #111111;
-  --overlay: rgba(17, 17, 17, 0.9);
-  --gray: rgba(17, 17, 17, 0.6);
-  --orange: #E67E23;
-  --red: #E74B3B;
-  --green: #24AE60;
+    --blue: #2057a5;
+    --blue-darker: #194785;
+    --blue-light: rgba(32, 87, 165, 0.8);
+    --whitesmoke: #F5F5F5FF;
+    --whitesmoke-hover: #ececec;
+    --black: #111111;
+    --overlay: rgba(17, 17, 17, 0.9);
+    --gray: rgba(17, 17, 17, 0.6);
+    --orange: #E67E23;
+    --red: #E74B3B;
+    --green: #24AE60;
 }
 
 ::-moz-selection {
-  color: var(--whitesmoke);
-  background: rgba(32, 87, 165, 0.47);
+    color: var(--whitesmoke);
+    background: rgba(32, 87, 165, 0.47);
 }
 
 ::selection {
-  color: var(--whitesmoke);
-  background: rgba(32, 87, 165, 0.47);
+    color: var(--whitesmoke);
+    background: rgba(32, 87, 165, 0.47);
 }
 
-html{
-  scroll-behavior: smooth;
-  background-color: var(--whitesmoke);
-  min-height: 100vh;
+html {
+    scroll-behavior: smooth;
+    background-color: var(--whitesmoke);
+    min-height: 100vh;
 }
 
-.App{
-  max-width: 1280px;
-  margin: 0 auto;
+.App {
+    max-width: 1280px;
+    margin: 0 auto;
 }
 
-.main-container{
-  margin-top: 65px;
-  min-height: calc(100vh - 65px);
-  overflow-x: hidden;
-  overflow-y: auto;
+.main-container {
+    margin-top: 65px;
+    min-height: calc(100vh - 65px);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-a{
-  color: var(--black);
+* {
+    font-size: 1.05rem;
 }
 
-h1{
-  font-family: "Fabrikant Medium", serif !important;
-  font-size: 2.5rem;
-  text-align: center;
+h2 {
+    font-size: 1.5rem;
+}
+
+p, label {
+    /*font-weight: bolder;*/
+}
+
+a {
+    color: var(--black);
+}
+
+h1 {
+    font-family: "Fabrikant Medium", serif !important;
+    font-size: 2.5rem;
+    text-align: center;
 }
 
 @media (min-width: 768px) {
-  h1{
-    font-size: 3rem;
-  }
+    h1 {
+        font-size: 3rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
 }
 
 input[type="text"], textarea, input[type="email"], input[type="password"] {
-  margin-top: 1rem;
-  width: 99%;
-  max-width: 99%;
-  min-width: 99%;
-  padding: 0.5rem 0.8rem;
-  border: 1px solid rgba(32, 87, 165, 0.6);
-  color: var(--black);
-  background-color: var(--whitesmoke);
-  font-size: 1rem;
+    margin-top: 1rem;
+    width: 99%;
+    max-width: 99%;
+    min-width: 99%;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--blue-light);
+    color: var(--black);
+    background-color: var(--whitesmoke);
+    font-size: 1.05rem;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    /*box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;*/
+   /* box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;*/
 }
 
 input[type="text"]:focus-visible,
@@ -119,88 +136,117 @@ textarea:focus-visible,
 input[type="email"]:focus-visible,
 input[type="password"]:focus-visible,
 select:focus-visible {
-  outline: 1px solid var(--blue-darker);
-  border-radius: 0;
+    outline: 1px solid var(--blue-darker);
+    border-radius: 0;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+/*    box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;*/
+    /*box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;*/
 }
 
 button {
-  border-radius: 2px;
-  text-transform: lowercase;
+    border-radius: 1px;
+    text-transform: lowercase;
 }
 
 .input-container input,
 .input-container textarea {
-  margin-top: .2rem;
-  margin-bottom: 1rem;
+    margin-top: .2rem;
+    margin-bottom: 1rem;
 }
 
 label {
-  text-align: left;
-  display: block;
-  margin-left: .2rem;
-  color: var(--blue);
+    text-align: left;
+    display: block;
+    margin-left: .2rem;
+    color: var(--blue);
 }
 
-.errorText{
-  color: var(--red);
-  margin-top: -0.5rem;
-  margin-left: .2rem;
-  margin-bottom: .2rem;
-  text-align: left;
+.errorText {
+    color: var(--red);
+    margin-top: -0.7rem;
+    margin-left: .2rem;
+    margin-bottom: .5rem;
+    text-align: left;
 }
 
 .input-container.error input,
 .input-container.error textarea {
-  border-color: var(--red);
+    border-color: var(--red);
 }
 
 .input-container.valid input,
 .input-container.valid textarea {
-  border-color: var(--green);
+    border-color: var(--green);
 }
 
 .textLeft {
-  text-align: left;
-  margin-left: 0.2rem;
-  margin-top: 0;
+    text-align: left;
+    margin-left: 0.2rem;
+    margin-top: 0;
 }
 
 select {
-  width: 99%;
-  padding: 0.5rem 0.8rem;
-  margin-bottom: 1rem;
-  margin-top: 0.2rem;
-  border: 1px solid var(--blue-light);
-  background-color: var(--whitesmoke);
+    width: 99%;
+    padding: 0.5rem 0.8rem;
+    margin-bottom: 1rem;
+    margin-top: 0.2rem;
+    border: 1px solid var(--blue-light);
+    background-color: var(--whitesmoke);
 }
 
 option {
-  padding: 0.5rem 0.8rem;
-  background-color: var(--whitesmoke);
+    padding: 0.5rem 0.8rem;
+    background-color: var(--whitesmoke);
 }
 
-/* modal */
-
 .modalContainer p {
-  margin-top: 3rem;
+    margin-top: 3rem;
 }
 
 .modalContainer .modalActions button {
-  margin: .5rem 0;
+    margin: .5rem 0;
 }
 
 .modalActions {
-  margin-top: 2rem;
+    margin-top: 2rem;
+}
+
+.notFoundContainer,
+.errorContainer {
+    margin: 3rem auto;
+}
+
+.notFoundContainer a,
+.errorContainer button {
+    color: var(--blue);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.errorContainer * {
+    text-align: center;
 }
 
 @media (min-width: 576px) {
-  .button {
-    width: 15rem;
-  }
+    .button {
+        width: 15rem;
+    }
 }
 
 @media (min-width: 768px) {
-  .modalContainer .modalActions button {
-    margin: .5rem;
-  }
+    .modalContainer .modalActions button {
+        margin: .5rem;
+    }
+
+    .notFoundContainer,
+    .errorContainer {
+        margin: 5rem auto;
+    }
 }
+
+

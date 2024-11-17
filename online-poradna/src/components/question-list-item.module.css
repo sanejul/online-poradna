@@ -3,9 +3,10 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 1rem;
-    border: 1px solid rgba(32, 87, 165, 0.5);
+    border: 1px solid var(--blue-light);
     margin-bottom: 1rem;
     margin-left: 0;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 .listItem h2,
@@ -36,15 +37,13 @@
 }
 
 .info .button {
-    font-size: 1rem;
+    font-size: 1.05rem;
     width: 60%;
     margin: 0 auto;
     padding: 0.5rem 2rem;
-    border: 1px solid rgba(32, 87, 165, 0.6);
-    border-radius: 2px;
+    border: 1px solid var(--blue-light);
+    border-radius: 1px;
     cursor: pointer;
-/*    background-color: var(--whitesmoke);
-    color: var(--blue);*/
     background-color: var(--blue);
     color: var(--whitesmoke);
 }
@@ -70,6 +69,11 @@
     .listItem {
         width: 50rem;
         margin: 0 auto 1rem auto;
+    }
+
+    .info .button {
+        width: max-content;
+        min-width: 10rem;
     }
 }
 

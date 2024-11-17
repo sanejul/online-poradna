@@ -6,6 +6,7 @@ import '../../index.css';
 
 import igLogo from "../../assets/ig.png";
 import fbLogo from "../../assets/fb.png";
+import { Link } from 'react-router-dom';
 
 class Footer extends Component {
   render() {
@@ -56,8 +57,8 @@ class Footer extends Component {
                        className={stylesNav.navLink}><span>kadeřnictví</span></a></li>
                 <li><a href="https://haarosalon.cz/pages/oHaaro.html" data-link="o haaro"
                        className={stylesNav.navLink}><span>o haaro</span></a></li>
-                <li><a target="_blank" rel="noreferrer" data-link="online poradna" className={stylesNav.navLink}
-                       href="https://www.haaro-edu.cz/"><span>online poradna</span></a></li>
+                <li><Link rel="noreferrer" data-link="online poradna" className={stylesNav.navLink}
+                       to="/"><span>online poradna</span></Link></li>
               </ul>
 
             </div>
@@ -75,8 +76,6 @@ class Footer extends Component {
                 <li><a target="_blank" rel="noreferrer" data-link="věrnostní klub" className={stylesNav.navLink}
                        href="https://www.haaro-naturo.cz/vernostni-program/"><span>věrnostní klub</span></a>
                 </li>
-                <li><a href="https://haarosalon.cz/pages/kadernictvi.html" data-link="kadeřnictví"
-                       className={stylesNav.navLink}><span>kadeřnictví</span></a></li>
                 <li><a target="_blank" rel="noreferrer" data-link="pomáháme" className={stylesNav.navLink}
                        href="https://www.haaro-naturo.cz/pomahame/"><span>pomáháme</span></a>
                 </li>

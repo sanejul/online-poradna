@@ -24,7 +24,6 @@ const CategoryManagementPage = () => {
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
   const { showNotification } = useNotification();
 
-  // Load categories from the database
   useEffect(() => {
     const fetchCategories = async () => {
       const querySnapshot = await getDocs(collection(db, 'categories'));
@@ -32,13 +31,15 @@ const CategoryManagementPage = () => {
         id: doc.id,
         ...doc.data(),
       } as Category));
+
+      categoryList.sort((a, b) => a.name.localeCompare(b.name));
+
       setCategories(categoryList);
     };
 
     fetchCategories();
   }, []);
 
-  // Add a new category
   const handleAddCategory = async () => {
     const error = validateCategoryName(newCategory);
     setNewCategoryError(error);
@@ -51,6 +52,7 @@ const CategoryManagementPage = () => {
       setNewCategoryError(null);
       showNotification(<p>Kategorie {newCategory} byla úspěšně přidána.</p>, 5);
     } catch (e) {
+      showNotification(<p>Přidání kategorie {newCategory} se nezdařilo. Zkuste to prosím znovu.</p>, 10, 'warning');
       console.error('Error adding category:', e);
     }
   };
@@ -72,25 +74,23 @@ const CategoryManagementPage = () => {
     setIsModalOpen(true);
   };
 
-  // Delete a category
   const handleDeleteCategory = async (id: string, name: string) => {
     try {
       await deleteDoc(doc(db, 'categories', id));
       setCategories(categories.filter(category => category.id !== id));
       showNotification(<p>Kategorie {name} byla úspěšně smazána.</p>, 5);
     } catch (e) {
+      showNotification(<p>Smazání kategorie {name} se nezdařilo. Zkuste to prosím znovu.</p>, 10, 'warning');
       console.error('Error deleting category:', e);
     }
   };
 
-  // Start editing a category
   const startEditing = (category: Category) => {
     setEditingCategory(category.id);
     setEditedCategoryName(category.name);
     setEditedCategoryError(null);
   };
 
-  // Save category changes
   const handleSaveEdit = async (id: string, name: string) => {
     const error = validateCategoryName(editedCategoryName);
     setEditedCategoryError(error);
@@ -104,11 +104,11 @@ const CategoryManagementPage = () => {
       setEditingCategory(null);
       setEditedCategoryName('');
     } catch (e) {
+      showNotification(<p>Úprava kategorie {name} se nezdařila. Zkuste to prosím znovu.</p>, 10, 'warning');
       console.error('Error updating category:', e);
     }
   };
 
-  // Cancel editing
   const handleCancelEdit = () => {
     setEditingCategory(null);
     setEditedCategoryName('');
@@ -125,7 +125,7 @@ const CategoryManagementPage = () => {
           value={newCategory}
           onChange={(e) => {
             setNewCategory(e.target.value);
-            setNewCategoryError(validateCategoryName(e.target.value)); // Validate on change
+            setNewCategoryError(validateCategoryName(e.target.value));
           }}
           placeholder="Název kategorie"
           required

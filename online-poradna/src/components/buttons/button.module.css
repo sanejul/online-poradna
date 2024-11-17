@@ -1,23 +1,25 @@
 .button{
-    font-size: 1rem;
+    font-size: 1.05rem;
     width: 99%;
     margin: 0 auto;
     padding: 0.5rem 2rem;
-    border: 1px solid rgba(32, 87, 165, 0.6);
-    border-radius: 2px;
+    border: 1px solid var(--blue-light);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    border-radius: 1px;
     cursor: pointer;
     text-transform: lowercase;
 }
 
 @media (min-width: 576px) {
-   .button {
-        width: 15rem;
+    .button {
+        width: max-content;
+        min-width: 10rem;
     }
 }
 
 .button:disabled {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .primary {
@@ -26,7 +28,7 @@
 }
 
 .primary:active:hover,
-.primary:hover{
+.primary:hover {
     background-color: var(--blue-darker);
 }
 
@@ -40,7 +42,7 @@
     color: var(--whitesmoke);
 }
 
-.edit{
+.edit {
     background-color: var(--whitesmoke);
     color: var(--orange);
     border: 1px solid var(--orange);
@@ -51,7 +53,7 @@
     color: var(--whitesmoke);
 }
 
-.delete{
+.delete {
     background-color: var(--whitesmoke);
     color: var(--red);
     border: 1px solid var(--red);

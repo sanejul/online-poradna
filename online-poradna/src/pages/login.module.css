@@ -13,6 +13,7 @@
 .form Button {
     width: 99%;
     margin: 1rem 0;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
 
 .formContainer {
@@ -20,6 +21,10 @@
     flex-direction: column;
     justify-content: space-between;
     height: 80vh;
+}
+
+.infoText {
+    margin-bottom: 2rem;
 }
 
 @media (min-width: 576px) {
@@ -32,15 +37,3 @@
         height: 70vh;
     }
 }
-
-/*@media (min-width: 768px) {
-    .container {
-        width: 40%;
-    }
-}
-
-@media (min-width: 1024px) {
-    .container {
-        width: 30%;
-    }
-}*/

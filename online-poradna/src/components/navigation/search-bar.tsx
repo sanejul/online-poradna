@@ -1,6 +1,4 @@
-// components/SearchBar.tsx
 import React, { useState } from "react";
-import styles from "./search-bar.module.css";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -17,13 +15,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, placeholder }) => {
   };
 
   return (
-    <div className={styles.searchBar}>
+    <div className="searchBar">
       <input
         type="text"
         value={query}
         onChange={handleInputChange}
         placeholder={placeholder}
-        className={styles.searchInput}
+        className="searchInput"
       />
     </div>
   );

@@ -26,6 +26,7 @@ export const useAuthLogic = () => {
         showNotification(<p>Uživatel odhlášen.</p>, 5);
       }
     } catch (error) {
+      showNotification(<p>Uživatele se nepodařilo odhlásit. Zkuste to prosím znovu.</p>, 5, 'warning');
       console.error('Chyba při odhlašování:', error);
     }
   };

@@ -9,6 +9,11 @@
     padding: 1rem;
 }
 
+.warning {
+    background-color: var(--whitesmoke);
+    border: 1px solid var(--red);
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -32,10 +37,18 @@
     color: var(--green);
 }
 
+.warning .content {
+    color: var(--red);
+}
+
 .timerBar {
     height: 4px;
     background-color: var(--green);
     transition: width 0.1s linear;
+}
+
+.warning .timerBar {
+    background-color: var(--red);
 }
 
 @media (min-width: 768px) {

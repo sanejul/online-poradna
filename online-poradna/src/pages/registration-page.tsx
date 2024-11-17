@@ -3,7 +3,14 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { validateFirstName, validateLastName, validateEmail, isEmailUnique, validatePassword, validateConfirmPassword } from '../helpers/validation-helper';
+import {
+  validateFirstName,
+  validateLastName,
+  validateEmail,
+  isEmailUnique,
+  validatePassword,
+  validateConfirmPassword
+} from '../helpers/validation-helper';
 import { useNotification } from '../contexts/notification-context';
 import Button from '../components/buttons/button';
 import styles from './login.module.css'
@@ -14,12 +21,8 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const { showNotification } = useNotification();
-
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from: string })?.from || "/";
 
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState({
@@ -116,7 +119,7 @@ const RegisterPage = () => {
       });
 
       console.log("Uživatel úspěšně registrován a uložen do db.");
-      showNotification(<p>Registrace proběhla úspěšně. Nyní se můžete přihlásit.</p>, 15);
+      showNotification(<p>Registrace proběhla úspěšně. Nyní se můžete přihlásit.</p>, 5);
       navigate('/login');
     } catch (error) {
       console.error("Chyba při registraci:", error);
@@ -129,9 +132,10 @@ const RegisterPage = () => {
       <h1>Registrace</h1>
       {error && <p className={"errorText"}>{error}</p>}
       <div className={styles.formContainer}>
-        <form className={styles.form} onSubmit={handleRegister}>
+        <form className={styles.form} onSubmit={handleRegister} method="POST">
+          <div className="g-recaptcha" data-sitekey="6LdU-oAqAAAAAF-4qysAE35W9xrt6d_j9Ml2oIfn"></div>
           <div className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}>
-            <label>Jméno - bude zobrazeno *</label>
+            <label>Jméno (u dotazu bude zveřejněno) *</label>
             <input
               type="text"
               value={firstName}
@@ -150,7 +154,7 @@ const RegisterPage = () => {
               onBlur={() => handleBlur('lastName', lastName)}
               required
             />
-            {fieldErrors.lastName && <p className={"errorText"}>{fieldErrors.lastName}</p>}
+            {fieldErrors.lastName && <p className={'errorText'}>{fieldErrors.lastName}</p>}
           </div>
           <div className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}>
             <label>Email *</label>
@@ -161,10 +165,10 @@ const RegisterPage = () => {
               onBlur={handleBlurEmail}
               required
             />
-            {fieldErrors.email && <p className={"errorText"}>{fieldErrors.email}</p>}
+            {fieldErrors.email && <p className={'errorText'}>{fieldErrors.email}</p>}
           </div>
           <div className={`input-container ${fieldErrors.password ? 'error' : fieldValid.password ? 'valid' : ''}`}>
-            <label>Heslo *</label>
+            <label>Heslo (min 6 znaků) *</label>
             <input
               type="password"
               value={password}
@@ -172,9 +176,10 @@ const RegisterPage = () => {
               onBlur={() => handleBlur('password', password)}
               required
             />
-            {fieldErrors.password && <p className={"errorText"}>{fieldErrors.password}</p>}
+            {fieldErrors.password && <p className={'errorText'}>{fieldErrors.password}</p>}
           </div>
-          <div className={`input-container ${fieldErrors.confirmPassword ? 'error' : fieldValid.confirmPassword ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.confirmPassword ? 'error' : fieldValid.confirmPassword ? 'valid' : ''}`}>
             <label>Potvrdit heslo *</label>
             <input
               type="password"
@@ -183,15 +188,15 @@ const RegisterPage = () => {
               onBlur={() => handleBlur('confirmPassword', confirmPassword)}
               required
             />
-            {fieldErrors.confirmPassword && <p className={"errorText"}>{fieldErrors.confirmPassword}</p>}
+            {fieldErrors.confirmPassword && <p className={'errorText'}>{fieldErrors.confirmPassword}</p>}
           </div>
-          <p className={"textLeft"}>* povinné údaje</p>
+          <p className={'textLeft'}>* povinné údaje</p>
           {error && <p className="errorText">{error}</p>}
-          <Button type="submit" variant={"primary"} disabled={!isFormValid}>vytvořit můj účet</Button>
+          <Button type="submit" variant={'primary'} disabled={!isFormValid}>vytvořit můj účet</Button>
         </form>
 
         <div className={styles.questionContainer}>
-          <p>Už máte založený účet?</p>
+        <p>Už máte založený účet?</p>
           <Link to="/login">Přihlaste se</Link>
         </div>
       </div>

@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import CustomCloseIconGreen from '../components/icons/close-icon-green';
 import styles from './notification.module.css';
+import CustomCloseIconRed from '../components/icons/close-icon-red';
 
 interface NotificationProps {
   children: React.ReactNode;
   timeout: number;
+  type?: 'success' | 'warning';
   onClose?: () => void;
 }
 
-const Notification: React.FC<NotificationProps> = ({ children, timeout, onClose }) => {
-  const [remainingTime, setRemainingTime] = useState(timeout * 1000); // čas v ms
+const Notification: React.FC<NotificationProps> = ({ children, timeout, type = 'success', onClose }) => {
+  const [remainingTime, setRemainingTime] = useState(timeout * 1000);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -38,12 +40,19 @@ const Notification: React.FC<NotificationProps> = ({ children, timeout, onClose 
 
   if (!isVisible) return null;
 
+  const notificationClass =
+    type === 'warning' ? `${styles.notificationContainer} ${styles.warning}` : styles.notificationContainer;
+
   return (
-    <div className={styles.notificationContainer}>
+    <div className={notificationClass}>
       <div className={styles.header}>
         <div className={styles.content}>{children}</div>
         <button onClick={handleClose} className={styles.closeButton}>
-          <CustomCloseIconGreen></CustomCloseIconGreen>
+          {type === 'warning' ? (
+            <CustomCloseIconRed />
+          ) : (
+            <CustomCloseIconGreen />
+          )}
         </button>
       </div>
       <div className={styles.timerBar} style={{ width: `${(remainingTime / (timeout * 1000)) * 100}%` }} />

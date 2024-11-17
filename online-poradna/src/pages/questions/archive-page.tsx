@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebase';
-import { collection, query, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import LoadingSpinner from '../../components/loading-spinner';
 import QuestionListItem from '../../components/question-list-item';
 import styles from './archive-page.module.css';
@@ -9,7 +9,6 @@ import Button from '../../components/buttons/button';
 import Pagination from '@mui/material/Pagination';
 import { useWindowSize } from '../../hooks/use-window-size';
 
-// Definice rozhraní pro otázky
 interface Question {
   id: string;
   title: string;
@@ -32,12 +31,11 @@ const ArchivePage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(['all']);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const { isMobile, isTablet, isDesktop, isLargeDesktop } = useWindowSize();
+  const { isDesktop, isLargeDesktop } = useWindowSize();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 15;
 
   useEffect(() => {
-    // Fetch categories as objects with id and name
     const categoriesRef = collection(db, 'categories');
     const unsubscribeCategories = onSnapshot(categoriesRef, (querySnapshot) => {
       const categoryList: Category[] = [{ id: 'all', name: 'Všechny kategorie' }];
@@ -51,7 +49,6 @@ const ArchivePage = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch questions and store their data including category IDs
     const questionsRef = collection(db, 'questions');
     const unsubscribeQuestions = onSnapshot(questionsRef, (querySnapshot) => {
       const questionsList: Question[] = [];
@@ -73,7 +70,6 @@ const ArchivePage = () => {
   useEffect(() => {
     let filtered = questions;
 
-    // Apply text search filter first
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
       filtered = filtered.filter((question) =>
@@ -82,7 +78,6 @@ const ArchivePage = () => {
       );
     }
 
-    // Apply category filter if "Všechny kategorie" is not selected
     if (!selectedCategories.includes('all') && selectedCategories.length > 0) {
       filtered = filtered.filter((question) => {
         if (Array.isArray(question.category)) {

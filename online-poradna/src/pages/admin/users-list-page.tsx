@@ -9,7 +9,7 @@ import LoadingSpinner from '../../components/loading-spinner';
 import Button from '../../components/buttons/button';
 import SearchBar from '../../components/navigation/search-bar';
 import Pagination from '@mui/material/Pagination';
-import { validateFirstName, validateLastName, validateEmail, isEmailUnique } from '../../helpers/validation-helper';
+import { validateFirstName, validateLastName, validateEmail } from '../../helpers/validation-helper';
 import { useNotification } from '../../contexts/notification-context';
 
 interface User {
@@ -158,7 +158,6 @@ const UsersListPage = () => {
       });
   };
 
-  // Výpočet položek pro aktuální stránku
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
@@ -166,14 +165,13 @@ const UsersListPage = () => {
   const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
     window.scrollTo({
-      top: 0, // Posune stránku na vrchol
-      behavior: 'smooth', // Plynulý přechod
+      top: 0,
+      behavior: 'smooth',
     });
   };
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
-  // uložení upravených údajů
   const saveUser = async (userId: string, updatedUserData: any) => {
     if (Object.values(fieldErrors).some((err) => err)) {
       setError('Opravte chyby před uložením.');
@@ -194,31 +192,37 @@ const UsersListPage = () => {
       setEditingUser(null);
       setTouchedFields({ firstName: false, lastName: false, email: false });
     } catch (e) {
+      showNotification(<p>Osobní údaje se nepodařilo aktualizovat. Zkuste to prosím znovu.</p>, 10, 'warning');
       console.error('Chyba při ukládání dat:', e);
       setError('Chyba při ukládání dat.');
     }
   };
 
-  // mazání uživatele
   const deleteUser = async (userId: string) => {
     try {
       const userDocRef = doc(db, 'users', userId);
       await deleteDoc(userDocRef);
       console.log('Uživatel úspěšně smazán:', userId);
 
-      // Aktualizujeme seznam uživatelů po smazání
       setUsers((prevUsers) => prevUsers.filter(user => user.id !== userId));
       await fetchUsers();
 
       setIsModalOpen(false);
       showNotification(<p>Uživatel {userToDelete?.firstName} {userToDelete?.lastName} byl úspěšně smazán.</p>, 5);
     } catch (e) {
+      showNotification(<p>Smazání uživatele {userToDelete?.firstName} {userToDelete?.lastName} se nezdařilo. Zkuste to prosím znovu.</p>, 10, 'warning');
       console.error('Chyba při mazání uživatele:', e);
       setError('Chyba při mazání uživatele.');
     }
   };
 
   const openDeleteModal = (user: any) => {
+    if (!user) {
+      showNotification(<p>Nepovedlo se načíst uživatele, zkuste to prosím znovu.</p>, 10, 'warning');
+      console.error('Neplatný uživatel předaný do openDeleteModal.');
+      return;
+    }
+
     setUserToDelete(user);
     setModalContent(
       <div className={'modalContainer'}>
@@ -226,18 +230,18 @@ const UsersListPage = () => {
         <div className={'modalActions'}>
           <Button type={'button'} variant="secondary" onClick={() => setIsModalOpen(false)}>zrušit</Button>
           <Button type={'button'} variant="delete" onClick={async () => {
-            await deleteUser(userToDelete.id);
-            setIsModalOpen(false);
-          }}>smazat</Button>
+            if (user.id) {
+              await deleteUser(user.id);
+              setIsModalOpen(false);
+            } else {
+              showNotification(<p>Neplatný uživatel, mazání se nezdařilo.</p>, 10, 'warning');
+            }
+          }}
+          >smazat</Button>
         </div>
       </div>,
     );
     setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setUserToDelete(null);
   };
 
   if (loading) {

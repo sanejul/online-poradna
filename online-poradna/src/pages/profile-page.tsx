@@ -24,7 +24,6 @@ const ProfilePage: React.FC = () => {
   const [userQuestions, setUserQuestions] = useState<any[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [originalData, setOriginalData] = useState<any>(null);
@@ -53,6 +52,7 @@ const ProfilePage: React.FC = () => {
         setOriginalData(userData);
       }
     } catch (error) {
+      showNotification(<p>Nepodařilo se načíst uživatelská data. Zkuste to prosím později.</p>, 10, 'warning');
       setError('Nepodařilo se načíst uživatelská data.');
       console.error('Chyba při načítání uživatelských dat:', error);
     } finally {
@@ -104,16 +104,15 @@ const ProfilePage: React.FC = () => {
 
   const isFormValid = () => {
     return Object.entries(fieldValid).every(([field, valid]) => {
-      return valid || !touchedFields[field]; // True if valid or not touched
+      return valid || !touchedFields[field];
     });
   };
 
   const handleChange = (field: string, value: string) => {
     setTouchedFields((prev) => ({ ...prev, [field]: true }));
-    setFieldErrors((prev) => ({ ...prev, [field]: '' })); // Clear errors on change
-    setFieldValid((prev) => ({ ...prev, [field]: true })); // Set field as valid temporarily
+    setFieldErrors((prev) => ({ ...prev, [field]: '' }));
+    setFieldValid((prev) => ({ ...prev, [field]: true }));
 
-    // Update the editing user state
     if (field === 'firstName') setFirstName(value);
     if (field === 'lastName') setLastName(value);
     if (field === 'email') setEmail(value);
@@ -153,6 +152,7 @@ const ProfilePage: React.FC = () => {
     } catch (error) {
       setError('Nepodařilo se aktualizovat údaje.');
       console.error('Chyba při aktualizaci údajů:', error);
+      showNotification(<p>Osobní údaje se nepodařilo aktualizovat. Zkuste to prosím znovu.</p>, 10, 'warning');
     } finally {
       setLoading(false);
     }

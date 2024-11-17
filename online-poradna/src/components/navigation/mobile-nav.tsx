@@ -1,28 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth, db } from '../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
 import styles from './mobile-nav.module.css';
 import logo2 from '../../assets/haaro_logo_light.png';
-import { useNotification } from '../../contexts/notification-context';
-import { handleLogout } from '../../pages/logout-page';
 import { useAuthLogic } from '../../hooks/use-auth';
 import logo from '../../assets/haaro_logo_black.png';
 import { useWindowSize } from '../../hooks/use-window-size';
 
-
 const MobileNav: React.FC = () => {
-  /*  const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);*/
   const navigate = useNavigate();
   const location = useLocation();
-  const { showNotification } = useNotification();
   const { isAuthenticated, isAdmin, handleUserLogout } = useAuthLogic();
   const { isMobile, isTablet, isDesktop, isLargeDesktop } = useWindowSize();
-
-  // odhlášení uživatele
-  const from = (location.state as { from: string })?.from || '/';
 
   const closeOverlay = (): void => {
     const overlay = document.querySelector(`.${styles.overlay}`) as HTMLElement;
@@ -50,7 +38,6 @@ const MobileNav: React.FC = () => {
       toggleButton.addEventListener('click', toggleClasses);
     }
 
-    // Zajištění zavření overlay při kliknutí na všechny odkazy i tlačítka
     const navLinks = document.querySelectorAll(`.${styles.navLink}, button.${styles.navLink}`);
     navLinks.forEach((link) => {
       link.addEventListener('click', closeOverlay);

@@ -58,7 +58,8 @@ const Login = () => {
     <div className={styles.container}>
       <h1>Přihlášení</h1>
       <div className={styles.formContainer}>
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form className={styles.form} onSubmit={handleSubmit} method="POST">
+          <div className="g-recaptcha" data-sitekey="6LdU-oAqAAAAAF-4qysAE35W9xrt6d_j9Ml2oIfn"></div>
           <div className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}>
             <label>E-mail *</label>
             <input
@@ -72,7 +73,7 @@ const Login = () => {
           </div>
 
           <div className={`input-container ${fieldErrors.password ? 'error' : fieldValid.password ? 'valid' : ''}`}>
-            <label>Heslo *</label>
+            <label>Heslo (min 6 znaků) *</label>
             <input
               type="password"
               value={password}
@@ -84,7 +85,8 @@ const Login = () => {
           </div>
 
           <p className={'textLeft'}>* povinné údaje</p>
-          <Button type="submit" variant={'primary'} disabled={Object.values(fieldValid).some(valid => !valid)}>Přihlásit se</Button>
+          <Button type="submit" variant={'primary'} disabled={Object.values(fieldValid).some(valid => !valid)}>Přihlásit
+            se</Button>
           {error && <p className="errorText">{error}</p>}
         </form>
 
