@@ -1,15 +1,16 @@
 import React from 'react';
 import Footer from '../components/footer/footer';
 import styles from './home-page.module.css';
-import homeImgGray from '../assets/images/Zk_HN_foceni_zeny_24-07.jpg';
-import homeImg from '../assets/images/Zk_HN_foceni_zeny_24-08.jpg';
+import homeImgFallback from '../assets/images/Zk_HN_foceni_zeny_24-08.jpg';
+import homeImgMobile from '../assets/images/Zk_HN_foceni_zeny_24-08-1024.webp';
+import homeImgDesktop from '../assets/images/Zk_HN_foceni_zeny_24-08-1920.webp';
 import arrow from '../assets/icons/arrow.png';
 import Button from '../components/buttons/button';
 import { Link } from 'react-router-dom';
 import { useWindowSize } from '../hooks/use-window-size';
 
 const HomePage = () => {
-  const { isMobile, isTablet, isDesktop, isLargeDesktop } = useWindowSize();
+  const { isMobile, isDesktop, isLargeDesktop } = useWindowSize();
 
   return (
     <>
@@ -18,12 +19,18 @@ const HomePage = () => {
           <h1>Online poradna <br />
             pro přírodní barvení vlasů</h1>
           {(isDesktop || isLargeDesktop) && (
-            <img src={arrow} className={styles.arrow} alt="šipka dolů"></img>
+            <img src={arrow} className={styles.arrow} alt="Šipka dolů"></img>
           )}
-          <img src={homeImg} className={styles.img} alt="Haaro Naturo - poradna - úvodní fotka"></img>
+          <picture>
+            <source srcSet={homeImgDesktop} media="(min-width: 768px)" type="image/webp" />
+            <source srcSet={homeImgMobile} media="(max-width: 767px)" type="image/webp" />
+            <img src={homeImgFallback} loading="lazy" className={styles.img}
+                 alt="Poradna Haaro Naturo - úvodní fotka, ženy" />
+          </picture>
         </div>
 
-        <p className={styles.claim}>Rozumíme vlasům i přírodním barvám.{!isMobile && (<br />)} Zeptejte se nás.</p>
+        <p className={styles.claim}>12 let barvíme vlasy přírodně.{!isMobile && (<br />)} Zeptejte se na cokoli, rádi
+          pomůžeme i vám.</p>
         <div className={styles.buttonsContainer}>
           <Link to="/archivePage"><Button type={'button'} variant={'primary'}>Prohlédnout dotazy</Button></Link>
           <Link to="/newQuestionPage"><Button type={'button'} variant={'secondary'}>Položit nový dotaz</Button></Link>
@@ -90,8 +97,7 @@ const HomePage = () => {
 
       <Footer></Footer>;
     </>
-  )
-    ;
+  );
 };
 
 export default HomePage;
