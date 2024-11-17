@@ -14,8 +14,8 @@
 
 .previewItem {
     position: relative;
-    width: calc((100% - 2rem) / 3); /* Tři náhledy vedle sebe s mezerou */
-    aspect-ratio: 1 / 1; /* Poměr stran 1:1 pro čtvercový tvar */
+    width: calc((100% - 2rem) / 3);
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     border-radius: 5px;
     text-align: center;
@@ -35,7 +35,6 @@
     height: 100%;
     object-fit: cover;
     border-radius: 5px;
-    /*border: 1px solid rgba(32, 87, 165, 0.5);;*/
 }
 
 .removeButton {
@@ -78,10 +77,12 @@
     background-color: var(--whitesmoke);
     padding: 0.5rem 2rem;
     margin-bottom: 1rem;
-    border: 1px solid rgba(32, 87, 165, 0.6);
-    border-radius: 2px;
+    margin-left: 0;
+    border: 1px solid var(--blue-light);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    border-radius: 1px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-family: Fabrikant, 'Fabrikat', serif;
     text-align: center;
     display: inline-block;
@@ -94,6 +95,7 @@
 
 @media (min-width: 576px) {
     .customFileInput {
-        width: 15rem;
+        width: max-content;
+        min-width: 10rem;
     }
 }

@@ -1,5 +1,3 @@
-// AttachmentInput.tsx
-
 import React, { useEffect, useState } from 'react';
 import styles from './attachment-input.module.css';
 

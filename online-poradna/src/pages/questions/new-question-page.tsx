@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { db, storage, auth } from '../../firebase';
+import { db, auth } from '../../firebase';
 import { collection, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/buttons/button';
 import styles from './new-question-page.module.css';
 import AttachmentInput from '../../components/attachment-input';
@@ -9,6 +9,7 @@ import LoadingSpinner from '../../components/loading-spinner';
 import { validateQuestionText, validateQuestionTitle } from '../../helpers/validation-helper';
 import { useNotification } from '../../contexts/notification-context';
 import { uploadAndTransformFiles } from '../../utils/file-utils';
+import { formatTextForDisplay } from '../../utils/text-utils';
 
 const NewQuestionPage = () => {
   const [title, setTitle] = useState('');
@@ -19,7 +20,7 @@ const NewQuestionPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState({ title: '', questionText: '' });
   const [fieldValid, setFieldValid] = useState({ title: false, questionText: false });
-  const [isLoading, setIsLoading] = useState(false); // Stav pro spinner
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const user = auth.currentUser;
@@ -57,10 +58,9 @@ const NewQuestionPage = () => {
         return;
       }
 
-      // Vytvoření nové otázky bez souborů
       const newQuestion = {
         title,
-        questionText: questionText.replace(/\n/g, '<br />'),
+        questionText: formatTextForDisplay(questionText),
         category,
         createdAt: Timestamp.now(),
         files: [],
@@ -86,6 +86,7 @@ const NewQuestionPage = () => {
       showNotification(<p>Váš dotaz byl úspěšně odeslán.</p>, 5);
       navigate(`/questions/${questionId}`);
     } catch (error) {
+      showNotification(<p>Dotaz se nepodařilo odeslat. Zkuste to prosím znovu.</p>, 10, 'warning');
       setError('Chyba při odesílání dotazu: ' + (error as Error).message);
     } finally {
       setIsLoading(false);
@@ -96,8 +97,15 @@ const NewQuestionPage = () => {
     <div className={styles.container}>
       <h1>Položit nový dotaz</h1>
 
-      {!user && (
+      {!user ? (
         <p className={styles.infoText}>Pro položení dotazu se prosím přihlaste.</p>
+      ) : (
+        <div className={styles.infoTextContainer}>
+          <p className={styles.infoText}>U dotazu bude zveřejněno vaše křestní jméno, které jste uvedli při registraci.
+            Změnit ho můžete <Link to="/profilePage">ve svém
+              profilu</Link>, pokud zde chcete používat např. přezdívku.</p>
+          <p className={styles.infoText}>Jakmile odpovíme, přijde vám upozornění na e-mail.</p>
+        </div>
       )}
 
       {isLoading && <LoadingSpinner />}

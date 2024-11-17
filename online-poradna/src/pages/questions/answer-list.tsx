@@ -5,6 +5,7 @@ import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import CustomCloseIcon from '../../components/icons/close-icon';
 import { validateQuestionText } from '../../helpers/validation-helper';
+import { convertTextForEditing, formatTextForDisplay } from '../../utils/text-utils';
 import Button from '../../components/buttons/button';
 import styles from './question-detail-page.module.css';
 import editPen from '../../assets/icons/edit-pen.png';
@@ -40,7 +41,6 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
   const [fieldValid, setFieldValid] = useState<{ [key: string]: boolean }>({});
   const currentUserUid = auth.currentUser?.uid;
 
-  // Kontrola role administrátora
   useEffect(() => {
     const fetchUserRole = async () => {
       if (currentUserUid) {
@@ -53,7 +53,6 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     fetchUserRole();
   }, [currentUserUid]);
 
-  // Načtení ID autora dotazu
   useEffect(() => {
     const fetchQuestionAuthor = async () => {
       const questionRef = doc(db, 'questions', questionId);
@@ -119,7 +118,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
 
   const handleEditAnswer = (answerId: string, currentText: string) => {
     setEditingAnswerId(answerId);
-    setEditedAnswerText(currentText.replace(/<br\s*\/?>/gi, '\n'));
+    setEditedAnswerText(convertTextForEditing(currentText));
   };
 
   const handleAnswerBlur = (answerId: string) => {
@@ -137,7 +136,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     }
 
     const answerRef = doc(db, 'questions', questionId, 'answers', answerId);
-    const formattedText = editedAnswerText.replace(/\n/g, '<br />');
+    const formattedText = formatTextForDisplay(editedAnswerText);
     await updateDoc(answerRef, { text: formattedText });
     setEditingAnswerId(null);
   };
@@ -188,12 +187,12 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                   <div className={styles.answerActions}>
                     {editingAnswerId === answer.id ? (
                       <div className={styles.actionButtonsContainer}>
+                        <Button variant="secondary" type="button" onClick={handleCancelEdit}>
+                          Zrušit
+                        </Button>
                         <Button variant="primary" type="submit" onClick={() => handleSaveAnswer(answer.id)}
                                 disabled={!fieldValid[answer.id] || !editedAnswerText.trim()}>
                           Uložit změny
-                        </Button>
-                        <Button variant="secondary" type="button" onClick={handleCancelEdit}>
-                          Zrušit
                         </Button>
                       </div>
                     ) : (

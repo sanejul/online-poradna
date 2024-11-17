@@ -1,10 +1,7 @@
-// QuestionDetailPage.tsx
-
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db, auth, storage } from '../../firebase';
+import { db, auth } from '../../firebase';
 import { doc, getDoc, getDocs, collection, addDoc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import AnswerList from './answer-list';
@@ -19,6 +16,7 @@ import { validateQuestionTitle, validateQuestionText } from '../../helpers/valid
 import editPen from '../../assets/icons/edit-pen.png';
 import { useNotification } from '../../contexts/notification-context';
 import { uploadAndTransformFiles } from '../../utils/file-utils';
+import { formatTextForDisplay, convertTextForEditing } from '../../utils/text-utils';
 
 interface Category {
   id: string;
@@ -72,11 +70,7 @@ const QuestionDetailPage = () => {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [allCategories, setAllCategories] = useState<Category[]>([]);
 
-  /*  const archiveContext = useContext(ArchiveContext);
-    const categories = archiveContext?.categories || [];*/
-
   useEffect(() => {
-    // Check if user is admin
     const checkAdminRole = async () => {
       if (user) {
         const userDocRef = doc(db, 'users', user.uid);
@@ -224,15 +218,14 @@ const QuestionDetailPage = () => {
     setIsLightboxOpen(true);
   };
 
-  const handleEditField = (field: 'title' | 'text') => {
-    if (question) {
-      setTempQuestion({
-        ...question,
-        title: question.title,
-        questionText: question.questionText,
-      });
-    }
-    setEditingField(field);
+  const startEditingQuestionText = () => {
+    if (!tempQuestion) return;
+
+    setEditingField('text');
+    setTempQuestion({
+      ...tempQuestion,
+      questionText: convertTextForEditing(tempQuestion.questionText),
+    });
   };
 
   const saveChanges = async () => {
@@ -246,15 +239,17 @@ const QuestionDetailPage = () => {
     try {
       await updateDoc(doc(db, 'questions', id), {
         title: tempQuestion.title,
-        questionText: tempQuestion.questionText.replace(/\n/g, '<br />'),
+        questionText: formatTextForDisplay(tempQuestion.questionText),
       });
-      setQuestion(tempQuestion);
+      setQuestion({
+        ...question!,
+        questionText: formatTextForDisplay(tempQuestion.questionText),
+      });
       setEditingField(null);
     } catch (error) {
       console.error('Chyba při ukládání:', error);
     }
   };
-
 
   if (!question) return <LoadingSpinner />;
 
@@ -283,10 +278,8 @@ const QuestionDetailPage = () => {
         fileURLs.push(urls);
       }
 
-      const formattedAnswerText = answerText.replace(/\n/g, '<br />');
-
       await addDoc(collection(db, 'questions', id!, 'answers'), {
-        text: formattedAnswerText,
+        text: formatTextForDisplay(answerText),
         author: {
           uid: user.uid,
           email: user.email,
@@ -302,6 +295,7 @@ const QuestionDetailPage = () => {
       setUploadProgress(0);
       showNotification(<p>Odpověď byla úspěšně odeslána.</p>, 5);
     } catch (error) {
+      showNotification(<p>Odpověď se nepodařilo odeslat. Zkuste to prosím znovu.</p>, 10, 'warning');
       console.error('Chyba při odesílání odpovědi:', error);
       setError('Chyba při odesílání odpovědi: ' + (error as Error).message);
     } finally {
@@ -309,14 +303,12 @@ const QuestionDetailPage = () => {
     }
   };
 
-  const handleFileChange = (files: File[]) => {
-    setFiles(files);
-  };
-
   const firstName = question.user?.displayName?.split(' ')[0] || 'Anonym';
 
   return (
     <div className={`${styles.container} ${user ? '' : styles.marginBottom}`}>
+
+      {isLoading && <LoadingSpinner />}
 
       {isAdmin && (
         <div className={styles.deleteConversationButton}>
@@ -443,7 +435,7 @@ const QuestionDetailPage = () => {
                       <Button variant="primary" type="submit" onClick={saveChanges}>Uložit změny</Button>
                     </div>
                   ) : (
-                    <button className={styles.editIconBtn} type="button" onClick={() => setEditingField('text')}>
+                    <button className={styles.editIconBtn} type="button" onClick={startEditingQuestionText}>
                       <img src={editPen} alt="Edit text" />
                     </button>
                   )}

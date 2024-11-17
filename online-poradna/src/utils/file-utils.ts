@@ -1,9 +1,9 @@
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebase'; // Importujte váš Firebase Storage
+import { storage } from '../firebase';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
- * Převádí obrázek na formát WebP.
+ * Převod fotografií na WebP formát.
  */
 const convertImageToWebP = async (file: File, options: { maxWidth: number; maxHeight: number }): Promise<Blob> => {
   return new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ const convertImageToWebP = async (file: File, options: { maxWidth: number; maxHe
 };
 
 /**
- * Nahrává a transformuje soubor do různých formátů a vrací jejich URL.
+ * Nahrání a transformace souboru do webp a vytvoření URL.
  */
 export const uploadAndTransformFiles = async (file: File, basePath: string) => {
   const uniqueId = uuidv4();
