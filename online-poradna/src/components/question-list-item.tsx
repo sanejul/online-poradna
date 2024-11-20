@@ -21,7 +21,7 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
                                                            }) => {
   return (
     <li className={styles.listItem}>
-      <Link to={`/questions/${id}`} className={styles.title}>
+      <Link to={`/dotazy/${id}`} className={styles.title}>
         <h2>{title}</h2>
       </Link>
       <p className={styles.category}>
@@ -36,7 +36,7 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
           <p className={styles.date}>{createdAt.toLocaleDateString('cs-CZ')}{' '}</p>
           <p className={`${isAnswered ? styles.isAnswered : ''}`}>{isAnswered ? 'Zodpovězeno' : 'Čeká na odpověď'}</p>
         </div>
-        <Link to={`/questions/${id}`} className={styles.button}>
+        <Link to={`/dotazy/${id}`} className={styles.button}>
           prohlédnout
         </Link>
       </div>

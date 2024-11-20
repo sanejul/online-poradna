@@ -99,12 +99,12 @@ const Login = () => {
         <div>
           <div className={styles.questionContainer}>
             <p>Ještě nemáte založený účet?</p>
-            <Link to="/registration">Registrujte se</Link>
+            <Link to="/registrace">Registrujte se</Link>
           </div>
 
           <div className={styles.questionContainer}>
             <p>Zapomněli jste heslo?</p>
-            <Link to="/resetPassword">Obnovit heslo</Link>
+            <Link to="/obnoveni-hesla">Obnovit heslo</Link>
           </div>
         </div>
 

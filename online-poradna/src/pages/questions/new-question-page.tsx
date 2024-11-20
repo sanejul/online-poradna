@@ -87,7 +87,7 @@ const NewQuestionPage = () => {
       await updateDoc(docRef, { files: fileDataArray });
 
       showNotification(<p>Váš dotaz byl úspěšně odeslán.</p>, 5);
-      navigate(`/questions/${questionId}`);
+      navigate(`/dotazy/${questionId}`);
     } catch (error) {
       showNotification(<p>Dotaz se nepodařilo odeslat. Zkuste to prosím znovu.</p>, 10, 'warning');
       setError('Chyba při odesílání dotazu: ' + (error as Error).message);
@@ -111,7 +111,7 @@ const NewQuestionPage = () => {
       ) : (
         <div className={styles.infoTextContainer}>
           <p className={styles.infoText}>U dotazu bude zveřejněno vaše křestní jméno, které jste uvedli při registraci.
-            Změnit ho můžete <Link to="/profilePage">ve svém
+            Změnit ho můžete <Link to="/profil">ve svém
               profilu</Link>, pokud zde chcete používat např. přezdívku.</p>
           <p className={styles.infoText}>Jakmile odpovíme, přijde vám upozornění{isMobile && (<br />)} na e-mail.</p>
         </div>

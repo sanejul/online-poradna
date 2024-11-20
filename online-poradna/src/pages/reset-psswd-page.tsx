@@ -64,7 +64,7 @@ const ResetPasswordPage: React.FC = () => {
 
       <div className={styles.questionContainer}>
         <p>Už máte obnovené heslo?</p>
-        <Link to="/login">Přihlaste se</Link>
+        <Link to="/prihlaseni">Přihlaste se</Link>
       </div>
     </div>
   )

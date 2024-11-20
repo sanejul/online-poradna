@@ -58,8 +58,8 @@ const HomePage = () => {
         <p className={styles.claim}>12 let barvíme vlasy přírodně.{!isMobile && (<br />)} Zeptejte se na cokoli, rádi
           pomůžeme i vám.</p>
         <div className={styles.buttonsContainer}>
-          <Link to="/archivePage"><Button type={'button'} variant={'primary'}>Prohlédnout dotazy</Button></Link>
-          <Link to="/newQuestionPage"><Button type={'button'} variant={'secondary'}>Položit nový dotaz</Button></Link>
+          <Link to="/vsechny-dotazy"><Button type={'button'} variant={'primary'}>Prohlédnout dotazy</Button></Link>
+          <Link to="/novy-dotaz"><Button type={'button'} variant={'secondary'}>Položit nový dotaz</Button></Link>
         </div>
 
         <div className={styles.infoContainer}>

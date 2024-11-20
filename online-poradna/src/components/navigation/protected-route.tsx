@@ -50,7 +50,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <LoadingSpinner></LoadingSpinner>
   }
 
-  return isAdmin ? <>{children}</> : <Navigate to="/login" />;
+  return isAdmin ? <>{children}</> : <Navigate to="/prihlaseni" />;
 };
 
 export default ProtectedRoute;

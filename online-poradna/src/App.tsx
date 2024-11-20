@@ -33,16 +33,16 @@ function App() {
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/registration" element={<Registration />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/usersList" element={<ProtectedRoute><UsersListPage /></ProtectedRoute>} />
-            <Route path="/categoryManagement" element={<ProtectedRoute><CategoryManagementPage /></ProtectedRoute>} />
-            <Route path="/newQuestionPage" element={<NewQuestionPage />} />
-            <Route path="/archivePage" element={<ArchivePage />} />
-            <Route path="/profilePage" element={<ProfilePage />} />
-            <Route path="/resetPassword" element={<ResetPasswordPage />} />
-            <Route path="/questions/:id" element={<QuestionDetailPage />} />
+            <Route path="/registrace" element={<Registration />} />
+            <Route path="/prihlaseni" element={<Login />} />
+            <Route path="/odhlaseni" element={<Logout />} />
+            <Route path="/seznam-uzivatelu" element={<ProtectedRoute><UsersListPage /></ProtectedRoute>} />
+            <Route path="/sprava-kategorii" element={<ProtectedRoute><CategoryManagementPage /></ProtectedRoute>} />
+            <Route path="/novy-dotaz" element={<NewQuestionPage />} />
+            <Route path="/vsechny-dotazy" element={<ArchivePage />} />
+            <Route path="/profil" element={<ProfilePage />} />
+            <Route path="/obnoveni-hesla" element={<ResetPasswordPage />} />
+            <Route path="/dotazy/:id" element={<QuestionDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

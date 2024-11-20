@@ -204,7 +204,7 @@ const QuestionDetailPage = () => {
             await deleteDoc(doc(db, 'questions', id!));
             setIsModalOpen(false);
             showNotification(<p>Konverzace byla úspěšně smazána.</p>, 15);
-            navigate('/archivePage');
+            navigate('/vsechny-dotazy');
           }}>smazat</Button>
         </div>
       </div>,

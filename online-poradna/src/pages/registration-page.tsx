@@ -121,7 +121,7 @@ const RegisterPage = () => {
 
       console.log("Uživatel úspěšně registrován a uložen do db.");
       showNotification(<p>Registrace proběhla úspěšně. Nyní se můžete přihlásit.</p>, 5);
-      navigate('/login');
+      navigate('/prihlaseni');
     } catch (error) {
       console.error("Chyba při registraci:", error);
       setError("Chyba při registraci: " + (error as Error).message);
@@ -204,7 +204,7 @@ const RegisterPage = () => {
 
         <div className={styles.questionContainer}>
         <p>Už máte založený účet?</p>
-          <Link to="/login">Přihlaste se</Link>
+          <Link to="/prihlaseni">Přihlaste se</Link>
         </div>
       </div>
 

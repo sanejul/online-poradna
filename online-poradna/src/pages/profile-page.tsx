@@ -218,7 +218,7 @@ const ProfilePage: React.FC = () => {
           </div>
           <Button onClick={() => setIsEditMode(true)} type={'button'} variant={'edit'}>Upravit osobní údaje</Button>
           <Button onClick={() => handleUserLogout()} type={'button'} variant={'delete'}>odhlásit se</Button>
-          <Link className={styles.link} to="/resetPassword">Zaslat email pro obnovení hesla</Link>
+          <Link className={styles.link} to="/obnoveni-hesla">Zaslat email pro obnovení hesla</Link>
         </div>
       ) : (
         <form className={styles.editMode} onSubmit={handleUpdate}>

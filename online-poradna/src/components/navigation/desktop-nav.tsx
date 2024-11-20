@@ -28,18 +28,18 @@ const DesktopNav: React.FC = () => {
             </Link>
           </li>
           <li>
-            <Link to="/newQuestionPage" data-link="nový dotaz" className={styles.navLink}>
+            <Link to="/novy-dotaz" data-link="nový dotaz" className={styles.navLink}>
               <span>nový dotaz</span>
             </Link>
           </li>
           <li>
-            <Link to="/archivePage" data-link="prohlédnout dotazy" className={styles.navLink}>
+            <Link to="/vsechny-dotazy" data-link="prohlédnout dotazy" className={styles.navLink}>
               <span>prohlédnout dotazy</span>
             </Link>
           </li>
           {isAuthenticated && (
             <li>
-              <Link to="/profilePage" data-link="můj profil" className={styles.navLink}>
+              <Link to="/profil" data-link="můj profil" className={styles.navLink}>
                 <span>můj profil</span>
               </Link>
             </li>
@@ -47,12 +47,12 @@ const DesktopNav: React.FC = () => {
           {isAdmin && (
             <>
               <li>
-                <Link to="/usersList" data-link="seznam uživatelů" className={styles.navLink}>
+                <Link to="/seznam-uzivatelu" data-link="seznam uživatelů" className={styles.navLink}>
                   <span>seznam uživatelů</span>
                 </Link>
               </li>
               <li>
-                <Link to="/categoryManagement" data-link="správa kategorií" className={styles.navLink}>
+                <Link to="/sprava-kategorii" data-link="správa kategorií" className={styles.navLink}>
                   <span>správa kategorií</span>
                 </Link>
               </li>
@@ -82,12 +82,12 @@ const DesktopNav: React.FC = () => {
           {!isAuthenticated && (
             <>
               <li>
-                <Link to="/login" data-link="přihlásit se" className={styles.navLink}>
+                <Link to="/prihlaseni" data-link="přihlásit se" className={styles.navLink}>
                   <span>přihlásit se</span>
                 </Link>
               </li>
               <li>
-                <Link to="/registration" data-link="registrovat se" className={styles.navLink}>
+                <Link to="/registrace" data-link="registrovat se" className={styles.navLink}>
                   <span>registrovat se</span>
                 </Link>
               </li>
