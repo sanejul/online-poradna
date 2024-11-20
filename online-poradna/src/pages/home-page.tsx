@@ -8,12 +8,38 @@ import arrow from '../assets/icons/arrow.png';
 import Button from '../components/buttons/button';
 import { Link } from 'react-router-dom';
 import { useWindowSize } from '../hooks/use-window-size';
+import {Helmet} from "react-helmet";
 
 const HomePage = () => {
   const { isMobile, isDesktop, isLargeDesktop } = useWindowSize();
 
   return (
     <>
+      <Helmet>
+        <title>Poradna Haaro Naturo</title>
+        <meta name="description" content="Máte problém s barvením vlasů hennou? Rostlinné barvy na vlasy, bez ohledu na značku, jsou náš denní chleba - rádi
+              pomůžeme v online poradně přírodního kadeřnictví." />
+        <meta name="keywords" content="barvení hennou,
+              henna na vlasy,
+              henové barvy,
+              rostlinné barvy na vlasy,
+              poradit s hennou,
+              poradit s barvením hennou,
+              poradit s henou,
+              poradit s barvením henou,
+              jak barvit hennou,
+              jak barvit henou,
+              henna na šediny,
+              hena na šediny,
+              nechytá barva na šediny,
+              nechytla barva na šediny,
+              nechytá henna na šediny,
+              nechytla henna na šediny,
+              jak barvit šediny,
+              barvení šedin hennou,
+              barvení šedin přírodně," />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <div className={styles.container}>
         <div className={styles.titleContainer}>
           <h1>Online poradna <br />
@@ -62,7 +88,7 @@ const HomePage = () => {
               <ul>
                 <li>mrkněte na předešlé odpovědi, třeba najdete podobný problém, jako je ten váš</li>
                 <li>registrujte se, přihlaste se a napište mi</li>
-                <li>u dotazu bude zveřejněno pouze Vaše křestní jméno</li>
+                <li>u dotazu bude zveřejněno pouze vaše křestní jméno</li>
               </ul>
             </div>
           </div>

@@ -10,6 +10,7 @@ import { isEmailUnique, validateEmail, validateFirstName, validateLastName } fro
 import { useNotification } from '../contexts/notification-context';
 import { useAuthLogic } from '../hooks/use-auth';
 import LoadingSpinner from '../components/loading-spinner';
+import {Helmet} from "react-helmet";
 
 interface Category {
   id: string;
@@ -202,6 +203,10 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className={styles.profileContainer}>
+      <Helmet>
+        <title>Profil - Poradna Haaro Naturo</title>
+        <meta name="description" content="Uživatelský profil v poradně Haaro Naturo." />
+      </Helmet>
       <h1>Můj profil</h1>
 
       {!isEditMode ? (

@@ -6,6 +6,7 @@ import styles from './category-management-page.module.css';
 import { validateCategoryName } from '../../helpers/validation-helper';
 import { useNotification } from '../../contexts/notification-context';
 import Modal from '../../components/modal/modal';
+import {Helmet} from "react-helmet";
 
 interface Category {
   id: string;
@@ -116,6 +117,10 @@ const CategoryManagementPage = () => {
 
   return (
     <div className={styles.container}>
+      <Helmet>
+        <title>Kategorie - Poradna Haaro Naturo</title>
+        <meta name="description" content="Správa kategorií." />
+      </Helmet>
       <h1>Správa kategorií</h1>
 
       <div className={`${styles.newCategory} input-container`}>

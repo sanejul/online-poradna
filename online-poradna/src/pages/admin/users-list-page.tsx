@@ -11,6 +11,7 @@ import SearchBar from '../../components/navigation/search-bar';
 import Pagination from '@mui/material/Pagination';
 import { validateFirstName, validateLastName, validateEmail } from '../../helpers/validation-helper';
 import { useNotification } from '../../contexts/notification-context';
+import {Helmet} from "react-helmet";
 
 interface User {
   id: string;
@@ -248,16 +249,12 @@ const UsersListPage = () => {
     return <LoadingSpinner></LoadingSpinner>;
   }
 
-  if (!isAdmin) {
-    return (
-      <div>
-        <p>{error ? error : 'Nemáte oprávnění přistupovat k této stránce.'}</p>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.container}>
+      <Helmet>
+        <title>Uživatelé - Poradna Haaro Naturo</title>
+        <meta name="description" content="Správa uživatelů a jejich rolí." />
+      </Helmet>
       <h1>Seznam uživatelů</h1>
       <div className={styles.searchBarContainer}>
         <SearchBar onSearch={handleSearch} placeholder="Vyhledat uživatele..." />

@@ -8,6 +8,7 @@ import SearchBar from '../../components/navigation/search-bar';
 import Button from '../../components/buttons/button';
 import Pagination from '@mui/material/Pagination';
 import { useWindowSize } from '../../hooks/use-window-size';
+import {Helmet} from "react-helmet";
 
 interface Question {
   id: string;
@@ -136,6 +137,12 @@ const ArchivePage = () => {
 
   return (
     <div className={styles.archiveContainer}>
+      <Helmet>
+        <title>Všechny dotazy - Poradna Haaro Naturo</title>
+        <meta name="description" content="Seznam všech položených dotazů." />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <h1>Všechny dotazy</h1>
 
       <div className={styles.contentContainer}>

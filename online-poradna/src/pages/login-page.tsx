@@ -6,6 +6,7 @@ import Button from '../components/buttons/button';
 import styles from './login.module.css';
 import { validateEmail, validatePassword } from '../helpers/validation-helper';
 import { useNotification } from '../contexts/notification-context';
+import {Helmet} from "react-helmet";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -56,6 +57,11 @@ const Login = () => {
 
   return (
     <div className={styles.container}>
+      <Helmet>
+        <title>Detail dotazu - Poradna Haaro Naturo</title>
+        <meta name="description" content="Přihlášení do online poradny Haaro Naturo." />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <h1>Přihlášení</h1>
       <div className={styles.formContainer}>
         <form className={styles.form} onSubmit={handleSubmit} method="POST">

@@ -13,7 +13,8 @@ import {
 } from '../helpers/validation-helper';
 import { useNotification } from '../contexts/notification-context';
 import Button from '../components/buttons/button';
-import styles from './login.module.css'
+import styles from './login.module.css';
+import {Helmet} from "react-helmet";
 
 const RegisterPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -129,6 +130,12 @@ const RegisterPage = () => {
 
   return (
     <div className={styles.container}>
+      <Helmet>
+        <title>Registrace - Poradna Haaro Naturo</title>
+        <meta name="description" content="Registrace do online poradny Haaro Naturo." />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
+
       <h1>Registrace</h1>
       {error && <p className={"errorText"}>{error}</p>}
       <div className={styles.formContainer}>

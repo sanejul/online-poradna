@@ -17,6 +17,7 @@ import editPen from '../../assets/icons/edit-pen.png';
 import { useNotification } from '../../contexts/notification-context';
 import { uploadAndTransformFiles } from '../../utils/file-utils';
 import { formatTextForDisplay, convertTextForEditing } from '../../utils/text-utils';
+import {Helmet} from "react-helmet";
 
 interface Category {
   id: string;
@@ -307,6 +308,12 @@ const QuestionDetailPage = () => {
 
   return (
     <div className={`${styles.container} ${user ? '' : styles.marginBottom}`}>
+      <Helmet>
+        <title>Detail dotazu - Poradna Haaro Naturo</title>
+        <meta name="description" content={`Detail dotazu ${question.title}`} />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
 
       {isLoading && <LoadingSpinner />}
 

@@ -26,6 +26,7 @@
 }
 
 .categoryList li:first-of-type{
+    padding-top: 1rem;
     border-top: 1px solid rgba(32, 87, 165, 0.1);
 }
 

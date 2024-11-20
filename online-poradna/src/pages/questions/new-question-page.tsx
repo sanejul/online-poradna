@@ -10,6 +10,8 @@ import { validateQuestionText, validateQuestionTitle } from '../../helpers/valid
 import { useNotification } from '../../contexts/notification-context';
 import { uploadAndTransformFiles } from '../../utils/file-utils';
 import { formatTextForDisplay } from '../../utils/text-utils';
+import { useWindowSize } from '../../hooks/use-window-size';
+import {Helmet} from "react-helmet";
 
 const NewQuestionPage = () => {
   const [title, setTitle] = useState('');
@@ -21,6 +23,7 @@ const NewQuestionPage = () => {
   const [fieldErrors, setFieldErrors] = useState({ title: '', questionText: '' });
   const [fieldValid, setFieldValid] = useState({ title: false, questionText: false });
   const [isLoading, setIsLoading] = useState(false);
+  const { isMobile } = useWindowSize();
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const user = auth.currentUser;
@@ -95,6 +98,12 @@ const NewQuestionPage = () => {
 
   return (
     <div className={styles.container}>
+      <Helmet>
+        <title>Nový dotaz - Poradna Haaro Naturo</title>
+        <meta name="description" content="Položte nový dotaz." />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <h1>Položit nový dotaz</h1>
 
       {!user ? (
@@ -104,7 +113,7 @@ const NewQuestionPage = () => {
           <p className={styles.infoText}>U dotazu bude zveřejněno vaše křestní jméno, které jste uvedli při registraci.
             Změnit ho můžete <Link to="/profilePage">ve svém
               profilu</Link>, pokud zde chcete používat např. přezdívku.</p>
-          <p className={styles.infoText}>Jakmile odpovíme, přijde vám upozornění na e-mail.</p>
+          <p className={styles.infoText}>Jakmile odpovíme, přijde vám upozornění{isMobile && (<br />)} na e-mail.</p>
         </div>
       )}
 
