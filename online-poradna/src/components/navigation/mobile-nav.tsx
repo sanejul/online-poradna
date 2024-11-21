@@ -139,8 +139,6 @@ const MobileNav: React.FC = () => {
                   <span>e-shop</span>
                 </a>
               </li>
-            </ul>
-            <ul>
               {!isAuthenticated ? (
                 <>
                   <li>

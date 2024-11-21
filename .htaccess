@@ -1,21 +1,17 @@
 RewriteEngine On
+AddType application/javascript .js
 
 # Přesměrování na HTTPS
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Odstranění složek
-RewriteCond %{REQUEST_URI} ^/[^/]+/.+ [NC]
-RewriteRule ^([^/]+)/(.+)$ /$2 [R=301,L]
+#RewriteCond %{REQUEST_URI} ^/[^/]+/.+ [NC]
+#RewriteRule ^([^/]+)/(.+)$ /$2 [R=301,L]
 
 # Odstranění index.html z URL
-RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s([^.]+)\.html [NC]
-RewriteRule ^ %1 [R=301,L]
-
-# Odstranění .html z URL
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)\.html$ /$1 [R=301,L]
+#RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s([^.]+)\.html [NC]
+#RewriteRule ^ %1 [R=301,L]
 
 # Přesměrování na index.html
 RewriteCond %{REQUEST_FILENAME} !-f

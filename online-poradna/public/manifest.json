@@ -3,7 +3,7 @@
   "name": "Poradna - Haaro Naturo",
   "icons": [
     {
-      "src": "favicon.png",
+      "src": "/favicon.png",
       "sizes": "345x345",
       "type": "image/png"
     }
@@ -11,6 +11,6 @@
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#2057a5",
-  "background_color": "#F5F5F5FF",
+  "background_color": "#F5F5F5",
   "description": "Máte problém s barvením vlasů hennou? Rostlinné barvy na vlasy, bez ohledu na značku, jsou náš denní chleba - rádi\npomůžeme v online poradně přírodního kadeřnictví."
 }

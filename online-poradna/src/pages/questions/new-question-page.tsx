@@ -101,13 +101,12 @@ const NewQuestionPage = () => {
       <Helmet>
         <title>Nový dotaz - Poradna Haaro Naturo</title>
         <meta name="description" content="Položte nový dotaz." />
-        <meta name="keywords" content="" />
         <meta name="robots" content="index, follow" />
       </Helmet>
       <h1>Položit nový dotaz</h1>
 
       {!user ? (
-        <p className={styles.infoText}>Pro položení dotazu se prosím přihlaste.</p>
+        <p className={styles.infoText}>Pro položení dotazu se prosím <Link to="/prihlaseni">přihlaste</Link>.</p>
       ) : (
         <div className={styles.infoTextContainer}>
           <p className={styles.infoText}>U dotazu bude zveřejněno vaše křestní jméno, které jste uvedli při registraci.

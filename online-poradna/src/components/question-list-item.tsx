@@ -19,17 +19,23 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
                                                              isAnswered,
                                                              category,
                                                            }) => {
+  const validCategories = category.filter((cat) => cat && cat.trim() !== '');
+
   return (
     <li className={styles.listItem}>
       <Link to={`/dotazy/${id}`} className={styles.title}>
         <h2>{title}</h2>
       </Link>
       <p className={styles.category}>
-        {category.map((cat, index) => (
-          <span key={index} className={styles.categoryItem}>
-      {cat}{' '}
-    </span>
-        ))}
+        {validCategories
+          .map((cat, index) => (
+            <span key={index} className={styles.categoryItem}>
+        {cat}
+      </span>
+          ))
+          .reduce<React.ReactNode[]>((acc, curr, idx) =>
+              idx === 0 ? [curr] : [...acc, ', ', curr],
+            [])}
       </p>
       <div className={styles.info}>
         <div>

@@ -325,9 +325,7 @@ const QuestionDetailPage = () => {
 
       <div className={styles.categoryList}>
         {selectedCategoryNames.length > 0 ? (
-          selectedCategoryNames.map((name, index) => (
-            <span key={index} className={styles.categorySpan}>{name}</span>
-          ))
+          <span className={styles.categorySpan}>{selectedCategoryNames.join(', ')}</span>
         ) : (
           <span>Zatím nejsou přiřazeny žádné kategorie</span>
         )}

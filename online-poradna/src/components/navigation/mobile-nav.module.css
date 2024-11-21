@@ -95,7 +95,7 @@ button:focus {
 }
 
 #logo2 {
-    width: 100px;
+    width: 70px;
 }
 
 #logo {
@@ -148,6 +148,7 @@ button:focus {
     height: 100%;
     max-height: max-content;
     padding: 0 !important;
+    margin: 0;
 }
 
 .overlayMenu ul:nth-child(2) {

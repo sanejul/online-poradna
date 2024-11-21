@@ -230,6 +230,7 @@
     margin: 0 .5rem;
     text-transform: uppercase;
     color: var(--blue-light);
+    font-size: .9rem;
 }
 
 .categoryList {
