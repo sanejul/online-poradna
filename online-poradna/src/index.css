@@ -1,21 +1,21 @@
 @font-face {
-    font-family: 'Fabrikant';
-    src: url('../fonts/Fabrikant/Fabrikat.otf') format('opentype');
+    font-family: 'Fabrikat';
+    src: url('../fonts/Fabrikat/Fabrikat.otf') format('opentype');
 }
 
 @font-face {
-    font-family: 'Fabrikant Black';
-    src: url('../fonts/Fabrikant/FabrikatBlack.otf') format('opentype');
+    font-family: 'Fabrikat Black';
+    src: url('../fonts/Fabrikat/FabrikatBlack.otf') format('opentype');
 }
 
 @font-face {
-    font-family: 'Fabrikant Bold';
-    src: url('../fonts/Fabrikant/FabrikatBold.otf') format('opentype');
+    font-family: 'Fabrikat Bold';
+    src: url('../fonts/Fabrikat/FabrikatBold.otf') format('opentype');
 }
 
 @font-face {
-    font-family: 'Fabrikant Medium';
-    src: url('../fonts/Fabrikant/FabrikatMedium.otf') format('opentype');
+    font-family: 'Fabrikat Medium';
+    src: url('../fonts/Fabrikat/FabrikatMedium.otf') format('opentype');
 }
 
 @font-face {
@@ -35,7 +35,7 @@
 
 * {
     box-sizing: border-box;
-    font-family: Fabrikant, 'Fabrikat', serif;
+    font-family: Fabrikat, 'Fabrikat', serif;
 }
 
 .freight-semibold {
@@ -86,14 +86,20 @@ html {
 
 * {
     font-size: 1.05rem;
+    color: var(--black);
 }
 
 h2 {
     font-size: 1.5rem;
+    font-family: "Fabrikat Medium", serif !important;
 }
 
 p, label {
     /*font-weight: bolder;*/
+}
+
+label {
+    font-family: "Fabrikat Medium", serif;
 }
 
 a {
@@ -101,7 +107,7 @@ a {
 }
 
 h1 {
-    font-family: "Fabrikant Medium", serif !important;
+    font-family: "Fabrikat Medium", serif !important;
     font-size: 2.5rem;
     text-align: center;
 }
@@ -123,6 +129,7 @@ input[type="text"], textarea, input[type="email"], input[type="password"] {
     min-width: 99%;
     padding: 0.5rem 0.8rem;
     border: 1px solid var(--blue-light);
+    border-radius: 1px;
     color: var(--black);
     background-color: var(--whitesmoke);
     font-size: 1.05rem;
@@ -137,7 +144,7 @@ input[type="email"]:focus-visible,
 input[type="password"]:focus-visible,
 select:focus-visible {
     outline: 1px solid var(--blue-darker);
-    border-radius: 0;
+    border-radius: 1px;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 /*    box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;*/
     /*box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;*/
@@ -200,7 +207,7 @@ option {
 }
 
 .modalContainer p {
-    margin-top: 3rem;
+    margin-top: 3.5rem;
 }
 
 .modalContainer .modalActions button {
@@ -208,7 +215,7 @@ option {
 }
 
 .modalActions {
-    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
 
 .notFoundContainer,

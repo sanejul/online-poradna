@@ -36,6 +36,7 @@
     position: relative;
     text-transform: lowercase;
     color: var(--black);
+    font-family: "Fabrikat", serif;
 }
 
 .categoryDropdown label:before {

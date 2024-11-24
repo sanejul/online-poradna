@@ -50,12 +50,14 @@
 
 .category {
     text-transform: uppercase;
-    color: var(--blue-light);
     text-align: left;
+    margin: .5rem 0;
+    color: var(--blue-light);
 }
 
 .category span {
     font-size: .9rem !important;
+    color: var(--blue-light);
 }
 
 /*.category span:not(:first-child) {

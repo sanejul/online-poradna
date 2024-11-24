@@ -14,7 +14,7 @@
 
 .modalContent {
     background-color: var(--whitesmoke);
-    padding: 2rem;
+    padding: 0 1rem;
     border-radius: 1px;
     position: relative;
     width: 90%;
@@ -33,7 +33,7 @@
     padding: 0;
 }
 
-.modalCloseButton svg {
+/*.modalCloseButton svg {
     margin: 12px;
-}
+}*/
 

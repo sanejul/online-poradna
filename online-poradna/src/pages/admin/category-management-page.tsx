@@ -101,11 +101,11 @@ const CategoryManagementPage = () => {
       const docRef = doc(db, 'categories', id);
       await updateDoc(docRef, { name: editedCategoryName });
       setCategories(categories.map(category => category.id === id ? { id, name: editedCategoryName } : category));
-      showNotification(<p>Kategorie {name} byla úspěšně upravena.</p>, 5);
+      showNotification(<p>Kategorie "{name}" byla úspěšně upravena.</p>, 5);
       setEditingCategory(null);
       setEditedCategoryName('');
     } catch (e) {
-      showNotification(<p>Úprava kategorie {name} se nezdařila. Zkuste to prosím znovu.</p>, 10, 'warning');
+      showNotification(<p>Úprava kategorie "{name}" se nezdařila. Zkuste to prosím znovu.</p>, 10, 'warning');
       console.error('Error updating category:', e);
     }
   };

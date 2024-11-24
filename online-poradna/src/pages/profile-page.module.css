@@ -41,13 +41,20 @@
 
 .profileInfo p strong {
     color: var(--blue);
-    font-weight: bold;
+    font-family: "Fabrikat Medium", serif;
     display: block;
     width: 4rem;
 }
 
 .profileInfo span {
     display: block;
+}
+
+@media (min-width: 576px) {
+    .profileContainer button {
+        margin-right: .5rem;
+        margin-left: .5rem;
+    }
 }
 
 @media (min-width: 768px) {
@@ -59,11 +66,6 @@
     .personalInfo {
         width: max-content;
         margin: auto;
-    }
-
-    .profileContainer button {
-        margin-right: .5rem;
-        margin-left: .5rem;
     }
 
     .profileContainer li {

@@ -2,7 +2,7 @@
     margin: 1rem;
     min-height: 60vh;
     background-attachment: scroll;
-    padding: 10px 20px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -15,7 +15,7 @@
 }
 
 .section h2 {
-    font-family: "Fabrikant Medium", serif !important;
+    font-family: "Fabrikat Medium", serif !important;
     font-size: 1.5rem;
     color: var(--blue) !important;
 }

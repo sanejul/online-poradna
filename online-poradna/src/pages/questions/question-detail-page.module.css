@@ -205,11 +205,6 @@
     margin: 1rem 0;
 }
 
-.actionButtonsContainer Button[type="button"],
-.category Button[type="button"]{
-    margin-bottom: 1rem;
-}
-
 .actionButtonsContainer Button[type="button"] {
     margin-top: 1rem;
 }
@@ -245,12 +240,24 @@
 
 .actionButtonsContainer Button {
     text-align: center;
-    width: 15rem;
-    margin: 1rem;
+    width: 100%;
+    margin: 0;
 }
 
 .categorySection > Button {
     margin-top: 1rem;
 }
 
+@media (min-width: 576px) {
+    .actionButtonsContainer Button {
+        width: max-content;
+        min-width: 10rem;
+        margin: 1rem;
+    }
+
+    .actionButtonsContainer Button[type="button"],
+    .category Button[type="button"] {
+        margin-bottom: 1rem;
+    }
+}
 
