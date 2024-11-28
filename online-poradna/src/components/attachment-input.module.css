@@ -59,7 +59,7 @@
 }
 
 .removeButton:hover {
-    background-color: var(--blue-darker);
+    background-color: #da4a3b;
 }
 
 .fileName {

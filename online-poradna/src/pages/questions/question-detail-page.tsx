@@ -7,6 +7,7 @@ import 'yet-another-react-lightbox/styles.css';
 import AnswerList from './answer-list';
 import styles from './question-detail-page.module.css';
 import archiveStyles from './archive-page.module.css';
+import arrow from '../../assets/icons/arrow.png'
 import LoadingSpinner from '../../components/loading-spinner';
 import CustomCloseIcon from '../../components/icons/close-icon';
 import Button from '../../components/buttons/button';
@@ -17,7 +18,7 @@ import editPen from '../../assets/icons/edit-pen.png';
 import { useNotification } from '../../contexts/notification-context';
 import { uploadAndTransformFiles } from '../../utils/file-utils';
 import { formatTextForDisplay, convertTextForEditing } from '../../utils/text-utils';
-import {Helmet} from "react-helmet";
+import { Helmet } from 'react-helmet';
 
 interface Category {
   id: string;
@@ -543,21 +544,34 @@ const QuestionDetailPage = () => {
       )}
 
       {isLightboxOpen && (
-        <Lightbox
-          slides={currentAttachments.map((url) => ({ src: url }))}
-          open={isLightboxOpen}
-          close={() => setIsLightboxOpen(false)}
-          index={lightboxIndex}
-          styles={{
-            container: {
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              backdropFilter: 'blur(5px)',
-            },
-          }}
-          render={{
-            buttonClose: () => <CustomCloseIcon onClick={() => setIsLightboxOpen(false)} />,
-          }}
-        />
+        <div className={styles.lightBoxContainer}>
+          <Lightbox
+            slides={currentAttachments.map((url) => ({ src: url }))}
+            open={isLightboxOpen}
+            close={() => setIsLightboxOpen(false)}
+            index={lightboxIndex}
+            styles={{
+              container: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                backdropFilter: 'blur(5px)',
+                color: '#F5F5F5FF !important',
+              },
+            }}
+            render={{
+              buttonPrev: () => (
+                <button className={`${styles.customArrow} ${styles.customArrowLeft}`} onClick={() => setLightboxIndex(lightboxIndex - 1)}>
+                    <img src={arrow}  alt='Šipka doleva'/>
+                </button>
+              ),
+              buttonNext: () => (
+                <button className={`${styles.customArrow} ${styles.customArrowRight}`} onClick={() => setLightboxIndex(lightboxIndex + 1)}>
+                  <img src={arrow} alt="Šipka doprava" />
+                </button>
+              ),
+              buttonClose: () => <CustomCloseIcon onClick={() => setIsLightboxOpen(false)} />,
+            }}
+          />
+        </div>
       )}
 
       <AnswerList questionId={id!} />
@@ -577,7 +591,8 @@ const QuestionDetailPage = () => {
                     placeholder="Zadejte text vaší zprávy..."
                   />
               </div>
-              {fieldErrors.answerText && <p className="errorText">{fieldErrors.answerText}</p>}
+              {fieldErrors.answerText &&
+                <p className={`errorText ${styles.errorTextAnswer}`}>{fieldErrors.answerText}</p>}
               <AttachmentInput files={files} onFilesSelected={setFiles} />
               {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
               <div className={styles.buttonContainer}>

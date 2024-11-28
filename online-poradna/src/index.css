@@ -170,8 +170,7 @@ label {
 
 .errorText {
     color: var(--red);
-   /* margin-top: -0.7rem;*/
-    margin-top: .3rem;
+    margin-top: -0.7rem;
     margin-left: .2rem;
     margin-bottom: .5rem;
     text-align: left;
@@ -180,6 +179,10 @@ label {
 .input-container.error input,
 .input-container.error textarea {
     border-color: var(--red);
+}
+
+.input-container.error textarea {
+    margin-bottom: 0;
 }
 
 .input-container.valid input,

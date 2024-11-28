@@ -256,6 +256,44 @@
     color: var(--blue);
 }
 
+.container .errorTextAnswer {
+    margin-top: .3rem !important;
+}
+
+.customArrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.customArrow img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    filter: drop-shadow(2px 2px 2px rgba(17, 17, 17, 0.6));
+}
+
+.customArrowLeft {
+    left: 10px;
+    transform: rotate(90deg);
+}
+
+.customArrowRight {
+    right: 10px;
+    transform: rotate(-90deg);
+}
+
+.customArrow:hover img {
+    transform: scale(1.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+
 @media (min-width: 576px) {
     .actionButtonsContainer Button {
         width: max-content;
