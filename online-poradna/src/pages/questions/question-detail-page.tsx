@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { db, auth } from '../../firebase';
 import { doc, getDoc, getDocs, collection, addDoc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import Lightbox from 'yet-another-react-lightbox';
@@ -133,12 +133,30 @@ const QuestionDetailPage = () => {
     }
   }, [question]);
 
-  const handleAnswerBlur = () => {
-    const error = validateQuestionText(answerText);
-    const isValid = !error;
-    setFieldErrors(prev => ({ ...prev, answerText: error }));
-    setFieldValid(prev => ({ ...prev, answerText: isValid }));
+  const handleChange = (field: 'title' | 'questionText' | 'answerText', value: string) => {
+    let error = '';
+    let isValid = false;
+
+    // Validace podle pole
+    if (field === 'title') {
+      error = validateQuestionTitle(value.trim());
+      isValid = !error;
+      setTempQuestion((prev: any) => ({ ...prev, title: value }));
+    } else if (field === 'questionText') {
+      error = validateQuestionText(value.trim());
+      isValid = !error;
+      setTempQuestion((prev: any) => ({ ...prev, questionText: value }));
+    } else if (field === 'answerText') {
+      error = validateQuestionText(value.trim());
+      isValid = !error;
+      setAnswerText(value);
+    }
+
+    // Aktualizace stavů pro chyby a validitu
+    setFieldErrors((prev) => ({ ...prev, [field]: error }));
+    setFieldValid((prev) => ({ ...prev, [field]: isValid }));
   };
+
 
   const handleBlur = (field: 'title' | 'questionText', value: string) => {
     let error = '';
@@ -237,6 +255,8 @@ const QuestionDetailPage = () => {
       return;
     }
 
+    console.log('Saving title:', tempQuestion.title);
+
     try {
       await updateDoc(doc(db, 'questions', id), {
         title: tempQuestion.title,
@@ -244,17 +264,41 @@ const QuestionDetailPage = () => {
       });
       setQuestion({
         ...question!,
+        title: tempQuestion.title,
         questionText: formatTextForDisplay(tempQuestion.questionText),
       });
       setEditingField(null);
+      setFieldErrors({ title: '', questionText: '', answerText: '' });
+      setFieldValid({ title: false, questionText: false, answerText: false });
+      console.log('Změny úspěšně uloženy.');
     } catch (error) {
       console.error('Chyba při ukládání:', error);
     }
   };
 
+
   if (!question) return <LoadingSpinner />;
 
   const isAuthor = question.user?.uid === user?.uid;
+
+  const isAdminRole = async (uid: string): Promise<boolean> => {
+    const userDocRef = doc(db, 'users', uid);
+    const userDocSnap = await getDoc(userDocRef);
+    return userDocSnap.exists() && userDocSnap.data().role === 'admin';
+  };
+
+  const checkIfAnsweredByAdmin = async (questionId: string): Promise<boolean> => {
+    const answersSnapshot = await getDocs(collection(db, 'questions', questionId, 'answers'));
+    for (const answer of answersSnapshot.docs) {
+      const authorUid = answer.data().author.uid;
+      const isAdmin = await isAdminRole(authorUid);
+      if (isAdmin) {
+        return true;
+      }
+    }
+    return false;
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -279,6 +323,8 @@ const QuestionDetailPage = () => {
         fileURLs.push(urls);
       }
 
+      const isCurrentUserAdmin = await isAdminRole(user.uid);
+
       await addDoc(collection(db, 'questions', id!, 'answers'), {
         text: formatTextForDisplay(answerText),
         author: {
@@ -292,9 +338,18 @@ const QuestionDetailPage = () => {
 
       console.log('Odpověď odeslána.');
       setAnswerText('');
+      setFieldErrors((prev) => ({ ...prev, answerText: '' })); // Resetování chyb
+      setFieldValid((prev) => ({ ...prev, answerText: false }));
       setFiles([]);
       setUploadProgress(0);
       showNotification(<p>Odpověď byla úspěšně odeslána.</p>, 5);
+
+      if (isCurrentUserAdmin) {
+        await updateDoc(doc(db, 'questions', id!), { isAnswered: true });
+        console.log(`Question ${id} marked as answered: true`);
+      } else {
+        console.log(`Question ${id} remains unanswered as the responder is not an admin.`);
+      }
     } catch (error) {
       showNotification(<p>Odpověď se nepodařilo odeslat. Zkuste to prosím znovu.</p>, 10, 'warning');
       console.error('Chyba při odesílání odpovědi:', error);
@@ -390,8 +445,7 @@ const QuestionDetailPage = () => {
               <input
                 type="text"
                 value={tempQuestion?.title || ''}
-                onChange={(e) => setTempQuestion({ ...tempQuestion, title: e.target.value })}
-                onBlur={() => handleBlur('title', tempQuestion?.title || '')}
+                onChange={(e) => handleChange('title', e.target.value)}
                 required
               />
               {fieldErrors.title && <p className="errorText">{fieldErrors.title}</p>}
@@ -458,8 +512,7 @@ const QuestionDetailPage = () => {
                 className={`input-container ${fieldErrors.questionText ? 'error' : fieldValid.questionText ? 'valid' : ''}`}>
               <textarea
                 value={tempQuestion?.questionText || ''}
-                onChange={(e) => setTempQuestion({ ...tempQuestion, questionText: e.target.value })}
-                onBlur={() => handleBlur('questionText', tempQuestion?.questionText || '')}
+                onChange={(e) => handleChange('questionText', e.target.value)}
                 required
               />
                 {fieldErrors.questionText && <p className="errorText">{fieldErrors.questionText}</p>}
@@ -509,23 +562,22 @@ const QuestionDetailPage = () => {
 
       <AnswerList questionId={id!} />
 
-      {user !== null && (
+      {user !== null ? (
         <div className={styles.answerContainer}>
           {error && <p style={{ color: 'red' }}>{error}</p>}
 
           <div>
-            {fieldErrors.answerText && <p className="errorText">{fieldErrors.answerText}</p>}
             <form onSubmit={handleSubmit}>
               <div
                 className={`input-container ${fieldErrors.answerText ? 'error' : fieldValid.answerText ? 'valid' : ''}`}>
                   <textarea
                     value={answerText}
-                    onChange={(e) => setAnswerText(e.target.value)}
-                    onBlur={handleAnswerBlur}
+                    onChange={(e) => handleChange('answerText', e.target.value)}
                     required
-                    placeholder="Zadejte odpověď..."
+                    placeholder="Zadejte text vaší zprávy..."
                   />
               </div>
+              {fieldErrors.answerText && <p className="errorText">{fieldErrors.answerText}</p>}
               <AttachmentInput files={files} onFilesSelected={setFiles} />
               {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
               <div className={styles.buttonContainer}>
@@ -535,6 +587,11 @@ const QuestionDetailPage = () => {
               </div>
             </form>
           </div>
+        </div>
+      ) : (
+        <div className={styles.loginInfo}>
+          <p>Pokud jste autorem dotazu a chcete pokračovat v konverzaci, tak se prosím <Link
+            to={'/prihlaseni'}>přihlaste</Link>.</p>
         </div>
       )}
 

@@ -11,7 +11,8 @@ import { useNotification } from '../../contexts/notification-context';
 import { uploadAndTransformFiles } from '../../utils/file-utils';
 import { formatTextForDisplay } from '../../utils/text-utils';
 import { useWindowSize } from '../../hooks/use-window-size';
-import {Helmet} from "react-helmet";
+import { Helmet } from 'react-helmet';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const NewQuestionPage = () => {
   const [title, setTitle] = useState('');
@@ -22,13 +23,23 @@ const NewQuestionPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState({ title: '', questionText: '' });
   const [fieldValid, setFieldValid] = useState({ title: false, questionText: false });
+  const [captchaVerified, setCaptchaVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isMobile } = useWindowSize();
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const user = auth.currentUser;
 
-  const handleBlur = (field: string, value: string) => {
+  const handleCaptchaChange = (token: string | null) => {
+    const isVerified = !!token;
+    setCaptchaVerified(isVerified);
+
+    if (isVerified && error === 'Pro odeslání dotazu prosím potvrďte, že nejste robot.') {
+      setError(null);
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
     let fieldError = '';
     let isValid = false;
 
@@ -36,10 +47,12 @@ const NewQuestionPage = () => {
       case 'title':
         fieldError = validateQuestionTitle(value);
         isValid = !fieldError;
+        setTitle(value);
         break;
       case 'questionText':
         fieldError = validateQuestionText(value);
         isValid = !fieldError;
+        setQuestionText(value);
         break;
       default:
         break;
@@ -57,6 +70,14 @@ const NewQuestionPage = () => {
     try {
       if (!user) {
         setError('Pro položení dotazu musíte být přihlášeni.');
+        /*showNotification(<p>Pro odeslání dotazu se prosím přihlaste.</p>, 10, 'warning');*/
+        setIsLoading(false);
+        return;
+      }
+
+      if (!captchaVerified) {
+        setError('Pro odeslání dotazu prosím potvrďte, že nejste robot.');
+        /*showNotification(<p>Pro odeslání dotazu prosím potvrďte, že nejste robot.</p>, 10, 'warning');*/
         setIsLoading(false);
         return;
       }
@@ -116,18 +137,34 @@ const NewQuestionPage = () => {
         </div>
       )}
 
-      {isLoading && <LoadingSpinner />}
+      {isLoading && (
+        <div className="loadingContainer">
+          <LoadingSpinner />
+          <div className="loadingText">
+            <p>Probíhá odesílání dotazu. Pokud k dotazu byly přiloženy fotografie jejich zpracování může chvilku
+              trvat.</p>
+            <p>Děkujeme, že čekáte.</p>
+          </div>
+        </div>
+      )}
 
       <form className={styles.formContainer} onSubmit={handleSubmit}>
         <div>
+          <div className="captcha">
+            <ReCAPTCHA
+              sitekey="6LfcuT4jAAAAADrHwrSTR5_S19LYAUk-TMnZdF48"
+              onChange={handleCaptchaChange}
+              data-size="compact"
+              data-theme="light"
+            />
+          </div>
           <div className={`input-container ${fieldErrors.title ? 'error' : fieldValid.title ? 'valid' : ''}`}>
             <label>Název dotazu *</label>
             <input
               type="text"
               placeholder="Čeho se týká Váš problém?"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={() => handleBlur('title', title)}
+              onChange={(e) => handleChange('title', e.target.value)}
               required
             />
             {fieldErrors.title && <p className="errorText">{fieldErrors.title}</p>}
@@ -140,8 +177,7 @@ const NewQuestionPage = () => {
               className={styles.textarea}
               placeholder="Sem prosím napište dotaz"
               value={questionText}
-              onChange={(e) => setQuestionText(e.target.value)}
-              onBlur={() => handleBlur('questionText', questionText)}
+              onChange={(e) => handleChange('questionText', e.target.value)}
               required
             />
             {fieldErrors.questionText && <p className="errorText">{fieldErrors.questionText}</p>}
@@ -152,12 +188,12 @@ const NewQuestionPage = () => {
         <AttachmentInput files={files} onFilesSelected={setFiles} />
         {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
         <div className={styles.buttonContainer}>
+          {error && <p className="errorText">{error}</p>}
           <Button variant="primary" type="submit"
                   disabled={!user || isLoading || !Object.values(fieldValid).every(valid => valid)}>
             Odeslat dotaz
           </Button>
         </div>
-        {error && <p className="errorText">{error}</p>}
       </form>
     </div>
   );

@@ -7,19 +7,30 @@ import styles from './login.module.css';
 import { validateEmail, validatePassword } from '../helpers/validation-helper';
 import { useNotification } from '../contexts/notification-context';
 import {Helmet} from "react-helmet";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
   const [fieldValid, setFieldValid] = useState({ email: false, password: false });
+  const [captchaVerified, setCaptchaVerified] = useState(false);
   const { showNotification } = useNotification();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from: string })?.from || '/';
 
-  const handleBlur = (field: string, value: string) => {
+  const handleCaptchaChange = (token: string | null) => {
+    const isVerified = !!token;
+    setCaptchaVerified(isVerified);
+
+    if (isVerified && error === 'Pro přihlášení prosím potvrďte, že nejste robot.') {
+      setError(null);
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
     let fieldError = '';
     let isValid = false;
 
@@ -27,10 +38,12 @@ const Login = () => {
       case 'email':
         fieldError = validateEmail(value);
         isValid = !fieldError;
+        setEmail(value);
         break;
       case 'password':
         fieldError = validatePassword(value);
         isValid = !fieldError;
+        setPassword(value);
         break;
       default:
         break;
@@ -42,6 +55,10 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaVerified) {
+      setError('Pro přihlášení prosím potvrďte, že nejste robot.');
+      return;
+    }
     if (fieldErrors.email || fieldErrors.password) {
       setError('Zkontrolujte prosím chyby ve formuláři.');
       return;
@@ -65,14 +82,20 @@ const Login = () => {
       <h1>Přihlášení</h1>
       <div className={styles.formContainer}>
         <form className={styles.form} onSubmit={handleSubmit} method="POST">
-          <div className="g-recaptcha" data-sitekey="6LdU-oAqAAAAAF-4qysAE35W9xrt6d_j9Ml2oIfn"></div>
+          <div className="captcha">
+            <ReCAPTCHA
+              sitekey="6LfcuT4jAAAAADrHwrSTR5_S19LYAUk-TMnZdF48"
+              onChange={handleCaptchaChange}
+              data-size="compact"
+              data-theme="light"
+            />
+          </div>
           <div className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}>
             <label>E-mail *</label>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={() => handleBlur('email', email)}
+              onChange={(e) => handleChange('email', e.target.value)}
               required
             />
             {fieldErrors.email && <p className="errorText">{fieldErrors.email}</p>}
@@ -83,17 +106,16 @@ const Login = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onBlur={() => handleBlur('password', password)}
+              onChange={(e) => handleChange('password', e.target.value)}
               required
             />
             {fieldErrors.password && <p className="errorText">{fieldErrors.password}</p>}
           </div>
 
           <p className={'textLeft'}>* povinné údaje</p>
+          {error && <p className="errorText">{error}</p>}
           <Button type="submit" variant={'primary'} disabled={Object.values(fieldValid).some(valid => !valid)}>Přihlásit
             se</Button>
-          {error && <p className="errorText">{error}</p>}
         </form>
 
         <div>

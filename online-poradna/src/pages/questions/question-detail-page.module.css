@@ -181,7 +181,7 @@
 }
 
 .bubble .textInput {
-    border: none;
+/*    border: none;*/
     height: 30vh !important;
 }
 
@@ -246,6 +246,14 @@
 
 .categorySection > Button {
     margin-top: 1rem;
+}
+
+.loginInfo {
+    margin: 3rem auto;
+}
+
+.loginInfo a {
+    color: var(--blue);
 }
 
 @media (min-width: 576px) {

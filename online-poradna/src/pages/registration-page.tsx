@@ -1,27 +1,29 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { auth, db } from "../firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { auth, db } from '../firebase';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import {
   validateFirstName,
   validateLastName,
   validateEmail,
   isEmailUnique,
   validatePassword,
-  validateConfirmPassword
+  validateConfirmPassword,
 } from '../helpers/validation-helper';
 import { useNotification } from '../contexts/notification-context';
 import Button from '../components/buttons/button';
 import styles from './login.module.css';
-import {Helmet} from "react-helmet";
+import { Helmet } from 'react-helmet';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const RegisterPage = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [captchaVerified, setCaptchaVerified] = useState(false);
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
@@ -31,7 +33,7 @@ const RegisterPage = () => {
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const [fieldValid, setFieldValid] = useState({
@@ -39,10 +41,19 @@ const RegisterPage = () => {
     lastName: false,
     email: false,
     password: false,
-    confirmPassword: false
+    confirmPassword: false,
   });
 
-  const handleBlur = (field: string, value: string) => {
+  const handleCaptchaChange = (token: string | null) => {
+    const isVerified = !!token;
+    setCaptchaVerified(isVerified);
+
+    if (isVerified && error === 'Pro dokončení registrace prosím potvrďte, že nejste robot.') {
+      setError(null);
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
     let error = '';
     let isValid = false;
 
@@ -50,22 +61,27 @@ const RegisterPage = () => {
       case 'firstName':
         error = validateFirstName(value);
         isValid = !error;
+        setFirstName(value);
         break;
       case 'lastName':
         error = validateLastName(value);
         isValid = !error;
+        setLastName(value);
         break;
       case 'email':
         error = validateEmail(value);
         isValid = !error;
+        setEmail(value);
         break;
       case 'password':
         error = validatePassword(value);
         isValid = !error;
+        setPassword(value);
         break;
       case 'confirmPassword':
         error = validateConfirmPassword(password, value);
         isValid = !error;
+        setConfirmPassword(value);
         break;
       default:
         break;
@@ -81,11 +97,11 @@ const RegisterPage = () => {
       const isUnique = await isEmailUnique(email);
       setFieldErrors((prev) => ({
         ...prev,
-        email: isUnique ? "" : "Tento e-mail už někdo v této aplikaci používá."
+        email: isUnique ? '' : 'Tento e-mail už někdo v této aplikaci používá.',
       }));
       setFieldValid((prev) => ({
         ...prev,
-        email: isUnique
+        email: isUnique,
       }));
     } else {
       setFieldErrors((prev) => ({ ...prev, email: emailError }));
@@ -99,8 +115,13 @@ const RegisterPage = () => {
     e.preventDefault();
     setError(null);
 
+    if (!captchaVerified) {
+      setError('Pro dokončení registrace prosím potvrďte, že nejste robot.');
+      return;
+    }
+
     if (Object.values(fieldErrors).some(err => err)) {
-      setError("Zkontrolujte prosím chyby ve formuláři.");
+      setError('Zkontrolujte prosím chyby ve formuláři.');
       return;
     }
 
@@ -110,23 +131,31 @@ const RegisterPage = () => {
 
       await updateProfile(user, { displayName: `${firstName} ${lastName}` });
 
-      await setDoc(doc(db, "users", user.uid), {
+      await setDoc(doc(db, 'users', user.uid), {
         firstName,
         lastName,
         email: user.email,
-        role: "user",
+        role: 'user',
         createdAt: new Date(),
         uid: user.uid,
       });
 
-      console.log("Uživatel úspěšně registrován a uložen do db.");
+      console.log('Uživatel úspěšně registrován a uložen do db.');
       showNotification(<p>Registrace proběhla úspěšně. Nyní se můžete přihlásit.</p>, 5);
       navigate('/prihlaseni');
-    } catch (error) {
-      console.error("Chyba při registraci:", error);
-      setError("Chyba při registraci: " + (error as Error).message);
+    } catch (error: any) {
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          setError('Tento e-mail je již registrován. Přihlaste se nebo použijte jiný.');
+          break;
+        default:
+          setError('Došlo k neočekávané chybě. Zkuste to prosím znovu.');
+          break;
+      }
+      console.error('Chyba při registraci:', error.message);
     }
   };
+
 
   return (
     <div className={styles.container}>
@@ -137,17 +166,22 @@ const RegisterPage = () => {
       </Helmet>
 
       <h1>Registrace</h1>
-      {error && <p className={"errorText"}>{error}</p>}
       <div className={styles.formContainer}>
         <form className={styles.form} onSubmit={handleRegister} method="POST">
-          <div className="g-recaptcha" data-sitekey="6LdU-oAqAAAAAF-4qysAE35W9xrt6d_j9Ml2oIfn"></div>
+          <div className="captcha">
+            <ReCAPTCHA
+              sitekey="6LfcuT4jAAAAADrHwrSTR5_S19LYAUk-TMnZdF48"
+              onChange={handleCaptchaChange}
+              data-size="compact"
+              data-theme="light"
+            />
+          </div>
           <div className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}>
             <label>Jméno (u dotazu bude zveřejněno) *</label>
             <input
               type="text"
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              onBlur={() => handleBlur('firstName', firstName)}
+              onChange={(e) => handleChange('firstName', e.target.value)}
               required
             />
             {fieldErrors.firstName && <p className={'errorText'}>{fieldErrors.firstName}</p>}
@@ -157,8 +191,7 @@ const RegisterPage = () => {
             <input
               type="text"
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              onBlur={() => handleBlur('lastName', lastName)}
+              onChange={(e) => handleChange('lastName', e.target.value)}
               required
             />
             {fieldErrors.lastName && <p className={'errorText'}>{fieldErrors.lastName}</p>}
@@ -168,8 +201,7 @@ const RegisterPage = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={handleBlurEmail}
+              onChange={(e) => handleChange('email', e.target.value)}
               required
             />
             {fieldErrors.email && <p className={'errorText'}>{fieldErrors.email}</p>}
@@ -179,8 +211,7 @@ const RegisterPage = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onBlur={() => handleBlur('password', password)}
+              onChange={(e) => handleChange('password', e.target.value)}
               required
             />
             {fieldErrors.password && <p className={'errorText'}>{fieldErrors.password}</p>}
@@ -191,19 +222,18 @@ const RegisterPage = () => {
             <input
               type="password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              onBlur={() => handleBlur('confirmPassword', confirmPassword)}
+              onChange={(e) => handleChange('confirmPassword', e.target.value)}
               required
             />
             {fieldErrors.confirmPassword && <p className={'errorText'}>{fieldErrors.confirmPassword}</p>}
           </div>
           <p className={'textLeft'}>* povinné údaje</p>
-          {error && <p className="errorText">{error}</p>}
+          {error && <p className={'errorText'}>{error}</p>}
           <Button type="submit" variant={'primary'} disabled={!isFormValid}>vytvořit můj účet</Button>
         </form>
 
         <div className={styles.questionContainer}>
-        <p>Už máte založený účet?</p>
+          <p>Už máte založený účet?</p>
           <Link to="/prihlaseni">Přihlaste se</Link>
         </div>
       </div>

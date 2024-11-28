@@ -6,6 +6,7 @@ import { useNotification } from '../contexts/notification-context';
 import Button from '../components/buttons/button';
 import styles from '../pages/login.module.css';
 import { Link } from 'react-router-dom';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const ResetPasswordPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -13,16 +14,35 @@ const ResetPasswordPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string>('');
   const [isValid, setIsValid] = useState<boolean>(false);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
   const { showNotification } = useNotification();
 
-  const handleBlur = () => {
-    const emailError = validateEmail(email);
+  const handleCaptchaChange = (token: string | null) => {
+    const isVerified = !!token;
+    setCaptchaVerified(isVerified);
+
+    if (isVerified && error === 'Pro odeslání e-mailu potvrďte, že nejste robot.') {
+      setError(null);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    const emailError = validateEmail(value);
     setFieldError(emailError);
     setIsValid(!emailError);
   };
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!captchaVerified) {
+      setError('Pro odeslání e-mailu potvrďte, že nejste robot.');
+      return;
+    }
+
     if (fieldError || !isValid) {
       setError('Zadejte prosím platný e-mail.');
       return;
@@ -46,14 +66,20 @@ const ResetPasswordPage: React.FC = () => {
         aplikace.</p>
 
       <form className={styles.form} onSubmit={handlePasswordReset} method="POST">
-        <div className="g-recaptcha" data-sitekey="6LdU-oAqAAAAAF-4qysAE35W9xrt6d_j9Ml2oIfn"></div>
+        <div className="captcha">
+          <ReCAPTCHA
+            sitekey="6LfcuT4jAAAAADrHwrSTR5_S19LYAUk-TMnZdF48"
+            onChange={handleCaptchaChange}
+            data-size="compact"
+            data-theme="light"
+          />
+        </div>
         <div className={`input-container ${fieldError ? 'error' : isValid ? 'valid' : ''}`}>
           <label>Email *</label>
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={handleBlur}
+            onChange={handleChange}
             required
           />
           {fieldError && <p className="errorText">{fieldError}</p>}

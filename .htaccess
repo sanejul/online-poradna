@@ -5,14 +5,6 @@ AddType application/javascript .js
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Odstranění složek
-#RewriteCond %{REQUEST_URI} ^/[^/]+/.+ [NC]
-#RewriteRule ^([^/]+)/(.+)$ /$2 [R=301,L]
-
-# Odstranění index.html z URL
-#RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s([^.]+)\.html [NC]
-#RewriteRule ^ %1 [R=301,L]
-
 # Přesměrování na index.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

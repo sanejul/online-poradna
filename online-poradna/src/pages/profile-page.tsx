@@ -72,7 +72,30 @@ const ProfilePage: React.FC = () => {
     });
   };
 
-  const handleBlur = async (field: string, value: string) => {
+  const isFormValid = () => {
+    return Object.entries(fieldValid).every(([field, valid]) => valid || !touchedFields[field]);
+  };
+
+  const handleChange = (field: string, value: string) => {
+    // Označit pole jako upravené
+    setTouchedFields((prev) => ({ ...prev, [field]: true }));
+
+    // Nastavit hodnotu
+    switch (field) {
+      case 'firstName':
+        setFirstName(value);
+        break;
+      case 'lastName':
+        setLastName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      default:
+        break;
+    }
+
+    // Validace
     let error = '';
     let isValid = false;
 
@@ -87,36 +110,24 @@ const ProfilePage: React.FC = () => {
         break;
       case 'email':
         error = validateEmail(value);
-        if (!error && value !== originalData?.email) {
-          const unique = await isEmailUnique(value);
-          if (!unique) {
-            error = 'Tento e-mail je již použitý.';
-          }
-        }
         isValid = !error;
+
+        // Asynchronní kontrola jedinečnosti e-mailu
+        if (!error && value !== originalData?.email) {
+          isEmailUnique(value).then((unique) => {
+            if (!unique) {
+              setFieldErrors((prev) => ({ ...prev, email: 'Tento e-mail je již použitý.' }));
+              setFieldValid((prev) => ({ ...prev, email: false }));
+            }
+          });
+        }
         break;
       default:
         break;
     }
 
-    setFieldErrors(prev => ({ ...prev, [field]: error }));
-    setFieldValid(prev => ({ ...prev, [field]: isValid }));
-  };
-
-  const isFormValid = () => {
-    return Object.entries(fieldValid).every(([field, valid]) => {
-      return valid || !touchedFields[field];
-    });
-  };
-
-  const handleChange = (field: string, value: string) => {
-    setTouchedFields((prev) => ({ ...prev, [field]: true }));
-    setFieldErrors((prev) => ({ ...prev, [field]: '' }));
-    setFieldValid((prev) => ({ ...prev, [field]: true }));
-
-    if (field === 'firstName') setFirstName(value);
-    if (field === 'lastName') setLastName(value);
-    if (field === 'email') setEmail(value);
+    setFieldErrors((prev) => ({ ...prev, [field]: error }));
+    setFieldValid((prev) => ({ ...prev, [field]: isValid }));
   };
 
 
@@ -124,32 +135,47 @@ const ProfilePage: React.FC = () => {
     e.preventDefault();
     if (!userId) return;
 
-    if (Object.values(fieldErrors).some(err => err) || !Object.values(fieldValid).every(valid => valid)) {
+    if (Object.values(fieldErrors).some((err) => err)) {
       setError('Zkontrolujte prosím chyby ve formuláři.');
       return;
     }
 
     try {
       setLoading(true);
-      if (auth.currentUser) {
-        await updateProfile(auth.currentUser, {
-          displayName: `${firstName} ${lastName}`,
-        });
 
-        if (auth.currentUser.email !== email) {
-          await updateEmail(auth.currentUser, email);
+      const updates: Partial<Record<string, string>> = {};
+
+      // Přidat pouze změněná pole
+      if (touchedFields.firstName && firstName !== originalData?.firstName) {
+        updates.firstName = firstName;
+      }
+      if (touchedFields.lastName && lastName !== originalData?.lastName) {
+        updates.lastName = lastName;
+      }
+      if (touchedFields.email && email !== originalData?.email) {
+        updates.email = email;
+        if (auth.currentUser?.email !== email) {
+          await updateEmail(auth.currentUser!, email);
         }
       }
 
-      const userDocRef = doc(db, 'users', userId);
-      await updateDoc(userDocRef, {
-        firstName,
-        lastName,
-        email,
-      });
+      // Aktualizace Firebase dat
+      if (Object.keys(updates).length > 0) {
+        const userDocRef = doc(db, 'users', userId);
+        await updateDoc(userDocRef, updates);
+
+        if (auth.currentUser) {
+          await updateProfile(auth.currentUser, {
+            displayName: `${updates.firstName || originalData?.firstName} ${
+              updates.lastName || originalData?.lastName
+            }`,
+          });
+        }
+      }
 
       showNotification(<p>Vaše údaje byly úspěšně aktualizovány.</p>, 5);
       setIsEditMode(false);
+      resetValidation();
     } catch (error) {
       setError('Nepodařilo se aktualizovat údaje.');
       console.error('Chyba při aktualizaci údajů:', error);
@@ -159,13 +185,31 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  const handleEditMode = () => {
+    setIsEditMode(true);
+    resetValidation(); // Reset validací
+    if (originalData) {
+      setFirstName(originalData.firstName || '');
+      setLastName(originalData.lastName || '');
+      setEmail(originalData.email || '');
+    }
+  };
+
   const handleCancelEdit = () => {
+    // Obnovit původní hodnoty a reset validací
     if (originalData) {
       setFirstName(originalData.firstName);
       setLastName(originalData.lastName);
       setEmail(originalData.email);
     }
+    resetValidation();
     setIsEditMode(false);
+  };
+
+  const resetValidation = () => {
+    setFieldErrors({ firstName: '', lastName: '', email: '' }); // Vyčistit chyby
+    setFieldValid({ firstName: false, lastName: false, email: false }); // Pole nejsou validní
+    setTouchedFields({ firstName: false, lastName: false, email: false }); // Pole nejsou dotknutá
   };
 
   useEffect(() => {
@@ -216,7 +260,7 @@ const ProfilePage: React.FC = () => {
             <p><strong>Příjmení: </strong> <span>{lastName}</span></p>
             <p><strong>Email: </strong> <span>{email}</span></p>
           </div>
-          <Button onClick={() => setIsEditMode(true)} type={'button'} variant={'edit'}>Upravit osobní údaje</Button>
+          <Button onClick={handleEditMode} type={'button'} variant={'edit'}>Upravit osobní údaje</Button>
           <Button onClick={() => handleUserLogout()} type={'button'} variant={'delete'}>odhlásit se</Button>
           <Link className={styles.link} to="/obnoveni-hesla">Zaslat email pro obnovení hesla</Link>
         </div>
@@ -227,9 +271,8 @@ const ProfilePage: React.FC = () => {
             <label>Jméno:</label>
             <input
               type="text"
-              value={firstName}
+              defaultValue={firstName}
               onChange={(e) => handleChange('firstName', e.target.value)}
-              onBlur={() => handleBlur('firstName', firstName)}
               required
             />
             {fieldErrors.firstName && <p className="errorText">{fieldErrors.firstName}</p>}
@@ -239,9 +282,8 @@ const ProfilePage: React.FC = () => {
             <label>Příjmení:</label>
             <input
               type="text"
-              value={lastName}
+              defaultValue={lastName}
               onChange={(e) => handleChange('lastName', e.target.value)}
-              onBlur={() => handleBlur('lastName', lastName)}
               required
             />
             {fieldErrors.lastName && <p className="errorText">{fieldErrors.lastName}</p>}
@@ -251,9 +293,8 @@ const ProfilePage: React.FC = () => {
             <label>Email:</label>
             <input
               type="email"
-              value={email}
+              defaultValue={email}
               onChange={(e) => handleChange('email', e.target.value)}
-              onBlur={() => handleBlur('email', email)}
               required
             />
             {fieldErrors.email && <p className="errorText">{fieldErrors.email}</p>}

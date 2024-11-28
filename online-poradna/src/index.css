@@ -170,7 +170,8 @@ label {
 
 .errorText {
     color: var(--red);
-    margin-top: -0.7rem;
+   /* margin-top: -0.7rem;*/
+    margin-top: .3rem;
     margin-left: .2rem;
     margin-bottom: .5rem;
     text-align: left;
@@ -239,9 +240,40 @@ option {
     text-align: center;
 }
 
+.captcha {
+    margin: 0 auto 2rem;
+    width: max-content;
+}
+
+.loadingContainer{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background-color: var(--whitesmoke);
+}
+
+.loadingContainer .loadingText {
+    position: fixed;
+    width: 80%;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -70%);
+}
+
 @media (min-width: 576px) {
     .button {
         width: 15rem;
+    }
+
+    .loadingContainer .loadingText {
+        position: fixed;
+        width: 50%;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -60%);
     }
 }
 

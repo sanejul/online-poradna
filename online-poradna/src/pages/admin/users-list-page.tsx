@@ -113,12 +113,13 @@ const UsersListPage = () => {
     setCurrentPage(1);
   };
 
-  const handleChange = (field: string, value: string) => {
-    setEditingUser((prevUser: any) => ({ ...prevUser, [field]: value }));
-    setTouchedFields((prev) => ({ ...prev, [field]: true }));
-  };
+  const handleChange = async (field: string, value: string) => {
+    if (editingUser && editingUser[field] === value) {
+      return;
+    }
 
-  const handleBlur = async (field: string, value: string) => {
+    setEditingUser((prevUser: any) => ({ ...prevUser, [field]: value }));
+
     let error = '';
     let isValid = false;
 
@@ -135,12 +136,16 @@ const UsersListPage = () => {
         error = validateEmail(value);
         isValid = !error;
 
-        if (isValid) {
+        // Kontrola jedinečnosti e-mailu
+        if (isValid && editingUser?.email !== value) {
           const emailQuery = query(collection(db, 'users'), where('email', '==', value));
           const emailSnapshot = await getDocs(emailQuery);
-          if (!emailSnapshot.empty && editingUser?.email !== value) {
-            error = 'Tento e-mail je již registrován.';
-            isValid = false;
+          if (!emailSnapshot.empty) {
+            const isCurrentEmail = emailSnapshot.docs.some(doc => doc.id === editingUser?.id);
+            if (!isCurrentEmail) {
+              error = 'Tento e-mail je již registrován.';
+              isValid = false;
+            }
           }
         }
         break;
@@ -148,15 +153,15 @@ const UsersListPage = () => {
         break;
     }
 
-    setFieldErrors(prev => ({ ...prev, [field]: error }));
-    setFieldValid(prev => ({ ...prev, [field]: isValid }));
+    setFieldErrors((prev) => ({ ...prev, [field]: error }));
+    setFieldValid((prev) => ({ ...prev, [field]: isValid }));
   };
 
   const isFormValid = () => {
-    return Object.entries(touchedFields).some(([field, touched]) => touched) &&
-      Object.entries(fieldValid).every(([field, valid]) => {
-        return !touchedFields[field] || (touchedFields[field] && valid);
-      });
+    return (
+      Object.values(fieldValid).some((valid) => valid) && // Alespoň jedno pole je validní
+      !Object.values(fieldErrors).some((error) => error) // Žádné pole nemá chybu
+    );
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -272,7 +277,6 @@ const UsersListPage = () => {
                     type="text"
                     defaultValue={user.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
-                    onBlur={() => handleBlur('firstName', editingUser.firstName)}
                     required
                   />
                   {fieldErrors.firstName && <p className="errorText">{fieldErrors.firstName}</p>}
@@ -284,7 +288,6 @@ const UsersListPage = () => {
                     type="text"
                     defaultValue={user.lastName}
                     onChange={(e) => handleChange('lastName', e.target.value)}
-                    onBlur={() => handleBlur('lastName', editingUser.lastName)}
                     required
                   />
                   {fieldErrors.lastName && <p className="errorText">{fieldErrors.lastName}</p>}
@@ -295,7 +298,6 @@ const UsersListPage = () => {
                     type="text"
                     defaultValue={user.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    onBlur={() => handleBlur('email', editingUser.email)}
                     required
                   />
                   {fieldErrors.email && <p className="errorText">{fieldErrors.email}</p>}

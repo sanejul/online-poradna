@@ -93,13 +93,27 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     }
   }, [answers, questionId]);
 
+  const isAdminRole = async (uid: string): Promise<boolean> => {
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+    const userData = userSnap.data();
+    return userData?.role === 'admin';
+  };
+
   const updateIsAnsweredStatus = async () => {
     if (!questionId) return;
     const questionRef = doc(db, 'questions', questionId);
 
     try {
-      await updateDoc(questionRef, { isAnswered: answers.length > 0 });
-      console.log(`Question ${questionId} marked as answered: ${answers.length > 0}`);
+      // Kontrola, zda existuje odpověď od administrátora
+      const adminAnswerExists = await Promise.all(
+        answers.map(async (answer) => {
+          return await isAdminRole(answer.author.uid);
+        })
+      ).then((results) => results.some((isAdmin) => isAdmin));
+
+      await updateDoc(questionRef, { isAnswered: adminAnswerExists });
+      console.log(`Question ${questionId} marked as answered: ${adminAnswerExists}`);
     } catch (error) {
       console.error('Error updating isAnswered field:', error);
     }
@@ -121,12 +135,14 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     setEditedAnswerText(convertTextForEditing(currentText));
   };
 
-  const handleAnswerBlur = (answerId: string) => {
-    const error = validateQuestionText(editedAnswerText);
+  const handleChangeAnswerText = (answerId: string, value: string) => {
+    setEditedAnswerText(value);
+
+    const error = validateQuestionText(value.trim());
     const isValid = !error;
 
-    setFieldErrors(prev => ({ ...prev, [answerId]: error }));
-    setFieldValid(prev => ({ ...prev, [answerId]: isValid }));
+    setFieldErrors((prev) => ({ ...prev, [answerId]: error }));
+    setFieldValid((prev) => ({ ...prev, [answerId]: isValid }));
   };
 
   const handleSaveAnswer = async (answerId: string) => {
@@ -137,11 +153,24 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
 
     const answerRef = doc(db, 'questions', questionId, 'answers', answerId);
     const formattedText = formatTextForDisplay(editedAnswerText);
-    await updateDoc(answerRef, { text: formattedText });
-    setEditingAnswerId(null);
+
+    try {
+      await updateDoc(answerRef, { text: formattedText });
+      setEditingAnswerId(null);
+      setEditedAnswerText('');
+      setFieldErrors((prev) => ({ ...prev, [answerId]: '' }));
+      setFieldValid((prev) => ({ ...prev, [answerId]: false }));
+    } catch (error) {
+      console.error('Chyba při ukládání odpovědi:', error);
+    }
   };
 
   const handleCancelEdit = () => {
+    if (editingAnswerId) {
+      setFieldErrors((prev) => ({ ...prev, [editingAnswerId]: '' }));
+      setFieldValid((prev) => ({ ...prev, [editingAnswerId]: false }));
+    }
+
     setEditingAnswerId(null);
     setEditedAnswerText('');
   };
@@ -218,11 +247,12 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                 >
                   {editingAnswerId === answer.id ? (
                     <div
-                      className={`input-container ${fieldErrors[answer.id] ? 'error' : fieldValid[answer.id] ? 'valid' : ''}`}>
+                      className={`input-container ${
+                        fieldErrors[answer.id] ? 'error' : fieldValid[answer.id] ? 'valid' : ''
+                      }`}>
                       <textarea
                         value={editedAnswerText}
-                        onChange={(e) => setEditedAnswerText(e.target.value)}
-                        onBlur={() => handleAnswerBlur(answer.id)}
+                        onChange={(e) => handleChangeAnswerText(answer.id, e.target.value)}
                         required
                         className={styles.textInput}
                       />
