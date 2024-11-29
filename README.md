@@ -1,15 +1,14 @@
 # Online přírodní vlasová poradna
 
-Tento projekt je praktickou částí bakalářské práce a zabývá se redesignem a vývojem webové aplikace **Online přírodní vlasová poradna**. 
+Tento projekt je praktickou částí bakalářské práce a zabývá se redesignem a vývojem webové aplikace **Online vlasová poradna**. 
 
 ## Cíle projektu
 - Zlepšit uživatelské rozhraní aplikace.
-- Zvýšit počet uživatelských dotazů prostřednictvím intuitivního designu.
 - Optimalizovat administrátorskou správu aplikace.
 
 ## Použité technologie
 - **Frontend:** React.js, TypeScript
-- **Grafika:** Figma
+- **Grafický návrh:** Figma
 
 ## Instalace
 1. Klonujte repozitář:
@@ -19,7 +18,7 @@ Tento projekt je praktickou částí bakalářské práce a zabývá se redesign
    npm start
    
 2. Lokálně spuštěná apilkace je dostupná na: http://localhost:3000
-3. Produkční verze aplikace je dostupná na: ....
+3. Produkční verze aplikace je dostupná na: https://poradna.haaro-naturo.cz/
 
 ## Struktura projektu
 - `src/components` – Jednotlivé komponenty aplikace.
@@ -28,7 +27,7 @@ Tento projekt je praktickou částí bakalářské práce a zabývá se redesign
 
 ## Funkcionality
 - Uživatelé mohou klást dotazy a komunikovat s administrátorem.
-- Možnost nahrávání audiovizuálního obsahu pro detailnější konzultace.
+- Možnost nahrávání fotografií k dotazům.
 - Administrátor může dotazy editovat a mazat.
 
 ## Omezení
@@ -36,5 +35,4 @@ Tento projekt je praktickou částí bakalářské práce a zabývá se redesign
 
 ## Autor
 Projekt vytvořila: Julie Sanetrníková
-
 Datum vytvoření: Říjen 2024
