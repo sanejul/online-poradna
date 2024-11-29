@@ -9,6 +9,7 @@ Tento projekt je praktickou částí bakalářské práce a zabývá se redesign
 ## Použité technologie
 - **Frontend:** React.js, TypeScript
 - **Grafický návrh:** Figma
+- **Backendové služby:** Firebase
 
 ## Instalace
 1. Klonujte repozitář:
@@ -35,4 +36,5 @@ Tento projekt je praktickou částí bakalářské práce a zabývá se redesign
 
 ## Autor
 Projekt vytvořila: Julie Sanetrníková
+
 Datum vytvoření: Říjen 2024
