@@ -12,13 +12,13 @@ interface QuestionListItemProps {
 }
 
 const QuestionListItem: React.FC<QuestionListItemProps> = ({
-                                                             id,
-                                                             title,
-                                                             text,
-                                                             createdAt,
-                                                             isAnswered,
-                                                             category,
-                                                           }) => {
+  id,
+  title,
+  text,
+  createdAt,
+  isAnswered,
+  category,
+}) => {
   const validCategories = category.filter((cat) => cat && cat.trim() !== '');
 
   return (
@@ -30,17 +30,22 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
         {validCategories
           .map((cat, index) => (
             <span key={index} className={styles.categoryItem}>
-        {cat}
-      </span>
+              {cat}
+            </span>
           ))
-          .reduce<React.ReactNode[]>((acc, curr, idx) =>
-              idx === 0 ? [curr] : [...acc, ', ', curr],
-            [])}
+          .reduce<React.ReactNode[]>(
+            (acc, curr, idx) => (idx === 0 ? [curr] : [...acc, ', ', curr]),
+            []
+          )}
       </p>
       <div className={styles.info}>
         <div>
-          <p className={styles.date}>{createdAt.toLocaleDateString('cs-CZ')}{' '}</p>
-          <p className={`${isAnswered ? styles.isAnswered : ''}`}>{isAnswered ? 'Zodpovězeno' : 'Čeká na odpověď'}</p>
+          <p className={styles.date}>
+            {createdAt.toLocaleDateString('cs-CZ')}{' '}
+          </p>
+          <p className={`${isAnswered ? styles.isAnswered : ''}`}>
+            {isAnswered ? 'Zodpovězeno' : 'Čeká na odpověď'}
+          </p>
         </div>
         <Link to={`/dotazy/${id}`} className={styles.button}>
           prohlédnout

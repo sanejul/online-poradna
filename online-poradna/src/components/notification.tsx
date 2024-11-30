@@ -10,7 +10,12 @@ interface NotificationProps {
   onClose?: () => void;
 }
 
-const Notification: React.FC<NotificationProps> = ({ children, timeout, type = 'success', onClose }) => {
+const Notification: React.FC<NotificationProps> = ({
+  children,
+  timeout,
+  type = 'success',
+  onClose,
+}) => {
   const [remainingTime, setRemainingTime] = useState(timeout * 1000);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -41,7 +46,9 @@ const Notification: React.FC<NotificationProps> = ({ children, timeout, type = '
   if (!isVisible) return null;
 
   const notificationClass =
-    type === 'warning' ? `${styles.notificationContainer} ${styles.warning}` : styles.notificationContainer;
+    type === 'warning'
+      ? `${styles.notificationContainer} ${styles.warning}`
+      : styles.notificationContainer;
 
   return (
     <div className={notificationClass}>
@@ -55,7 +62,10 @@ const Notification: React.FC<NotificationProps> = ({ children, timeout, type = '
           )}
         </button>
       </div>
-      <div className={styles.timerBar} style={{ width: `${(remainingTime / (timeout * 1000)) * 100}%` }} />
+      <div
+        className={styles.timerBar}
+        style={{ width: `${(remainingTime / (timeout * 1000)) * 100}%` }}
+      />
     </div>
   );
 };

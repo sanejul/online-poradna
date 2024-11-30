@@ -1,16 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
 import { onAuthStateChanged, updateEmail, updateProfile } from 'firebase/auth';
-import { collection, doc, getDoc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import QuestionListItem from '../components/question-list-item';
 import styles from './profile-page.module.css';
 import Button from '../components/buttons/button';
-import { isEmailUnique, validateEmail, validateFirstName, validateLastName } from '../helpers/validation-helper';
+import {
+  isEmailUnique,
+  validateEmail,
+  validateFirstName,
+  validateLastName,
+} from '../helpers/validation-helper';
 import { useNotification } from '../contexts/notification-context';
 import { useAuthLogic } from '../hooks/use-auth';
 import LoadingSpinner from '../components/loading-spinner';
-import {Helmet} from "react-helmet";
+import { Helmet } from 'react-helmet';
 
 interface Category {
   id: string;
@@ -32,9 +45,19 @@ const ProfilePage: React.FC = () => {
 
   const { showNotification } = useNotification();
 
-  const [fieldErrors, setFieldErrors] = useState({ firstName: '', lastName: '', email: '' });
-  const [fieldValid, setFieldValid] = useState({ firstName: true, lastName: true, email: true });
-  const [touchedFields, setTouchedFields] = useState<{ [key: string]: boolean }>({
+  const [fieldErrors, setFieldErrors] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+  });
+  const [fieldValid, setFieldValid] = useState({
+    firstName: true,
+    lastName: true,
+    email: true,
+  });
+  const [touchedFields, setTouchedFields] = useState<{
+    [key: string]: boolean;
+  }>({
     firstName: false,
     lastName: false,
     email: false,
@@ -53,7 +76,11 @@ const ProfilePage: React.FC = () => {
         setOriginalData(userData);
       }
     } catch (error) {
-      showNotification(<p>Nepodařilo se načíst uživatelská data. Zkuste to prosím později.</p>, 10, 'warning');
+      showNotification(
+        <p>Nepodařilo se načíst uživatelská data. Zkuste to prosím později.</p>,
+        10,
+        'warning'
+      );
       setError('Nepodařilo se načíst uživatelská data.');
       console.error('Chyba při načítání uživatelských dat:', error);
     } finally {
@@ -62,7 +89,10 @@ const ProfilePage: React.FC = () => {
   };
 
   const fetchUserQuestions = (uid: string) => {
-    const questionsQuery = query(collection(db, 'questions'), where('user.uid', '==', uid));
+    const questionsQuery = query(
+      collection(db, 'questions'),
+      where('user.uid', '==', uid)
+    );
     return onSnapshot(questionsQuery, (querySnapshot) => {
       const questions: any[] = [];
       querySnapshot.forEach((doc) => {
@@ -73,7 +103,9 @@ const ProfilePage: React.FC = () => {
   };
 
   const isFormValid = () => {
-    return Object.entries(fieldValid).every(([field, valid]) => valid || !touchedFields[field]);
+    return Object.entries(fieldValid).every(
+      ([field, valid]) => valid || !touchedFields[field]
+    );
   };
 
   const handleChange = (field: string, value: string) => {
@@ -116,7 +148,10 @@ const ProfilePage: React.FC = () => {
         if (!error && value !== originalData?.email) {
           isEmailUnique(value).then((unique) => {
             if (!unique) {
-              setFieldErrors((prev) => ({ ...prev, email: 'Tento e-mail je již použitý.' }));
+              setFieldErrors((prev) => ({
+                ...prev,
+                email: 'Tento e-mail je již použitý.',
+              }));
               setFieldValid((prev) => ({ ...prev, email: false }));
             }
           });
@@ -129,7 +164,6 @@ const ProfilePage: React.FC = () => {
     setFieldErrors((prev) => ({ ...prev, [field]: error }));
     setFieldValid((prev) => ({ ...prev, [field]: isValid }));
   };
-
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,7 +213,11 @@ const ProfilePage: React.FC = () => {
     } catch (error) {
       setError('Nepodařilo se aktualizovat údaje.');
       console.error('Chyba při aktualizaci údajů:', error);
-      showNotification(<p>Osobní údaje se nepodařilo aktualizovat. Zkuste to prosím znovu.</p>, 10, 'warning');
+      showNotification(
+        <p>Osobní údaje se nepodařilo aktualizovat. Zkuste to prosím znovu.</p>,
+        10,
+        'warning'
+      );
     } finally {
       setLoading(false);
     }
@@ -226,7 +264,9 @@ const ProfilePage: React.FC = () => {
 
     const categoriesRef = collection(db, 'categories');
     const unsubscribeCategories = onSnapshot(categoriesRef, (querySnapshot) => {
-      const categoryList: Category[] = [{ id: 'all', name: 'Všechny kategorie' }];
+      const categoryList: Category[] = [
+        { id: 'all', name: 'Všechny kategorie' },
+      ];
       querySnapshot.forEach((doc) => {
         categoryList.push({ id: doc.id, name: doc.data().name });
       });
@@ -249,25 +289,45 @@ const ProfilePage: React.FC = () => {
     <div className={styles.profileContainer}>
       <Helmet>
         <title>Profil - Poradna Haaro Naturo</title>
-        <meta name="description" content="Uživatelský profil v poradně Haaro Naturo." />
+        <meta
+          name="description"
+          content="Uživatelský profil v poradně Haaro Naturo."
+        />
       </Helmet>
       <h1>Můj profil</h1>
 
       {!isEditMode ? (
         <div className={styles.profileInfo}>
           <div className={styles.personalInfo}>
-            <p><strong>Jméno: </strong> <span>{firstName}</span></p>
-            <p><strong>Příjmení: </strong> <span>{lastName}</span></p>
-            <p><strong>Email: </strong> <span>{email}</span></p>
+            <p>
+              <strong>Jméno: </strong> <span>{firstName}</span>
+            </p>
+            <p>
+              <strong>Příjmení: </strong> <span>{lastName}</span>
+            </p>
+            <p>
+              <strong>Email: </strong> <span>{email}</span>
+            </p>
           </div>
-          <Button onClick={handleEditMode} type={'button'} variant={'edit'}>Upravit osobní údaje</Button>
-          <Button onClick={() => handleUserLogout()} type={'button'} variant={'delete'}>odhlásit se</Button>
-          <Link className={styles.link} to="/obnoveni-hesla">Zaslat email pro obnovení hesla</Link>
+          <Button onClick={handleEditMode} type={'button'} variant={'edit'}>
+            Upravit osobní údaje
+          </Button>
+          <Button
+            onClick={() => handleUserLogout()}
+            type={'button'}
+            variant={'delete'}
+          >
+            odhlásit se
+          </Button>
+          <Link className={styles.link} to="/obnoveni-hesla">
+            Zaslat email pro obnovení hesla
+          </Link>
         </div>
       ) : (
         <form className={styles.editMode} onSubmit={handleUpdate}>
-
-          <div className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}
+          >
             <label>Jméno:</label>
             <input
               type="text"
@@ -275,10 +335,14 @@ const ProfilePage: React.FC = () => {
               onChange={(e) => handleChange('firstName', e.target.value)}
               required
             />
-            {fieldErrors.firstName && <p className="errorText">{fieldErrors.firstName}</p>}
+            {fieldErrors.firstName && (
+              <p className="errorText">{fieldErrors.firstName}</p>
+            )}
           </div>
 
-          <div className={`input-container ${fieldErrors.lastName ? 'error' : fieldValid.lastName ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.lastName ? 'error' : fieldValid.lastName ? 'valid' : ''}`}
+          >
             <label>Příjmení:</label>
             <input
               type="text"
@@ -286,10 +350,14 @@ const ProfilePage: React.FC = () => {
               onChange={(e) => handleChange('lastName', e.target.value)}
               required
             />
-            {fieldErrors.lastName && <p className="errorText">{fieldErrors.lastName}</p>}
+            {fieldErrors.lastName && (
+              <p className="errorText">{fieldErrors.lastName}</p>
+            )}
           </div>
 
-          <div className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}
+          >
             <label>Email:</label>
             <input
               type="email"
@@ -297,15 +365,23 @@ const ProfilePage: React.FC = () => {
               onChange={(e) => handleChange('email', e.target.value)}
               required
             />
-            {fieldErrors.email && <p className="errorText">{fieldErrors.email}</p>}
+            {fieldErrors.email && (
+              <p className="errorText">{fieldErrors.email}</p>
+            )}
           </div>
 
           {error && <p className="errorText">{error}</p>}
 
-          <Button type="button" onClick={handleCancelEdit} variant={'secondary'}>
+          <Button
+            type="button"
+            onClick={handleCancelEdit}
+            variant={'secondary'}
+          >
             Zrušit
           </Button>
-          <Button type="submit" variant={'primary'} disabled={!isFormValid()}>Uložit změny</Button>
+          <Button type="submit" variant={'primary'} disabled={!isFormValid()}>
+            Uložit změny
+          </Button>
         </form>
       )}
 
@@ -324,13 +400,16 @@ const ProfilePage: React.FC = () => {
               isAnswered={question.isAnswered}
               category={
                 Array.isArray(question.category)
-                  ? question.category.map((catId: string) => categories.find((cat) => cat.id === catId)?.name || catId)
+                  ? question.category.map(
+                      (catId: string) =>
+                        categories.find((cat) => cat.id === catId)?.name ||
+                        catId
+                    )
                   : ['Žádná kategorie']
               }
             />
           ))}
         </ul>
-
       )}
     </div>
   );

@@ -1,5 +1,5 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebase";
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export const validateFirstName = (firstName: string): string => {
   if (!firstName.trim()) {
@@ -24,8 +24,8 @@ export const validateEmail = (email: string): string => {
 };
 
 export const isEmailUnique = async (email: string): Promise<boolean> => {
-  const usersCollection = collection(db, "users");
-  const q = query(usersCollection, where("email", "==", email));
+  const usersCollection = collection(db, 'users');
+  const q = query(usersCollection, where('email', '==', email));
   const querySnapshot = await getDocs(q);
 
   return querySnapshot.empty;
@@ -38,7 +38,10 @@ export const validatePassword = (password: string): string => {
   return '';
 };
 
-export const validateConfirmPassword = (password: string, confirmPassword: string): string => {
+export const validateConfirmPassword = (
+  password: string,
+  confirmPassword: string
+): string => {
   if (password !== confirmPassword) {
     return 'Hesla se neshodují';
   }

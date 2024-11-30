@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../../firebase';
-import { collection, query, onSnapshot, orderBy, updateDoc, doc, getDoc } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  onSnapshot,
+  orderBy,
+  updateDoc,
+  doc,
+  getDoc,
+} from 'firebase/firestore';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import CustomCloseIcon from '../../components/icons/close-icon';
 import { validateQuestionText } from '../../helpers/validation-helper';
-import { convertTextForEditing, formatTextForDisplay } from '../../utils/text-utils';
+import {
+  convertTextForEditing,
+  formatTextForDisplay,
+} from '../../utils/text-utils';
 import Button from '../../components/buttons/button';
 import styles from './question-detail-page.module.css';
 import editPen from '../../assets/icons/edit-pen.png';
@@ -36,7 +47,9 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
   const [editedAnswerText, setEditedAnswerText] = useState<string>('');
   const [currentAttachments, setCurrentAttachments] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [questionAuthorUid, setQuestionAuthorUid] = useState<string | null>(null);
+  const [questionAuthorUid, setQuestionAuthorUid] = useState<string | null>(
+    null
+  );
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [fieldValid, setFieldValid] = useState<{ [key: string]: boolean }>({});
   const currentUserUid = auth.currentUser?.uid;
@@ -64,16 +77,21 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
   }, [questionId]);
 
   useEffect(() => {
-    const q = query(collection(db, 'questions', questionId, 'answers'), orderBy('createdAt'));
+    const q = query(
+      collection(db, 'questions', questionId, 'answers'),
+      orderBy('createdAt')
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const answersList: Answer[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const transformedAttachments = (data.attachments || []).map((attachment: any) => ({
-          thumbnailUrl: attachment.thumbnailUrl || '',
-          fullImageUrl: attachment.fullImageUrl || '',
-          originalUrl: attachment.originalUrl || '',
-        }));
+        const transformedAttachments = (data.attachments || []).map(
+          (attachment: any) => ({
+            thumbnailUrl: attachment.thumbnailUrl || '',
+            fullImageUrl: attachment.fullImageUrl || '',
+            originalUrl: attachment.originalUrl || '',
+          })
+        );
         answersList.push({
           ...data,
           id: doc.id,
@@ -113,15 +131,20 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
       ).then((results) => results.some((isAdmin) => isAdmin));
 
       await updateDoc(questionRef, { isAnswered: adminAnswerExists });
-      console.log(`Question ${questionId} marked as answered: ${adminAnswerExists}`);
+      console.log(
+        `Question ${questionId} marked as answered: ${adminAnswerExists}`
+      );
     } catch (error) {
       console.error('Error updating isAnswered field:', error);
     }
   };
 
   const handleAttachmentClick = (attachments: Attachment[], index: number) => {
-    const imageUrls = attachments.map((attachment) =>
-      attachment.fullImageUrl || attachment.originalUrl || attachment.thumbnailUrl
+    const imageUrls = attachments.map(
+      (attachment) =>
+        attachment.fullImageUrl ||
+        attachment.originalUrl ||
+        attachment.thumbnailUrl
     );
     console.warn('Attachments passed to handleAttachmentClick:', attachments);
     console.warn('imageUrls for Lightbox:', imageUrls);
@@ -185,42 +208,59 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
             <div
               key={answer.id}
               className={`${styles.bubbleContainer} ${
-                (answer.author.uid !== currentUserUid && currentUserUid !== undefined) || (currentUserUid === undefined && answer.author.uid === questionAuthorUid)
+                (answer.author.uid !== currentUserUid &&
+                  currentUserUid !== undefined) ||
+                (currentUserUid === undefined &&
+                  answer.author.uid === questionAuthorUid)
                   ? styles.left
                   : styles.right
               }`}
             >
               <div
                 className={`${styles.bubbleInfo} ${
-                  (answer.author.uid !== currentUserUid && currentUserUid !== undefined) || (currentUserUid === undefined && answer.author.uid === questionAuthorUid)
+                  (answer.author.uid !== currentUserUid &&
+                    currentUserUid !== undefined) ||
+                  (currentUserUid === undefined &&
+                    answer.author.uid === questionAuthorUid)
                     ? styles.leftBubbleInfo
                     : styles.rightBubbleInfo
                 }`}
               >
                 <p>{answer.author.displayName.split(' ')[0]}</p>
                 <p className={styles.date}>
-                  {new Date(answer.createdAt.seconds * 1000).toLocaleString('cs-CZ', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {new Date(answer.createdAt.seconds * 1000).toLocaleString(
+                    'cs-CZ',
+                    {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }
+                  )}
                 </p>
               </div>
 
-              <div
-                className={`${isAdmin ? styles.bubbleEditContainer : ''}`}
-              >
+              <div className={`${isAdmin ? styles.bubbleEditContainer : ''}`}>
                 {isAdmin && (
                   <div className={styles.answerActions}>
                     {editingAnswerId === answer.id ? (
                       <div className={styles.actionButtonsContainer}>
-                        <Button variant="secondary" type="button" onClick={handleCancelEdit}>
+                        <Button
+                          variant="secondary"
+                          type="button"
+                          onClick={handleCancelEdit}
+                        >
                           Zrušit
                         </Button>
-                        <Button variant="primary" type="submit" onClick={() => handleSaveAnswer(answer.id)}
-                                disabled={!fieldValid[answer.id] || !editedAnswerText.trim()}>
+                        <Button
+                          variant="primary"
+                          type="submit"
+                          onClick={() => handleSaveAnswer(answer.id)}
+                          disabled={
+                            !fieldValid[answer.id] || !editedAnswerText.trim()
+                          }
+                        >
                           Uložit změny
                         </Button>
                       </div>
@@ -239,24 +279,36 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                 <div
                   className={`${styles.bubble} 
                     ${
-                    (answer.author.uid !== currentUserUid && currentUserUid !== undefined) || (currentUserUid === undefined && answer.author.uid === questionAuthorUid)
-                      ? styles.leftBubble
-                      : styles.rightBubble
-                  } 
+                      (answer.author.uid !== currentUserUid &&
+                        currentUserUid !== undefined) ||
+                      (currentUserUid === undefined &&
+                        answer.author.uid === questionAuthorUid)
+                        ? styles.leftBubble
+                        : styles.rightBubble
+                    } 
                     ${editingAnswerId === answer.id ? styles.bubbleEditMode : ''}`}
                 >
                   {editingAnswerId === answer.id ? (
                     <div
                       className={`input-container ${
-                        fieldErrors[answer.id] ? 'error' : fieldValid[answer.id] ? 'valid' : ''
-                      }`}>
+                        fieldErrors[answer.id]
+                          ? 'error'
+                          : fieldValid[answer.id]
+                            ? 'valid'
+                            : ''
+                      }`}
+                    >
                       <textarea
                         value={editedAnswerText}
-                        onChange={(e) => handleChangeAnswerText(answer.id, e.target.value)}
+                        onChange={(e) =>
+                          handleChangeAnswerText(answer.id, e.target.value)
+                        }
                         required
                         className={styles.textInput}
                       />
-                      {fieldErrors[answer.id] && <p className="errorText">{fieldErrors[answer.id]}</p>}
+                      {fieldErrors[answer.id] && (
+                        <p className="errorText">{fieldErrors[answer.id]}</p>
+                      )}
                     </div>
                   ) : (
                     <p
@@ -271,7 +323,10 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                 <div className={styles.attachmentPreviews}>
                   <div
                     className={`${styles.previewContainer} ${
-                      (answer.author.uid !== currentUserUid && currentUserUid !== undefined) || (currentUserUid === undefined && answer.author.uid === questionAuthorUid)
+                      (answer.author.uid !== currentUserUid &&
+                        currentUserUid !== undefined) ||
+                      (currentUserUid === undefined &&
+                        answer.author.uid === questionAuthorUid)
                         ? styles.leftPreviewContainer
                         : styles.rightPreviewContainer
                     }`}
@@ -282,7 +337,9 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                         src={file.thumbnailUrl || file.originalUrl}
                         alt={`Příloha ${index + 1}`}
                         className={styles.previewImage}
-                        onClick={() => handleAttachmentClick(answer.attachments || [], index)}
+                        onClick={() =>
+                          handleAttachmentClick(answer.attachments || [], index)
+                        }
                       />
                     ))}
                   </div>
@@ -306,11 +363,12 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
             },
           }}
           render={{
-            buttonClose: () => <CustomCloseIcon onClick={() => setIsLightboxOpen(false)} />,
+            buttonClose: () => (
+              <CustomCloseIcon onClick={() => setIsLightboxOpen(false)} />
+            ),
           }}
         />
       )}
-
     </div>
   );
 };

@@ -1,7 +1,13 @@
 import React from 'react';
-import { ErrorBoundary as ReactErrorBoundary, FallbackProps } from 'react-error-boundary';
+import {
+  ErrorBoundary as ReactErrorBoundary,
+  FallbackProps,
+} from 'react-error-boundary';
 
-const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+const ErrorFallback: React.FC<FallbackProps> = ({
+  error,
+  resetErrorBoundary,
+}) => {
   return (
     <div className="errorContainer">
       <h1>Technická chyba</h1>
@@ -14,7 +20,9 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
   );
 };
 
-const ErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ErrorBoundary: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <ReactErrorBoundary
       FallbackComponent={ErrorFallback}

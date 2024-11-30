@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../../firebase';
-import { collection, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+} from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import Modal from '../../components/modal/modal';
 import styles from './users-list-page.module.css';
@@ -9,9 +18,13 @@ import LoadingSpinner from '../../components/loading-spinner';
 import Button from '../../components/buttons/button';
 import SearchBar from '../../components/navigation/search-bar';
 import Pagination from '@mui/material/Pagination';
-import { validateFirstName, validateLastName, validateEmail } from '../../helpers/validation-helper';
+import {
+  validateFirstName,
+  validateLastName,
+  validateEmail,
+} from '../../helpers/validation-helper';
 import { useNotification } from '../../contexts/notification-context';
-import {Helmet} from "react-helmet";
+import { Helmet } from 'react-helmet';
 
 interface User {
   id: string;
@@ -37,9 +50,19 @@ const UsersListPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
 
-  const [fieldErrors, setFieldErrors] = useState({ firstName: '', lastName: '', email: '' });
-  const [fieldValid, setFieldValid] = useState({ firstName: false, lastName: false, email: false });
-  const [touchedFields, setTouchedFields] = useState<{ [key: string]: boolean }>({
+  const [fieldErrors, setFieldErrors] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+  });
+  const [fieldValid, setFieldValid] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+  });
+  const [touchedFields, setTouchedFields] = useState<{
+    [key: string]: boolean;
+  }>({
     firstName: false,
     lastName: false,
     email: false,
@@ -58,10 +81,13 @@ const UsersListPage = () => {
             setIsAdmin(true);
             const usersCollectionRef = collection(db, 'users');
             const usersSnapshot = await getDocs(usersCollectionRef);
-            const allUsers: User[] = usersSnapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            } as User));
+            const allUsers: User[] = usersSnapshot.docs.map(
+              (doc) =>
+                ({
+                  id: doc.id,
+                  ...doc.data(),
+                }) as User
+            );
 
             allUsers.sort((a, b) => a.firstName.localeCompare(b.firstName));
             setUsers(allUsers);
@@ -94,10 +120,13 @@ const UsersListPage = () => {
   const fetchUsers = async () => {
     const usersCollectionRef = collection(db, 'users');
     const usersSnapshot = await getDocs(usersCollectionRef);
-    const allUsers: User[] = usersSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    } as User));
+    const allUsers: User[] = usersSnapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        }) as User
+    );
     setUsers(allUsers);
     setFilteredUsers(allUsers);
   };
@@ -105,9 +134,12 @@ const UsersListPage = () => {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     const lowerCaseQuery = query.toLowerCase();
-    const filtered = users.filter((user) =>
-      `${user.firstName} ${user.lastName}`.toLowerCase().includes(lowerCaseQuery) ||
-      user.email.toLowerCase().includes(lowerCaseQuery),
+    const filtered = users.filter(
+      (user) =>
+        `${user.firstName} ${user.lastName}`
+          .toLowerCase()
+          .includes(lowerCaseQuery) ||
+        user.email.toLowerCase().includes(lowerCaseQuery)
     );
     setFilteredUsers(filtered);
     setCurrentPage(1);
@@ -138,10 +170,15 @@ const UsersListPage = () => {
 
         // Kontrola jedinečnosti e-mailu
         if (isValid && editingUser?.email !== value) {
-          const emailQuery = query(collection(db, 'users'), where('email', '==', value));
+          const emailQuery = query(
+            collection(db, 'users'),
+            where('email', '==', value)
+          );
           const emailSnapshot = await getDocs(emailQuery);
           if (!emailSnapshot.empty) {
-            const isCurrentEmail = emailSnapshot.docs.some(doc => doc.id === editingUser?.id);
+            const isCurrentEmail = emailSnapshot.docs.some(
+              (doc) => doc.id === editingUser?.id
+            );
             if (!isCurrentEmail) {
               error = 'Tento e-mail je již registrován.';
               isValid = false;
@@ -168,7 +205,10 @@ const UsersListPage = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    page: number
+  ) => {
     setCurrentPage(page);
     window.scrollTo({
       top: 0,
@@ -190,15 +230,28 @@ const UsersListPage = () => {
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, dataToUpdate);
       console.log('Uživatel úspěšně aktualizován:', dataToUpdate);
-      showNotification(<p>Osobní údaje {userToDelete?.firstName} {userToDelete?.lastName} byly úspěšně
-        aktualizovány.</p>, 15);
+      showNotification(
+        <p>
+          Osobní údaje {userToDelete?.firstName} {userToDelete?.lastName} byly
+          úspěšně aktualizovány.
+        </p>,
+        15
+      );
 
-      setUsers(users.map(user => (user.id === userId ? { ...user, ...dataToUpdate } : user)));
+      setUsers(
+        users.map((user) =>
+          user.id === userId ? { ...user, ...dataToUpdate } : user
+        )
+      );
       await fetchUsers();
       setEditingUser(null);
       setTouchedFields({ firstName: false, lastName: false, email: false });
     } catch (e) {
-      showNotification(<p>Osobní údaje se nepodařilo aktualizovat. Zkuste to prosím znovu.</p>, 10, 'warning');
+      showNotification(
+        <p>Osobní údaje se nepodařilo aktualizovat. Zkuste to prosím znovu.</p>,
+        10,
+        'warning'
+      );
       console.error('Chyba při ukládání dat:', e);
       setError('Chyba při ukládání dat.');
     }
@@ -210,13 +263,26 @@ const UsersListPage = () => {
       await deleteDoc(userDocRef);
       console.log('Uživatel úspěšně smazán:', userId);
 
-      setUsers((prevUsers) => prevUsers.filter(user => user.id !== userId));
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
       await fetchUsers();
 
       setIsModalOpen(false);
-      showNotification(<p>Uživatel {userToDelete?.firstName} {userToDelete?.lastName} byl úspěšně smazán.</p>, 5);
+      showNotification(
+        <p>
+          Uživatel {userToDelete?.firstName} {userToDelete?.lastName} byl
+          úspěšně smazán.
+        </p>,
+        5
+      );
     } catch (e) {
-      showNotification(<p>Smazání uživatele {userToDelete?.firstName} {userToDelete?.lastName} se nezdařilo. Zkuste to prosím znovu.</p>, 10, 'warning');
+      showNotification(
+        <p>
+          Smazání uživatele {userToDelete?.firstName} {userToDelete?.lastName}{' '}
+          se nezdařilo. Zkuste to prosím znovu.
+        </p>,
+        10,
+        'warning'
+      );
       console.error('Chyba při mazání uživatele:', e);
       setError('Chyba při mazání uživatele.');
     }
@@ -224,7 +290,11 @@ const UsersListPage = () => {
 
   const openDeleteModal = (user: any) => {
     if (!user) {
-      showNotification(<p>Nepovedlo se načíst uživatele, zkuste to prosím znovu.</p>, 10, 'warning');
+      showNotification(
+        <p>Nepovedlo se načíst uživatele, zkuste to prosím znovu.</p>,
+        10,
+        'warning'
+      );
       console.error('Neplatný uživatel předaný do openDeleteModal.');
       return;
     }
@@ -232,20 +302,38 @@ const UsersListPage = () => {
     setUserToDelete(user);
     setModalContent(
       <div className={'modalContainer'}>
-        <p>Opravdu chcete smazat uživatele {userToDelete?.firstName} {userToDelete?.lastName}?</p>
+        <p>
+          Opravdu chcete smazat uživatele {userToDelete?.firstName}{' '}
+          {userToDelete?.lastName}?
+        </p>
         <div className={'modalActions'}>
-          <Button type={'button'} variant="secondary" onClick={() => setIsModalOpen(false)}>zrušit</Button>
-          <Button type={'button'} variant="delete" onClick={async () => {
-            if (user.id) {
-              await deleteUser(user.id);
-              setIsModalOpen(false);
-            } else {
-              showNotification(<p>Neplatný uživatel, mazání se nezdařilo.</p>, 10, 'warning');
-            }
-          }}
-          >smazat</Button>
+          <Button
+            type={'button'}
+            variant="secondary"
+            onClick={() => setIsModalOpen(false)}
+          >
+            zrušit
+          </Button>
+          <Button
+            type={'button'}
+            variant="delete"
+            onClick={async () => {
+              if (user.id) {
+                await deleteUser(user.id);
+                setIsModalOpen(false);
+              } else {
+                showNotification(
+                  <p>Neplatný uživatel, mazání se nezdařilo.</p>,
+                  10,
+                  'warning'
+                );
+              }
+            }}
+          >
+            smazat
+          </Button>
         </div>
-      </div>,
+      </div>
     );
     setIsModalOpen(true);
   };
@@ -262,7 +350,10 @@ const UsersListPage = () => {
       </Helmet>
       <h1>Seznam uživatelů</h1>
       <div className={styles.searchBarContainer}>
-        <SearchBar onSearch={handleSearch} placeholder="Vyhledat uživatele..." />
+        <SearchBar
+          onSearch={handleSearch}
+          placeholder="Vyhledat uživatele..."
+        />
       </div>
       <ul>
         {currentItems.map((user) => (
@@ -271,7 +362,8 @@ const UsersListPage = () => {
               <div className={styles.userItemEdit}>
                 <h2>Editace uživatele</h2>
                 <div
-                  className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}>
+                  className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}
+                >
                   <label>Jméno *</label>
                   <input
                     type="text"
@@ -279,10 +371,13 @@ const UsersListPage = () => {
                     onChange={(e) => handleChange('firstName', e.target.value)}
                     required
                   />
-                  {fieldErrors.firstName && <p className="errorText">{fieldErrors.firstName}</p>}
+                  {fieldErrors.firstName && (
+                    <p className="errorText">{fieldErrors.firstName}</p>
+                  )}
                 </div>
                 <div
-                  className={`input-container ${fieldErrors.lastName ? 'error' : fieldValid.lastName ? 'valid' : ''}`}>
+                  className={`input-container ${fieldErrors.lastName ? 'error' : fieldValid.lastName ? 'valid' : ''}`}
+                >
                   <label>Příjmení *</label>
                   <input
                     type="text"
@@ -290,9 +385,13 @@ const UsersListPage = () => {
                     onChange={(e) => handleChange('lastName', e.target.value)}
                     required
                   />
-                  {fieldErrors.lastName && <p className="errorText">{fieldErrors.lastName}</p>}
+                  {fieldErrors.lastName && (
+                    <p className="errorText">{fieldErrors.lastName}</p>
+                  )}
                 </div>
-                <div className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}>
+                <div
+                  className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}
+                >
                   <label>Email *</label>
                   <input
                     type="text"
@@ -300,32 +399,66 @@ const UsersListPage = () => {
                     onChange={(e) => handleChange('email', e.target.value)}
                     required
                   />
-                  {fieldErrors.email && <p className="errorText">{fieldErrors.email}</p>}
+                  {fieldErrors.email && (
+                    <p className="errorText">{fieldErrors.email}</p>
+                  )}
                 </div>
                 <div className={'input-container'}>
                   <label>Role *</label>
                   <select
                     defaultValue={user.role}
-                    onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                    onChange={(e) =>
+                      setEditingUser({ ...editingUser, role: e.target.value })
+                    }
                   >
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                   </select>
                 </div>
-                <Button variant="primary" type="submit" onClick={() => saveUser(user.id, editingUser)}
-                        disabled={!isFormValid()}>Uložit</Button>
-                <Button variant="secondary" type="button" onClick={() => setEditingUser(null)}>Zrušit</Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  onClick={() => saveUser(user.id, editingUser)}
+                  disabled={!isFormValid()}
+                >
+                  Uložit
+                </Button>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                >
+                  Zrušit
+                </Button>
               </div>
             ) : (
               <div className={styles.profileInfo}>
                 <div className={styles.personalInfo}>
-                  <p><strong>Jméno:</strong> {user.firstName} {user.lastName}</p>
-                  <p><strong>Email:</strong> {user.email}</p>
-                  <p><strong>Role:</strong> {user.role}</p>
+                  <p>
+                    <strong>Jméno:</strong> {user.firstName} {user.lastName}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {user.email}
+                  </p>
+                  <p>
+                    <strong>Role:</strong> {user.role}
+                  </p>
                 </div>
                 <div className={styles.buttonsContainer}>
-                  <Button variant="edit" type="button" onClick={() => setEditingUser(user)}>Upravit</Button>
-                  <Button variant="delete" type="button" onClick={() => openDeleteModal(user)}>Smazat</Button>
+                  <Button
+                    variant="edit"
+                    type="button"
+                    onClick={() => setEditingUser(user)}
+                  >
+                    Upravit
+                  </Button>
+                  <Button
+                    variant="delete"
+                    type="button"
+                    onClick={() => openDeleteModal(user)}
+                  >
+                    Smazat
+                  </Button>
                 </div>
               </div>
             )}

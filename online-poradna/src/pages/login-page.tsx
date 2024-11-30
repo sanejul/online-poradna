@@ -6,15 +6,18 @@ import Button from '../components/buttons/button';
 import styles from './login.module.css';
 import { validateEmail, validatePassword } from '../helpers/validation-helper';
 import { useNotification } from '../contexts/notification-context';
-import {Helmet} from "react-helmet";
-import ReCAPTCHA from "react-google-recaptcha";
+import { Helmet } from 'react-helmet';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
-  const [fieldValid, setFieldValid] = useState({ email: false, password: false });
+  const [fieldValid, setFieldValid] = useState({
+    email: false,
+    password: false,
+  });
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const { showNotification } = useNotification();
   const navigate = useNavigate();
@@ -25,7 +28,10 @@ const Login = () => {
     const isVerified = !!token;
     setCaptchaVerified(isVerified);
 
-    if (isVerified && error === 'Pro přihlášení prosím potvrďte, že nejste robot.') {
+    if (
+      isVerified &&
+      error === 'Pro přihlášení prosím potvrďte, že nejste robot.'
+    ) {
       setError(null);
     }
   };
@@ -76,7 +82,10 @@ const Login = () => {
     <div className={styles.container}>
       <Helmet>
         <title>Detail dotazu - Poradna Haaro Naturo</title>
-        <meta name="description" content="Přihlášení do online poradny Haaro Naturo." />
+        <meta
+          name="description"
+          content="Přihlášení do online poradny Haaro Naturo."
+        />
         <meta name="robots" content="index, follow" />
       </Helmet>
       <h1>Přihlášení</h1>
@@ -90,7 +99,9 @@ const Login = () => {
               data-theme="light"
             />
           </div>
-          <div className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}
+          >
             <label>E-mail *</label>
             <input
               type="email"
@@ -98,10 +109,14 @@ const Login = () => {
               onChange={(e) => handleChange('email', e.target.value)}
               required
             />
-            {fieldErrors.email && <p className="errorText">{fieldErrors.email}</p>}
+            {fieldErrors.email && (
+              <p className="errorText">{fieldErrors.email}</p>
+            )}
           </div>
 
-          <div className={`input-container ${fieldErrors.password ? 'error' : fieldValid.password ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.password ? 'error' : fieldValid.password ? 'valid' : ''}`}
+          >
             <label>Heslo (min 6 znaků) *</label>
             <input
               type="password"
@@ -109,13 +124,20 @@ const Login = () => {
               onChange={(e) => handleChange('password', e.target.value)}
               required
             />
-            {fieldErrors.password && <p className="errorText">{fieldErrors.password}</p>}
+            {fieldErrors.password && (
+              <p className="errorText">{fieldErrors.password}</p>
+            )}
           </div>
 
           <p className={'textLeft'}>* povinné údaje</p>
           {error && <p className="errorText">{error}</p>}
-          <Button type="submit" variant={'primary'} disabled={Object.values(fieldValid).some(valid => !valid)}>Přihlásit
-            se</Button>
+          <Button
+            type="submit"
+            variant={'primary'}
+            disabled={Object.values(fieldValid).some((valid) => !valid)}
+          >
+            Přihlásit se
+          </Button>
         </form>
 
         <div>
@@ -129,9 +151,7 @@ const Login = () => {
             <Link to="/obnoveni-hesla">Obnovit heslo</Link>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 };

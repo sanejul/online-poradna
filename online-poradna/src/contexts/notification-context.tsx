@@ -2,21 +2,33 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import Notification from '../components/notification';
 
 interface NotificationContextType {
-  showNotification: (message: ReactNode, timeout?: number, type?: 'success' | 'warning') => void;
+  showNotification: (
+    message: ReactNode,
+    timeout?: number,
+    type?: 'success' | 'warning'
+  ) => void;
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined
+);
 
-export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [notificationContent, setNotificationContent] = useState<ReactNode | null>(null);
+export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [notificationContent, setNotificationContent] =
+    useState<ReactNode | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   /* eslint-disable @typescript-eslint/no-inferrable-types */
   const [timeout, setTimeoutDuration] = useState(5);
   /* eslint-enable @typescript-eslint/no-inferrable-types */
   const [type, setType] = useState<'success' | 'warning'>('success');
 
-
-  const showNotification = (message: ReactNode, timeoutDuration: number = 5, notificationType: 'success' | 'warning' = 'success') => {
+  const showNotification = (
+    message: ReactNode,
+    timeoutDuration: number = 5,
+    notificationType: 'success' | 'warning' = 'success'
+  ) => {
     setNotificationContent(message);
     setTimeoutDuration(timeoutDuration);
     setType(notificationType);

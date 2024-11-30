@@ -1,23 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { db, auth } from '../../firebase';
-import { doc, getDoc, getDocs, collection, addDoc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  getDocs,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  Timestamp,
+} from 'firebase/firestore';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import AnswerList from './answer-list';
 import styles from './question-detail-page.module.css';
 import archiveStyles from './archive-page.module.css';
-import arrow from '../../assets/icons/arrow.png'
+import arrow from '../../assets/icons/arrow.png';
 import LoadingSpinner from '../../components/loading-spinner';
 import CustomCloseIcon from '../../components/icons/close-icon';
 import Button from '../../components/buttons/button';
 import Modal from '../../components/modal/modal';
 import AttachmentInput from '../../components/attachment-input';
-import { validateQuestionTitle, validateQuestionText } from '../../helpers/validation-helper';
+import {
+  validateQuestionTitle,
+  validateQuestionText,
+} from '../../helpers/validation-helper';
 import editPen from '../../assets/icons/edit-pen.png';
 import { useNotification } from '../../contexts/notification-context';
 import { uploadAndTransformFiles } from '../../utils/file-utils';
-import { formatTextForDisplay, convertTextForEditing } from '../../utils/text-utils';
+import {
+  formatTextForDisplay,
+  convertTextForEditing,
+} from '../../utils/text-utils';
 import { Helmet } from 'react-helmet';
 
 interface Category {
@@ -49,14 +64,24 @@ const QuestionDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [question, setQuestion] = useState<QuestionData | null>(null);
-  const [editingField, setEditingField] = useState<null | 'title' | 'category' | 'text' | 'newCategory'>(null);
+  const [editingField, setEditingField] = useState<
+    null | 'title' | 'category' | 'text' | 'newCategory'
+  >(null);
   const [tempQuestion, setTempQuestion] = useState<any>(null);
   const [answerText, setAnswerText] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState({ title: '', questionText: '', answerText: '' });
-  const [fieldValid, setFieldValid] = useState({ title: false, questionText: false, answerText: false });
+  const [fieldErrors, setFieldErrors] = useState({
+    title: '',
+    questionText: '',
+    answerText: '',
+  });
+  const [fieldValid, setFieldValid] = useState({
+    title: false,
+    questionText: false,
+    answerText: false,
+  });
   const [currentAttachments, setCurrentAttachments] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -97,11 +122,12 @@ const QuestionDetailPage = () => {
         const questionData = docSnap.data();
         console.warn('Fetched question data:', questionData);
 
-        const transformedFiles = questionData.files?.map((file: any) => ({
-          thumbnailUrl: file.thumbnailUrl || '',
-          fullImageUrl: file.fullImageUrl || '',
-          originalUrl: file.originalUrl || '',
-        })) || [];
+        const transformedFiles =
+          questionData.files?.map((file: any) => ({
+            thumbnailUrl: file.thumbnailUrl || '',
+            fullImageUrl: file.fullImageUrl || '',
+            originalUrl: file.originalUrl || '',
+          })) || [];
 
         setQuestion({
           ...questionData,
@@ -114,10 +140,13 @@ const QuestionDetailPage = () => {
 
     const fetchCategories = async () => {
       const categorySnapshot = await getDocs(collection(db, 'categories'));
-      const categoryList: Category[] = categorySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      } as Category));
+      const categoryList: Category[] = categorySnapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          }) as Category
+      );
       setAllCategories(categoryList);
     };
 
@@ -134,7 +163,10 @@ const QuestionDetailPage = () => {
     }
   }, [question]);
 
-  const handleChange = (field: 'title' | 'questionText' | 'answerText', value: string) => {
+  const handleChange = (
+    field: 'title' | 'questionText' | 'answerText',
+    value: string
+  ) => {
     let error = '';
     let isValid = false;
 
@@ -158,7 +190,6 @@ const QuestionDetailPage = () => {
     setFieldValid((prev) => ({ ...prev, [field]: isValid }));
   };
 
-
   const handleBlur = (field: 'title' | 'questionText', value: string) => {
     let error = '';
     let isValid = false;
@@ -171,8 +202,8 @@ const QuestionDetailPage = () => {
       isValid = !error;
     }
 
-    setFieldErrors(prev => ({ ...prev, [field]: error }));
-    setFieldValid(prev => ({ ...prev, [field]: isValid }));
+    setFieldErrors((prev) => ({ ...prev, [field]: error }));
+    setFieldValid((prev) => ({ ...prev, [field]: isValid }));
   };
 
   const saveCategoryChanges = async () => {
@@ -199,7 +230,7 @@ const QuestionDetailPage = () => {
     setSelectedCategoryIds((prevSelected) =>
       prevSelected.includes(categoryId)
         ? prevSelected.filter((id) => id !== categoryId)
-        : [...prevSelected, categoryId],
+        : [...prevSelected, categoryId]
     );
   };
 
@@ -210,7 +241,7 @@ const QuestionDetailPage = () => {
   };
 
   const selectedCategoryNames = selectedCategoryIds
-    .map(id => allCategories.find(category => category.id === id)?.name)
+    .map((id) => allCategories.find((category) => category.id === id)?.name)
     .filter(Boolean) as string[];
 
   const deleteQuestion = () => {
@@ -218,21 +249,35 @@ const QuestionDetailPage = () => {
       <div className={'modalContainer'}>
         <p>Opravdu chcete odstranit celou konverzaci?</p>
         <div className={'modalActions'}>
-          <Button type={'button'} variant="secondary" onClick={() => setIsModalOpen(false)}>zrušit</Button>
-          <Button type={'button'} variant="delete" onClick={async () => {
-            await deleteDoc(doc(db, 'questions', id!));
-            setIsModalOpen(false);
-            showNotification(<p>Konverzace byla úspěšně smazána.</p>, 15);
-            navigate('/vsechny-dotazy');
-          }}>smazat</Button>
+          <Button
+            type={'button'}
+            variant="secondary"
+            onClick={() => setIsModalOpen(false)}
+          >
+            zrušit
+          </Button>
+          <Button
+            type={'button'}
+            variant="delete"
+            onClick={async () => {
+              await deleteDoc(doc(db, 'questions', id!));
+              setIsModalOpen(false);
+              showNotification(<p>Konverzace byla úspěšně smazána.</p>, 15);
+              navigate('/vsechny-dotazy');
+            }}
+          >
+            smazat
+          </Button>
         </div>
-      </div>,
+      </div>
     );
     setIsModalOpen(true);
   };
 
   const handleFileClick = (files: FileData[], index: number) => {
-    const imageUrls = files.map((file) => file.fullImageUrl || file.originalUrl);
+    const imageUrls = files.map(
+      (file) => file.fullImageUrl || file.originalUrl
+    );
     setCurrentAttachments(imageUrls);
     setLightboxIndex(index);
     setIsLightboxOpen(true);
@@ -277,7 +322,6 @@ const QuestionDetailPage = () => {
     }
   };
 
-
   if (!question) return <LoadingSpinner />;
 
   const isAuthor = question.user?.uid === user?.uid;
@@ -288,8 +332,12 @@ const QuestionDetailPage = () => {
     return userDocSnap.exists() && userDocSnap.data().role === 'admin';
   };
 
-  const checkIfAnsweredByAdmin = async (questionId: string): Promise<boolean> => {
-    const answersSnapshot = await getDocs(collection(db, 'questions', questionId, 'answers'));
+  const checkIfAnsweredByAdmin = async (
+    questionId: string
+  ): Promise<boolean> => {
+    const answersSnapshot = await getDocs(
+      collection(db, 'questions', questionId, 'answers')
+    );
     for (const answer of answersSnapshot.docs) {
       const authorUid = answer.data().author.uid;
       const isAdmin = await isAdminRole(authorUid);
@@ -299,7 +347,6 @@ const QuestionDetailPage = () => {
     }
     return false;
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -317,7 +364,11 @@ const QuestionDetailPage = () => {
 
     try {
       setIsLoading(true);
-      const fileURLs: { thumbnailUrl: string; fullImageUrl: string; originalUrl: string }[] = [];
+      const fileURLs: {
+        thumbnailUrl: string;
+        fullImageUrl: string;
+        originalUrl: string;
+      }[] = [];
 
       for (const file of files) {
         const urls = await uploadAndTransformFiles(file, `answers/${user.uid}`);
@@ -349,10 +400,16 @@ const QuestionDetailPage = () => {
         await updateDoc(doc(db, 'questions', id!), { isAnswered: true });
         console.log(`Question ${id} marked as answered: true`);
       } else {
-        console.log(`Question ${id} remains unanswered as the responder is not an admin.`);
+        console.log(
+          `Question ${id} remains unanswered as the responder is not an admin.`
+        );
       }
     } catch (error) {
-      showNotification(<p>Odpověď se nepodařilo odeslat. Zkuste to prosím znovu.</p>, 10, 'warning');
+      showNotification(
+        <p>Odpověď se nepodařilo odeslat. Zkuste to prosím znovu.</p>,
+        10,
+        'warning'
+      );
       console.error('Chyba při odesílání odpovědi:', error);
       setError('Chyba při odesílání odpovědi: ' + (error as Error).message);
     } finally {
@@ -375,20 +432,26 @@ const QuestionDetailPage = () => {
 
       {isAdmin && (
         <div className={styles.deleteConversationButton}>
-          <Button type={'button'} onClick={deleteQuestion} variant="delete">Smazat celou konverzaci</Button>
+          <Button type={'button'} onClick={deleteQuestion} variant="delete">
+            Smazat celou konverzaci
+          </Button>
         </div>
       )}
 
       <div className={styles.categoryList}>
         {selectedCategoryNames.length > 0 ? (
-          <span className={styles.categorySpan}>{selectedCategoryNames.join(', ')}</span>
+          <span className={styles.categorySpan}>
+            {selectedCategoryNames.join(', ')}
+          </span>
         ) : (
           <span>Zatím nejsou přiřazeny žádné kategorie</span>
         )}
       </div>
 
       {editingField === 'category' ? (
-        <div className={`${styles.categorySection} ${archiveStyles.categoryContainer}`}>
+        <div
+          className={`${styles.categorySection} ${archiveStyles.categoryContainer}`}
+        >
           <Button
             type="button"
             variant="secondary"
@@ -396,7 +459,8 @@ const QuestionDetailPage = () => {
           >
             {showCategoryDropdown ? 'Skrýt kategorie' : 'Zobrazit kategorie'}
             <span
-              className={`${archiveStyles.arrowIcon} ${showCategoryDropdown ? archiveStyles.arrowUp : archiveStyles.arrowDown}`}></span>
+              className={`${archiveStyles.arrowIcon} ${showCategoryDropdown ? archiveStyles.arrowUp : archiveStyles.arrowDown}`}
+            ></span>
           </Button>
           {showCategoryDropdown && (
             <div className={archiveStyles.categoryDropdown}>
@@ -409,7 +473,10 @@ const QuestionDetailPage = () => {
                     checked={selectedCategoryIds.includes(cat.id)}
                     onChange={() => handleCategorySelect(cat.id)}
                   />
-                  <label htmlFor={`category-${cat.id}`} className={archiveStyles.categoryLabel}>
+                  <label
+                    htmlFor={`category-${cat.id}`}
+                    className={archiveStyles.categoryLabel}
+                  >
                     {cat.name}
                   </label>
                 </div>
@@ -420,7 +487,11 @@ const QuestionDetailPage = () => {
             <Button type="button" onClick={cancelChanges} variant="secondary">
               Zrušit
             </Button>
-            <Button type="submit" onClick={saveCategoryChanges} variant="primary">
+            <Button
+              type="submit"
+              onClick={saveCategoryChanges}
+              variant="primary"
+            >
               Uložit kategorie
             </Button>
           </div>
@@ -442,42 +513,64 @@ const QuestionDetailPage = () => {
       <div>
         {editingField === 'title' ? (
           <>
-            <div className={`input-container ${fieldErrors.title ? 'error' : fieldValid.title ? 'valid' : ''}`}>
+            <div
+              className={`input-container ${fieldErrors.title ? 'error' : fieldValid.title ? 'valid' : ''}`}
+            >
               <input
                 type="text"
                 value={tempQuestion?.title || ''}
                 onChange={(e) => handleChange('title', e.target.value)}
                 required
               />
-              {fieldErrors.title && <p className="errorText">{fieldErrors.title}</p>}
+              {fieldErrors.title && (
+                <p className="errorText">{fieldErrors.title}</p>
+              )}
             </div>
             <div className={styles.actionButtonsContainer}>
-              <Button type={'button'} onClick={cancelChanges} variant="secondary">Zrušit</Button>
-              <Button type={'submit'} onClick={saveChanges} variant="primary">Uložit název</Button>
+              <Button
+                type={'button'}
+                onClick={cancelChanges}
+                variant="secondary"
+              >
+                Zrušit
+              </Button>
+              <Button type={'submit'} onClick={saveChanges} variant="primary">
+                Uložit název
+              </Button>
             </div>
           </>
         ) : (
-          <h1>{question.title}
+          <h1>
+            {question.title}
             {isAdmin && (
               <button className={styles.editIconBtn}>
-                <img src={editPen} alt="Edit title" onClick={() => setEditingField('title')} />
+                <img
+                  src={editPen}
+                  alt="Edit title"
+                  onClick={() => setEditingField('title')}
+                />
               </button>
             )}
           </h1>
         )}
       </div>
 
-      <div className={`${styles.bubbleInfo} ${isAuthor ? styles.rightBubbleInfo : styles.leftBubbleInfo}`}>
+      <div
+        className={`${styles.bubbleInfo} ${isAuthor ? styles.rightBubbleInfo : styles.leftBubbleInfo}`}
+      >
         <p className={styles.author}>{firstName}</p>
         <p className={styles.date}>
           {question.createdAt && question.createdAt.seconds
-            ? new Date(question.createdAt.seconds * 1000).toLocaleString('cs-CZ', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })
+            ? new Date(question.createdAt.seconds * 1000).toLocaleString(
+                'cs-CZ',
+                {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }
+              )
             : 'Datum není k dispozici'}
         </p>
       </div>
@@ -486,16 +579,33 @@ const QuestionDetailPage = () => {
         <div className={`${isAdmin ? styles.bubbleEditQuestion : ''}`}>
           {isAdmin && (
             <div
-              className={`${isAdmin ? styles.bubbleEditQuestionInner : ''} ${isAuthor || isAdmin ? styles.left : styles.right}`}>
+              className={`${isAdmin ? styles.bubbleEditQuestionInner : ''} ${isAuthor || isAdmin ? styles.left : styles.right}`}
+            >
               {isAdmin && (
                 <div className={styles.answerActions}>
                   {editingField === 'text' ? (
                     <div className={styles.actionButtonsContainer}>
-                      <Button variant="secondary" type="button" onClick={cancelChanges}>Zrušit</Button>
-                      <Button variant="primary" type="submit" onClick={saveChanges}>Uložit změny</Button>
+                      <Button
+                        variant="secondary"
+                        type="button"
+                        onClick={cancelChanges}
+                      >
+                        Zrušit
+                      </Button>
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        onClick={saveChanges}
+                      >
+                        Uložit změny
+                      </Button>
                     </div>
                   ) : (
-                    <button className={styles.editIconBtn} type="button" onClick={startEditingQuestionText}>
+                    <button
+                      className={styles.editIconBtn}
+                      type="button"
+                      onClick={startEditingQuestionText}
+                    >
                       <img src={editPen} alt="Edit text" />
                     </button>
                   )}
@@ -510,26 +620,32 @@ const QuestionDetailPage = () => {
           >
             {editingField === 'text' ? (
               <div
-                className={`input-container ${fieldErrors.questionText ? 'error' : fieldValid.questionText ? 'valid' : ''}`}>
-              <textarea
-                value={tempQuestion?.questionText || ''}
-                onChange={(e) => handleChange('questionText', e.target.value)}
-                required
-              />
-                {fieldErrors.questionText && <p className="errorText">{fieldErrors.questionText}</p>}
+                className={`input-container ${fieldErrors.questionText ? 'error' : fieldValid.questionText ? 'valid' : ''}`}
+              >
+                <textarea
+                  value={tempQuestion?.questionText || ''}
+                  onChange={(e) => handleChange('questionText', e.target.value)}
+                  required
+                />
+                {fieldErrors.questionText && (
+                  <p className="errorText">{fieldErrors.questionText}</p>
+                )}
               </div>
             ) : (
-              <p className={styles.formattedText} dangerouslySetInnerHTML={{ __html: question.questionText }} />
+              <p
+                className={styles.formattedText}
+                dangerouslySetInnerHTML={{ __html: question.questionText }}
+              />
             )}
           </div>
         </div>
       </div>
 
-
       {question.files && question.files.length > 0 && (
         <div className={styles.attachmentPreviews}>
           <div
-            className={`${styles.previewContainer} ${isAuthor ? styles.rightPreviewContainer : styles.leftPreviewContainer}`}>
+            className={`${styles.previewContainer} ${isAuthor ? styles.rightPreviewContainer : styles.leftPreviewContainer}`}
+          >
             {question?.files?.map((file: FileData, index: number) => (
               <img
                 key={index}
@@ -559,16 +675,24 @@ const QuestionDetailPage = () => {
             }}
             render={{
               buttonPrev: () => (
-                <button className={`${styles.customArrow} ${styles.customArrowLeft}`} onClick={() => setLightboxIndex(lightboxIndex - 1)}>
-                    <img src={arrow}  alt='Šipka doleva'/>
+                <button
+                  className={`${styles.customArrow} ${styles.customArrowLeft}`}
+                  onClick={() => setLightboxIndex(lightboxIndex - 1)}
+                >
+                  <img src={arrow} alt="Šipka doleva" />
                 </button>
               ),
               buttonNext: () => (
-                <button className={`${styles.customArrow} ${styles.customArrowRight}`} onClick={() => setLightboxIndex(lightboxIndex + 1)}>
+                <button
+                  className={`${styles.customArrow} ${styles.customArrowRight}`}
+                  onClick={() => setLightboxIndex(lightboxIndex + 1)}
+                >
                   <img src={arrow} alt="Šipka doprava" />
                 </button>
               ),
-              buttonClose: () => <CustomCloseIcon onClick={() => setIsLightboxOpen(false)} />,
+              buttonClose: () => (
+                <CustomCloseIcon onClick={() => setIsLightboxOpen(false)} />
+              ),
             }}
           />
         </div>
@@ -583,20 +707,28 @@ const QuestionDetailPage = () => {
           <div>
             <form onSubmit={handleSubmit}>
               <div
-                className={`input-container ${fieldErrors.answerText ? 'error' : fieldValid.answerText ? 'valid' : ''}`}>
-                  <textarea
-                    value={answerText}
-                    onChange={(e) => handleChange('answerText', e.target.value)}
-                    required
-                    placeholder="Zadejte text vaší zprávy..."
-                  />
+                className={`input-container ${fieldErrors.answerText ? 'error' : fieldValid.answerText ? 'valid' : ''}`}
+              >
+                <textarea
+                  value={answerText}
+                  onChange={(e) => handleChange('answerText', e.target.value)}
+                  required
+                  placeholder="Zadejte text vaší zprávy..."
+                />
               </div>
-              {fieldErrors.answerText &&
-                <p className={`errorText ${styles.errorTextAnswer}`}>{fieldErrors.answerText}</p>}
+              {fieldErrors.answerText && (
+                <p className={`errorText ${styles.errorTextAnswer}`}>
+                  {fieldErrors.answerText}
+                </p>
+              )}
               <AttachmentInput files={files} onFilesSelected={setFiles} />
               {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
               <div className={styles.buttonContainer}>
-                <Button variant="primary" type="submit" disabled={isLoading || !fieldValid.answerText}>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  disabled={isLoading || !fieldValid.answerText}
+                >
                   Odeslat odpověď
                 </Button>
               </div>
@@ -605,8 +737,10 @@ const QuestionDetailPage = () => {
         </div>
       ) : (
         <div className={styles.loginInfo}>
-          <p>Pokud jste autorem dotazu a chcete pokračovat v konverzaci, tak se prosím <Link
-            to={'/prihlaseni'}>přihlaste</Link>.</p>
+          <p>
+            Pokud jste autorem dotazu a chcete pokračovat v konverzaci, tak se
+            prosím <Link to={'/prihlaseni'}>přihlaste</Link>.
+          </p>
         </div>
       )}
 

@@ -48,7 +48,10 @@ const RegisterPage = () => {
     const isVerified = !!token;
     setCaptchaVerified(isVerified);
 
-    if (isVerified && error === 'Pro dokončení registrace prosím potvrďte, že nejste robot.') {
+    if (
+      isVerified &&
+      error === 'Pro dokončení registrace prosím potvrďte, že nejste robot.'
+    ) {
       setError(null);
     }
   };
@@ -109,7 +112,7 @@ const RegisterPage = () => {
     }
   };
 
-  const isFormValid = Object.values(fieldValid).every(isValid => isValid);
+  const isFormValid = Object.values(fieldValid).every((isValid) => isValid);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,13 +123,17 @@ const RegisterPage = () => {
       return;
     }
 
-    if (Object.values(fieldErrors).some(err => err)) {
+    if (Object.values(fieldErrors).some((err) => err)) {
       setError('Zkontrolujte prosím chyby ve formuláři.');
       return;
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       await updateProfile(user, { displayName: `${firstName} ${lastName}` });
@@ -141,12 +148,17 @@ const RegisterPage = () => {
       });
 
       console.log('Uživatel úspěšně registrován a uložen do db.');
-      showNotification(<p>Registrace proběhla úspěšně. Nyní se můžete přihlásit.</p>, 5);
+      showNotification(
+        <p>Registrace proběhla úspěšně. Nyní se můžete přihlásit.</p>,
+        5
+      );
       navigate('/prihlaseni');
     } catch (error: any) {
       switch (error.code) {
         case 'auth/email-already-in-use':
-          setError('Tento e-mail je již registrován. Přihlaste se nebo použijte jiný.');
+          setError(
+            'Tento e-mail je již registrován. Přihlaste se nebo použijte jiný.'
+          );
           break;
         default:
           setError('Došlo k neočekávané chybě. Zkuste to prosím znovu.');
@@ -156,12 +168,14 @@ const RegisterPage = () => {
     }
   };
 
-
   return (
     <div className={styles.container}>
       <Helmet>
         <title>Registrace - Poradna Haaro Naturo</title>
-        <meta name="description" content="Registrace do online poradny Haaro Naturo." />
+        <meta
+          name="description"
+          content="Registrace do online poradny Haaro Naturo."
+        />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
@@ -176,7 +190,9 @@ const RegisterPage = () => {
               data-theme="light"
             />
           </div>
-          <div className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}
+          >
             <label>Jméno (u dotazu bude zveřejněno) *</label>
             <input
               type="text"
@@ -184,9 +200,13 @@ const RegisterPage = () => {
               onChange={(e) => handleChange('firstName', e.target.value)}
               required
             />
-            {fieldErrors.firstName && <p className={'errorText'}>{fieldErrors.firstName}</p>}
+            {fieldErrors.firstName && (
+              <p className={'errorText'}>{fieldErrors.firstName}</p>
+            )}
           </div>
-          <div className={`input-container ${fieldErrors.lastName ? 'error' : fieldValid.lastName ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.lastName ? 'error' : fieldValid.lastName ? 'valid' : ''}`}
+          >
             <label>Příjmení *</label>
             <input
               type="text"
@@ -194,9 +214,13 @@ const RegisterPage = () => {
               onChange={(e) => handleChange('lastName', e.target.value)}
               required
             />
-            {fieldErrors.lastName && <p className={'errorText'}>{fieldErrors.lastName}</p>}
+            {fieldErrors.lastName && (
+              <p className={'errorText'}>{fieldErrors.lastName}</p>
+            )}
           </div>
-          <div className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}
+          >
             <label>Email *</label>
             <input
               type="email"
@@ -204,9 +228,13 @@ const RegisterPage = () => {
               onChange={(e) => handleChange('email', e.target.value)}
               required
             />
-            {fieldErrors.email && <p className={'errorText'}>{fieldErrors.email}</p>}
+            {fieldErrors.email && (
+              <p className={'errorText'}>{fieldErrors.email}</p>
+            )}
           </div>
-          <div className={`input-container ${fieldErrors.password ? 'error' : fieldValid.password ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.password ? 'error' : fieldValid.password ? 'valid' : ''}`}
+          >
             <label>Heslo (min 6 znaků) *</label>
             <input
               type="password"
@@ -214,10 +242,13 @@ const RegisterPage = () => {
               onChange={(e) => handleChange('password', e.target.value)}
               required
             />
-            {fieldErrors.password && <p className={'errorText'}>{fieldErrors.password}</p>}
+            {fieldErrors.password && (
+              <p className={'errorText'}>{fieldErrors.password}</p>
+            )}
           </div>
           <div
-            className={`input-container ${fieldErrors.confirmPassword ? 'error' : fieldValid.confirmPassword ? 'valid' : ''}`}>
+            className={`input-container ${fieldErrors.confirmPassword ? 'error' : fieldValid.confirmPassword ? 'valid' : ''}`}
+          >
             <label>Potvrdit heslo *</label>
             <input
               type="password"
@@ -225,11 +256,15 @@ const RegisterPage = () => {
               onChange={(e) => handleChange('confirmPassword', e.target.value)}
               required
             />
-            {fieldErrors.confirmPassword && <p className={'errorText'}>{fieldErrors.confirmPassword}</p>}
+            {fieldErrors.confirmPassword && (
+              <p className={'errorText'}>{fieldErrors.confirmPassword}</p>
+            )}
           </div>
           <p className={'textLeft'}>* povinné údaje</p>
           {error && <p className={'errorText'}>{error}</p>}
-          <Button type="submit" variant={'primary'} disabled={!isFormValid}>vytvořit můj účet</Button>
+          <Button type="submit" variant={'primary'} disabled={!isFormValid}>
+            vytvořit můj účet
+          </Button>
         </form>
 
         <div className={styles.questionContainer}>
@@ -237,7 +272,6 @@ const RegisterPage = () => {
           <Link to="/prihlaseni">Přihlaste se</Link>
         </div>
       </div>
-
     </div>
   );
 };

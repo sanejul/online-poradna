@@ -11,7 +11,10 @@ interface AttachmentInputProps {
   onFilesSelected: (files: File[]) => void;
 }
 
-const AttachmentInput: React.FC<AttachmentInputProps> = ({ files, onFilesSelected }) => {
+const AttachmentInput: React.FC<AttachmentInputProps> = ({
+  files,
+  onFilesSelected,
+}) => {
   const [filePreviews, setFilePreviews] = useState<FileWithPreview[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,11 +29,18 @@ const AttachmentInput: React.FC<AttachmentInputProps> = ({ files, onFilesSelecte
     }
   };
 
-  const handleRemoveFile = (fileToRemove: FileWithPreview, event: React.MouseEvent) => {
+  const handleRemoveFile = (
+    fileToRemove: FileWithPreview,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation();
     event.preventDefault();
 
-    onFilesSelected(filePreviews.map((fwp) => fwp.file).filter((file) => file !== fileToRemove.file));
+    onFilesSelected(
+      filePreviews
+        .map((fwp) => fwp.file)
+        .filter((file) => file !== fileToRemove.file)
+    );
     setFilePreviews((prev) => prev.filter((file) => file !== fileToRemove));
     URL.revokeObjectURL(fileToRemove.preview);
   };
@@ -57,8 +67,15 @@ const AttachmentInput: React.FC<AttachmentInputProps> = ({ files, onFilesSelecte
       <div className={styles.previewContainer}>
         {filePreviews.map((fileWithPreview, index) => (
           <div key={index} className={styles.previewItem}>
-            <img src={fileWithPreview.preview} alt={`Preview ${index}`} className={styles.previewImage} />
-            <button className={styles.removeButton} onClick={(e) => handleRemoveFile(fileWithPreview, e)}>
+            <img
+              src={fileWithPreview.preview}
+              alt={`Preview ${index}`}
+              className={styles.previewImage}
+            />
+            <button
+              className={styles.removeButton}
+              onClick={(e) => handleRemoveFile(fileWithPreview, e)}
+            >
               ✕
             </button>
             <p className={styles.fileName}>{fileWithPreview.file.name}</p>

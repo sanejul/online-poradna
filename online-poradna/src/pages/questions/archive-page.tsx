@@ -8,7 +8,7 @@ import SearchBar from '../../components/navigation/search-bar';
 import Button from '../../components/buttons/button';
 import Pagination from '@mui/material/Pagination';
 import { useWindowSize } from '../../hooks/use-window-size';
-import {Helmet} from "react-helmet";
+import { Helmet } from 'react-helmet';
 
 interface Question {
   id: string;
@@ -30,7 +30,9 @@ const ArchivePage = () => {
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(['all']);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([
+    'all',
+  ]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const { isDesktop, isLargeDesktop } = useWindowSize();
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,7 +41,9 @@ const ArchivePage = () => {
   useEffect(() => {
     const categoriesRef = collection(db, 'categories');
     const unsubscribeCategories = onSnapshot(categoriesRef, (querySnapshot) => {
-      const categoryList: Category[] = [{ id: 'all', name: 'Všechny kategorie' }];
+      const categoryList: Category[] = [
+        { id: 'all', name: 'Všechny kategorie' },
+      ];
       querySnapshot.forEach((doc) => {
         categoryList.push({ id: doc.id, name: doc.data().name });
       });
@@ -73,16 +77,19 @@ const ArchivePage = () => {
 
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter((question) =>
-        (question.title || '').toLowerCase().includes(lowerCaseQuery) ||
-        (question.questionText || '').toLowerCase().includes(lowerCaseQuery),
+      filtered = filtered.filter(
+        (question) =>
+          (question.title || '').toLowerCase().includes(lowerCaseQuery) ||
+          (question.questionText || '').toLowerCase().includes(lowerCaseQuery)
       );
     }
 
     if (!selectedCategories.includes('all') && selectedCategories.length > 0) {
       filtered = filtered.filter((question) => {
         if (Array.isArray(question.category)) {
-          return question.category.some((catId) => selectedCategories.includes(catId));
+          return question.category.some((catId) =>
+            selectedCategories.includes(catId)
+          );
         }
         return false;
       });
@@ -94,7 +101,6 @@ const ArchivePage = () => {
 
     setFilteredQuestions(filtered);
   }, [searchQuery, questions, selectedCategories]);
-
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -123,9 +129,15 @@ const ArchivePage = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredQuestions.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredQuestions.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    page: number
+  ) => {
     setCurrentPage(page);
     window.scrollTo({
       top: 0,
@@ -148,14 +160,22 @@ const ArchivePage = () => {
       <div className={styles.contentContainer}>
         <div className={styles.navContainer}>
           <div className={styles.searchBar}>
-            <SearchBar onSearch={handleSearch} placeholder={'Vyhledat dotaz...'} />
+            <SearchBar
+              onSearch={handleSearch}
+              placeholder={'Vyhledat dotaz...'}
+            />
           </div>
 
           <div className={styles.categoryContainer}>
-            <Button type={'button'} variant={'secondary'} onClick={toggleCategoryDropdown}>
+            <Button
+              type={'button'}
+              variant={'secondary'}
+              onClick={toggleCategoryDropdown}
+            >
               {showCategoryDropdown ? 'Skrýt kategorie' : 'Kategorie'}
               <span
-                className={`${styles.arrowIcon} ${showCategoryDropdown ? styles.arrowUp : styles.arrowDown}`}></span>
+                className={`${styles.arrowIcon} ${showCategoryDropdown ? styles.arrowUp : styles.arrowDown}`}
+              ></span>
             </Button>
 
             {showCategoryDropdown && (
@@ -168,7 +188,10 @@ const ArchivePage = () => {
                       checked={selectedCategories.includes(category.id)}
                       onChange={() => handleCategorySelect(category.id)}
                     />
-                    <label htmlFor={`category-${category.id}`} className={styles.categoryLabel}>
+                    <label
+                      htmlFor={`category-${category.id}`}
+                      className={styles.categoryLabel}
+                    >
                       {category.name}
                     </label>
                   </div>
@@ -195,7 +218,11 @@ const ArchivePage = () => {
                   isAnswered={question.isAnswered}
                   category={
                     Array.isArray(question.category)
-                      ? question.category.map((catId) => categories.find((cat) => cat.id === catId)?.name || catId)
+                      ? question.category.map(
+                          (catId) =>
+                            categories.find((cat) => cat.id === catId)?.name ||
+                            catId
+                        )
                       : ['Žádná kategorie']
                   }
                 />

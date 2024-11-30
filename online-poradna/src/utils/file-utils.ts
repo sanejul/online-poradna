@@ -5,14 +5,21 @@ import { v4 as uuidv4 } from 'uuid';
 /**
  * Převod fotografií na WebP formát.
  */
-const convertImageToWebP = async (file: File, options: { maxWidth: number; maxHeight: number }): Promise<Blob> => {
+const convertImageToWebP = async (
+  file: File,
+  options: { maxWidth: number; maxHeight: number }
+): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async (event) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const scaleFactor = Math.min(options.maxWidth / img.width, options.maxHeight / img.height, 1);
+        const scaleFactor = Math.min(
+          options.maxWidth / img.width,
+          options.maxHeight / img.height,
+          1
+        );
         canvas.width = img.width * scaleFactor;
         canvas.height = img.height * scaleFactor;
 
@@ -22,7 +29,8 @@ const convertImageToWebP = async (file: File, options: { maxWidth: number; maxHe
 
         canvas.toBlob(
           (blob) => {
-            if (!blob) return reject(new Error('Failed to convert image to WebP'));
+            if (!blob)
+              return reject(new Error('Failed to convert image to WebP'));
             resolve(blob);
           },
           'image/webp',
@@ -43,17 +51,32 @@ const convertImageToWebP = async (file: File, options: { maxWidth: number; maxHe
 export const uploadAndTransformFiles = async (file: File, basePath: string) => {
   const uniqueId = uuidv4();
 
-  const originalRef = ref(storage, `${basePath}/original/${uniqueId}_${file.name}`);
+  const originalRef = ref(
+    storage,
+    `${basePath}/original/${uniqueId}_${file.name}`
+  );
   await uploadBytesResumable(originalRef, file);
   const originalUrl = await getDownloadURL(originalRef);
 
-  const fullWebPBlob = await convertImageToWebP(file, { maxWidth: Infinity, maxHeight: Infinity });
-  const fullWebPRef = ref(storage, `${basePath}/fullwebp/${uniqueId}_${file.name.replace(/\.[^/.]+$/, '')}.webp`);
+  const fullWebPBlob = await convertImageToWebP(file, {
+    maxWidth: Infinity,
+    maxHeight: Infinity,
+  });
+  const fullWebPRef = ref(
+    storage,
+    `${basePath}/fullwebp/${uniqueId}_${file.name.replace(/\.[^/.]+$/, '')}.webp`
+  );
   await uploadBytesResumable(fullWebPRef, fullWebPBlob);
   const fullImageUrl = await getDownloadURL(fullWebPRef);
 
-  const thumbBlob = await convertImageToWebP(file, { maxWidth: 400, maxHeight: 400 });
-  const thumbRef = ref(storage, `${basePath}/thumbs/${uniqueId}_${file.name.replace(/\.[^/.]+$/, '')}_thumb.webp`);
+  const thumbBlob = await convertImageToWebP(file, {
+    maxWidth: 400,
+    maxHeight: 400,
+  });
+  const thumbRef = ref(
+    storage,
+    `${basePath}/thumbs/${uniqueId}_${file.name.replace(/\.[^/.]+$/, '')}_thumb.webp`
+  );
   await uploadBytesResumable(thumbRef, thumbBlob);
   const thumbnailUrl = await getDownloadURL(thumbRef);
 

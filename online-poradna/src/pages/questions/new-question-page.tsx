@@ -6,7 +6,10 @@ import Button from '../../components/buttons/button';
 import styles from './new-question-page.module.css';
 import AttachmentInput from '../../components/attachment-input';
 import LoadingSpinner from '../../components/loading-spinner';
-import { validateQuestionText, validateQuestionTitle } from '../../helpers/validation-helper';
+import {
+  validateQuestionText,
+  validateQuestionTitle,
+} from '../../helpers/validation-helper';
 import { useNotification } from '../../contexts/notification-context';
 import { uploadAndTransformFiles } from '../../utils/file-utils';
 import { formatTextForDisplay } from '../../utils/text-utils';
@@ -21,8 +24,14 @@ const NewQuestionPage = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState({ title: '', questionText: '' });
-  const [fieldValid, setFieldValid] = useState({ title: false, questionText: false });
+  const [fieldErrors, setFieldErrors] = useState({
+    title: '',
+    questionText: '',
+  });
+  const [fieldValid, setFieldValid] = useState({
+    title: false,
+    questionText: false,
+  });
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isMobile } = useWindowSize();
@@ -34,7 +43,10 @@ const NewQuestionPage = () => {
     const isVerified = !!token;
     setCaptchaVerified(isVerified);
 
-    if (isVerified && error === 'Pro odeslání dotazu prosím potvrďte, že nejste robot.') {
+    if (
+      isVerified &&
+      error === 'Pro odeslání dotazu prosím potvrďte, že nejste robot.'
+    ) {
       setError(null);
     }
   };
@@ -101,7 +113,10 @@ const NewQuestionPage = () => {
 
       const fileDataArray = [];
       for (const file of files) {
-        const fileData = await uploadAndTransformFiles(file, `questions/${questionId}`);
+        const fileData = await uploadAndTransformFiles(
+          file,
+          `questions/${questionId}`
+        );
         fileDataArray.push(fileData);
       }
 
@@ -110,7 +125,11 @@ const NewQuestionPage = () => {
       showNotification(<p>Váš dotaz byl úspěšně odeslán.</p>, 5);
       navigate(`/dotazy/${questionId}`);
     } catch (error) {
-      showNotification(<p>Dotaz se nepodařilo odeslat. Zkuste to prosím znovu.</p>, 10, 'warning');
+      showNotification(
+        <p>Dotaz se nepodařilo odeslat. Zkuste to prosím znovu.</p>,
+        10,
+        'warning'
+      );
       setError('Chyba při odesílání dotazu: ' + (error as Error).message);
     } finally {
       setIsLoading(false);
@@ -127,13 +146,21 @@ const NewQuestionPage = () => {
       <h1>Položit nový dotaz</h1>
 
       {!user ? (
-        <p className={styles.infoText}>Pro položení dotazu se prosím <Link to="/prihlaseni">přihlaste</Link>.</p>
+        <p className={styles.infoText}>
+          Pro položení dotazu se prosím <Link to="/prihlaseni">přihlaste</Link>.
+        </p>
       ) : (
         <div className={styles.infoTextContainer}>
-          <p className={styles.infoText}>U dotazu bude zveřejněno vaše křestní jméno, které jste uvedli při registraci.
-            Změnit ho můžete <Link to="/profil">ve svém
-              profilu</Link>, pokud zde chcete používat např. přezdívku.</p>
-          <p className={styles.infoText}>Jakmile odpovíme, přijde vám upozornění{isMobile && (<br />)} na e-mail.</p>
+          <p className={styles.infoText}>
+            U dotazu bude zveřejněno vaše křestní jméno, které jste uvedli při
+            registraci. Změnit ho můžete{' '}
+            <Link to="/profil">ve svém profilu</Link>, pokud zde chcete používat
+            např. přezdívku.
+          </p>
+          <p className={styles.infoText}>
+            Jakmile odpovíme, přijde vám upozornění{isMobile && <br />} na
+            e-mail.
+          </p>
         </div>
       )}
 
@@ -141,8 +168,10 @@ const NewQuestionPage = () => {
         <div className="loadingContainer">
           <LoadingSpinner />
           <div className="loadingText">
-            <p>Probíhá odesílání dotazu. Pokud k dotazu byly přiloženy fotografie jejich zpracování může chvilku
-              trvat.</p>
+            <p>
+              Probíhá odesílání dotazu. Pokud k dotazu byly přiloženy fotografie
+              jejich zpracování může chvilku trvat.
+            </p>
             <p>Děkujeme, že čekáte.</p>
           </div>
         </div>
@@ -158,7 +187,9 @@ const NewQuestionPage = () => {
               data-theme="light"
             />
           </div>
-          <div className={`input-container ${fieldErrors.title ? 'error' : fieldValid.title ? 'valid' : ''}`}>
+          <div
+            className={`input-container ${fieldErrors.title ? 'error' : fieldValid.title ? 'valid' : ''}`}
+          >
             <label>Název dotazu *</label>
             <input
               type="text"
@@ -167,11 +198,14 @@ const NewQuestionPage = () => {
               onChange={(e) => handleChange('title', e.target.value)}
               required
             />
-            {fieldErrors.title && <p className="errorText">{fieldErrors.title}</p>}
+            {fieldErrors.title && (
+              <p className="errorText">{fieldErrors.title}</p>
+            )}
           </div>
 
           <div
-            className={`input-container ${fieldErrors.questionText ? 'error' : fieldValid.questionText ? 'valid' : ''}`}>
+            className={`input-container ${fieldErrors.questionText ? 'error' : fieldValid.questionText ? 'valid' : ''}`}
+          >
             <label>Text dotazu *</label>
             <textarea
               className={styles.textarea}
@@ -180,7 +214,9 @@ const NewQuestionPage = () => {
               onChange={(e) => handleChange('questionText', e.target.value)}
               required
             />
-            {fieldErrors.questionText && <p className="errorText">{fieldErrors.questionText}</p>}
+            {fieldErrors.questionText && (
+              <p className="errorText">{fieldErrors.questionText}</p>
+            )}
           </div>
 
           <p className={'textLeft'}>* povinné údaje</p>
@@ -189,8 +225,15 @@ const NewQuestionPage = () => {
         {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
         <div className={styles.buttonContainer}>
           {error && <p className="errorText">{error}</p>}
-          <Button variant="primary" type="submit"
-                  disabled={!user || isLoading || !Object.values(fieldValid).every(valid => valid)}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={
+              !user ||
+              isLoading ||
+              !Object.values(fieldValid).every((valid) => valid)
+            }
+          >
             Odeslat dotaz
           </Button>
         </div>

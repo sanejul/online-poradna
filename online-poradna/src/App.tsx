@@ -28,7 +28,11 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="App">
-        {(isTablet || isBiggerMobile || isMobile || isDesktop) || isAdmin ? <MobileNav /> : <DesktopNav />}
+        {isTablet || isBiggerMobile || isMobile || isDesktop || isAdmin ? (
+          <MobileNav />
+        ) : (
+          <DesktopNav />
+        )}
         <div className="main-container">
           <ScrollToTop />
           <Routes>
@@ -36,8 +40,22 @@ function App() {
             <Route path="/registrace" element={<Registration />} />
             <Route path="/prihlaseni" element={<Login />} />
             <Route path="/odhlaseni" element={<Logout />} />
-            <Route path="/seznam-uzivatelu" element={<ProtectedRoute><UsersListPage /></ProtectedRoute>} />
-            <Route path="/sprava-kategorii" element={<ProtectedRoute><CategoryManagementPage /></ProtectedRoute>} />
+            <Route
+              path="/seznam-uzivatelu"
+              element={
+                <ProtectedRoute>
+                  <UsersListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sprava-kategorii"
+              element={
+                <ProtectedRoute>
+                  <CategoryManagementPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/novy-dotaz" element={<NewQuestionPage />} />
             <Route path="/vsechny-dotazy" element={<ArchivePage />} />
             <Route path="/profil" element={<ProfilePage />} />
@@ -46,8 +64,7 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
-        <div>
-        </div>
+        <div></div>
       </div>
     </ErrorBoundary>
   );

@@ -7,6 +7,7 @@ export const formatTextForDisplay = (text: string): string => {
   const formattedText = text.replace(/\n/g, '<br />');
   return formattedText.replace(
     urlRegex,
-    (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+    (url) =>
+      `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
   );
 };

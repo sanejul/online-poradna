@@ -1,4 +1,3 @@
-// eslint.config.js
 import eslintRecommended from "eslint/conf/eslint-recommended";
 import reactPlugin from "eslint-plugin-react";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
