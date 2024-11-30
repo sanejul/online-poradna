@@ -67,6 +67,11 @@
     padding-left: 1rem;
 }
 
+.infoContainer a {
+    font-size: 1.2rem;
+    color: var(--blue);
+}
+
 .infoContainer li::before {
     display: inline-block;
     background-color: var(--blue-light);

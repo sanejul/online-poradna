@@ -86,8 +86,11 @@ const HomePage = () => {
 
             <div className={styles.textContainer}>
               <ul>
-                <li>mrkněte na předešlé odpovědi, třeba najdete podobný problém, jako je ten váš</li>
-                <li>registrujte se, přihlaste se a napište mi</li>
+                <li>mrkněte na <Link to='/vsechny-dotazy'>předešlé odpovědi</Link>, třeba najdete podobný problém, jako
+                  je ten váš
+                </li>
+                <li><Link to='/registrace'>registrujte se</Link>, <Link to='/prihlaseni'>přihlaste se</Link> a <Link
+                  to='/novy-dotaz'>napište mi</Link></li>
                 <li>u dotazu bude zveřejněno pouze vaše křestní jméno</li>
               </ul>
             </div>
@@ -118,6 +121,13 @@ const HomePage = () => {
                 pomoct, nekopíruju sem instantní odpovědi.</p>
             </div>
           </div>
+
+          {isMobile && (
+            <div className={styles.buttonsContainer}>
+              <Link to="/vsechny-dotazy"><Button type={'button'} variant={'primary'}>Prohlédnout dotazy</Button></Link>
+              <Link to="/novy-dotaz"><Button type={'button'} variant={'secondary'}>Položit nový dotaz</Button></Link>
+            </div>
+          )}
         </div>
       </div>
 

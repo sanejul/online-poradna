@@ -109,7 +109,6 @@
         align-items: center;
         justify-content: center;
         font-size: 2rem;
-        color: var(--blue) !important;
         opacity: 0.5;
     }
 
@@ -117,6 +116,7 @@
         font-size: 3rem;
         font-weight: 500;
         margin: 5rem 0 10rem 0;
+        color: var(--blue) !important;
     }
 }
 
