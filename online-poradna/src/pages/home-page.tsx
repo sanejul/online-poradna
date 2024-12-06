@@ -48,12 +48,12 @@ const HomePage = () => {
       </Helmet>
       <div className={styles.container}>
         <div className={styles.titleContainer}>
-          <h1>
+          <h1 id="main-title">
             Online poradna <br />
             pro přírodní barvení vlasů
           </h1>
           {(isDesktop || isLargeDesktop) && (
-            <img src={arrow} className={styles.arrow} alt="Šipka dolů"></img>
+            <img src={arrow} className={styles.arrow} alt="Šipka dolů" aria-hidden="true"></img>
           )}
           <picture>
             <source
@@ -71,6 +71,7 @@ const HomePage = () => {
               loading="lazy"
               className={styles.img}
               alt="Poradna Haaro Naturo - úvodní fotka, ženy"
+              aria-labelledby="main-title"
             />
           </picture>
         </div>
@@ -80,12 +81,12 @@ const HomePage = () => {
           cokoli, rádi pomůžeme i vám.
         </p>
         <div className={styles.buttonsContainer}>
-          <Link to="/vsechny-dotazy">
+          <Link to="/vsechny-dotazy" aria-label="Prohlédnout všechny dotazy">
             <Button type={'button'} variant={'primary'}>
               Prohlédnout dotazy
             </Button>
           </Link>
-          <Link to="/novy-dotaz">
+          <Link to="/novy-dotaz" aria-label="Položit nový dotaz">
             <Button type={'button'} variant={'secondary'}>
               Položit nový dotaz
             </Button>
@@ -94,12 +95,12 @@ const HomePage = () => {
 
         <div className={styles.infoContainer}>
           <div className={styles.h2Container}>
-            <h2>
+            <h2 id="about-author">
               Kdo Vám odpovídá
               <span className={styles.underline}></span>
             </h2>
 
-            <div className={styles.textContainer}>
+            <div className={styles.textContainer} aria-labelledby="about-author">
               <p>
                 Jmenuji se Zita a založila jsem přírodní kadeřnictví Haaro
                 Naturo v Liberci.
@@ -115,21 +116,21 @@ const HomePage = () => {
           </div>
 
           <div className={styles.h2Container}>
-            <h2>
+            <h2 id="how-it-works">
               Jak to tady funguje
               <span className={styles.underline}></span>
             </h2>
 
-            <div className={styles.textContainer}>
+            <div className={styles.textContainer} aria-labelledby="how-it-works">
               <ul>
                 <li>
-                  mrkněte na <Link to="/vsechny-dotazy">předešlé odpovědi</Link>
+                  mrkněte na <Link to="/vsechny-dotazy" aria-label="Předešlé odpovědi">předešlé odpovědi</Link>
                   , třeba najdete podobný problém, jako je ten váš
                 </li>
                 <li>
-                  <Link to="/registrace">registrujte se</Link>,{' '}
-                  <Link to="/prihlaseni">přihlaste se</Link> a{' '}
-                  <Link to="/novy-dotaz">napište mi</Link>
+                  <Link to="/registrace" aria-label="Registrace do poradny">registrujte se</Link>,{' '}
+                  <Link to="/prihlaseni" aria-label="Přihlášení do poradny">přihlaste se</Link> a{' '}
+                  <Link to="/novy-dotaz" aria-label="Napsání nového dotazu">napište mi</Link>
                 </li>
                 <li>u dotazu bude zveřejněno pouze vaše křestní jméno</li>
               </ul>
@@ -137,11 +138,11 @@ const HomePage = () => {
           </div>
 
           <div className={styles.h2Container}>
-            <h2>
+            <h2 id="write-more">
               Napište mi toho hodně o svých vlasech
               <span className={styles.underline}></span>
             </h2>
-            <div className={styles.textContainer}>
+            <div className={styles.textContainer} aria-labelledby="write-more">
               <ul>
                 <li>jejich přirozenou barvu</li>
                 <li>čím aktuálně barvíte a jak to vypadá</li>
@@ -167,12 +168,12 @@ const HomePage = () => {
 
           {isMobile && (
             <div className={styles.buttonsContainer}>
-              <Link to="/vsechny-dotazy">
+              <Link to="/vsechny-dotazy" aria-label="Prohlédnout všechny dotazy">
                 <Button type={'button'} variant={'primary'}>
                   Prohlédnout dotazy
                 </Button>
               </Link>
-              <Link to="/novy-dotaz">
+              <Link to="/novy-dotaz" aria-label="Položit nový dotaz">
                 <Button type={'button'} variant={'secondary'}>
                   Položit nový dotaz
                 </Button>

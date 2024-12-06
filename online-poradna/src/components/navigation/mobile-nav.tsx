@@ -17,6 +17,12 @@ const MobileNav: React.FC = () => {
     const contain = document.querySelector(`.${styles.contain}`) as HTMLElement;
 
     if (overlay && contain && overlay.classList.contains(styles.open)) {
+      const isOpen = overlay.classList.toggle(styles.open);
+      contain.classList.toggle(styles.change);
+
+      overlay.setAttribute('aria-hidden', !isOpen ? 'true' : 'false');
+      contain.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+
       overlay.classList.remove(styles.open);
       contain.classList.remove(styles.change);
     }
@@ -29,6 +35,10 @@ const MobileNav: React.FC = () => {
     if (overlay && contain) {
       overlay.classList.toggle(styles.open);
       contain.classList.toggle(styles.change);
+
+      const isOpen = overlay.classList.contains(styles.open);
+      overlay.setAttribute('aria-hidden', !isOpen ? 'true' : 'false');
+      contain.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     }
   };
 
@@ -39,7 +49,7 @@ const MobileNav: React.FC = () => {
     }
 
     const navLinks = document.querySelectorAll(
-      `.${styles.navLink}, button.${styles.navLink}`
+      `.${styles.navLink}, button.${styles.navLink}`,
     );
     navLinks.forEach((link) => {
       link.addEventListener('click', closeOverlay);
@@ -47,7 +57,7 @@ const MobileNav: React.FC = () => {
 
     return () => {
       const navLinks = document.querySelectorAll(
-        `.${styles.navLink}, button.${styles.navLink}`
+        `.${styles.navLink}, button.${styles.navLink}`,
       );
       navLinks.forEach((link) => {
         link.removeEventListener('click', closeOverlay);
@@ -57,16 +67,22 @@ const MobileNav: React.FC = () => {
 
   return (
     <header className={styles.container}>
-      <p>HAARO-PORADNA</p>
+      <p aria-hidden="true">HAARO-PORADNA</p>
       {((isAdmin && !isMobile) || !isMobile) && (
-        <Link to="/" className={styles.logo}>
+        <Link to="/" className={styles.logo} aria-label="Přejít na úvodní stránku">
           <img id={styles.logo} src={logo} alt="Haaro Naturo logo" />
         </Link>
       )}
       <div>
-        <nav id={styles.mobileNavbar} className={styles.mobileNavbar}>
+        <nav id={styles.mobileNavbar} className={styles.mobileNavbar} tabIndex={1}>
           <div className={styles.navbarButtons}>
-            <button className={styles.contain}>
+            <button
+              className={styles.contain}
+              tabIndex={1}
+              aria-label="Otevřít nebo zavřít menu"
+              aria-controls="mobileMenu"
+              aria-expanded="false"
+            >
               <span className={styles.bar1}></span>
               <span className={styles.bar2}></span>
               <span className={styles.bar3}></span>
@@ -74,16 +90,22 @@ const MobileNav: React.FC = () => {
           </div>
         </nav>
 
-        <nav className={styles.overlay}>
-          <div className={styles.overlayMenu}>
+        <nav
+          className={styles.overlay}
+          id="mobileMenu"
+          role="dialog"
+          aria-label="Navigace v aplikaci"
+          aria-hidden="true"
+        >
+          <div className={styles.overlayMenu} tabIndex={1}>
             <ul>
               <li>
-                <Link to="/" className={styles.logo2}>
+                <Link to="/" className={styles.logo2} aria-label="Přejít na úvodní stránku">
                   <img id={styles.logo2} src={logo2} alt="Haaro Naturo logo" />
                 </Link>
               </li>
               <li>
-                <Link to="/" data-link="o poradně" className={styles.navLink}>
+                <Link to="/" data-link="o poradně" className={styles.navLink} aria-label="Přejít na úvodní stránku">
                   <span>o poradně</span>
                 </Link>
               </li>
@@ -92,6 +114,7 @@ const MobileNav: React.FC = () => {
                   to="/novy-dotaz"
                   data-link="nový dotaz"
                   className={styles.navLink}
+                  aria-label="Položit nový dotaz"
                 >
                   <span>nový dotaz</span>
                 </Link>
@@ -101,6 +124,7 @@ const MobileNav: React.FC = () => {
                   to="/vsechny-dotazy"
                   data-link="prohlédnout dotazy"
                   className={styles.navLink}
+                  aria-label="Prohlédnout všechny dotazy"
                 >
                   <span>prohlédnout dotazy</span>
                 </Link>
@@ -112,6 +136,7 @@ const MobileNav: React.FC = () => {
                     data-link="můj profil"
                     className={styles.navLink}
                     onClick={closeOverlay}
+                    aria-label="Přejít na svůj profil"
                   >
                     <span>můj profil</span>
                   </Link>
@@ -125,6 +150,7 @@ const MobileNav: React.FC = () => {
                       data-link="seznam uživatelů"
                       className={styles.navLink}
                       onClick={closeOverlay}
+                      aria-label="Zobrazit seznam uživatelů"
                     >
                       <span>seznam uživatelů</span>
                     </Link>
@@ -135,6 +161,7 @@ const MobileNav: React.FC = () => {
                       data-link="správa kategorií"
                       className={styles.navLink}
                       onClick={closeOverlay}
+                      aria-label="Správa kategorií"
                     >
                       <span>správa kategorií</span>
                     </Link>
@@ -148,6 +175,7 @@ const MobileNav: React.FC = () => {
                   href="https://blog.haarosalon.cz/"
                   data-link="blog"
                   className={styles.navLink}
+                  aria-label="Přejít na blog"
                 >
                   <span>blog</span>
                 </a>
@@ -159,6 +187,7 @@ const MobileNav: React.FC = () => {
                   href="https://www.haaro-naturo.cz/"
                   data-link="e-shop"
                   className={styles.navLink}
+                  aria-label="Přejít na e-shop"
                 >
                   <span>e-shop</span>
                 </a>
@@ -171,6 +200,7 @@ const MobileNav: React.FC = () => {
                       data-link="přihlásit se"
                       className={styles.navLink}
                       onClick={closeOverlay}
+                      aria-label="Přihlásit se"
                     >
                       <span>přihlásit se</span>
                     </Link>
@@ -181,6 +211,7 @@ const MobileNav: React.FC = () => {
                       data-link="registrovat se"
                       className={styles.navLink}
                       onClick={closeOverlay}
+                      aria-label="Registrovat nový účet"
                     >
                       <span>registrovat se</span>
                     </Link>
@@ -191,6 +222,7 @@ const MobileNav: React.FC = () => {
                   <button
                     onClick={() => handleUserLogout(closeOverlay)}
                     className={styles.navLink}
+                    aria-label="Odhlásit se"
                   >
                     <span>odhlásit se</span>
                   </button>

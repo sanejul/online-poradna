@@ -419,7 +419,7 @@ const UsersListPage = () => {
                   variant="primary"
                   type="submit"
                   onClick={() => saveUser(user.id, editingUser)}
-                  disabled={!isFormValid()}
+                  isDisabled={!isFormValid()}
                 >
                   Uložit
                 </Button>

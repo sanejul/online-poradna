@@ -179,9 +179,9 @@ const RegisterPage = () => {
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      <h1>Registrace</h1>
+      <h1 id="form-title">Registrace</h1>
       <div className={styles.formContainer}>
-        <form className={styles.form} onSubmit={handleRegister} method="POST">
+        <form className={styles.form} onSubmit={handleRegister} method="POST" aria-labelledby="form-title">
           <div className="captcha">
             <ReCAPTCHA
               sitekey="6LfcuT4jAAAAADrHwrSTR5_S19LYAUk-TMnZdF48"
@@ -199,9 +199,11 @@ const RegisterPage = () => {
               value={firstName}
               onChange={(e) => handleChange('firstName', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.firstName}
+              aria-describedby={fieldErrors.firstName ? 'first-name-error' : undefined}
             />
             {fieldErrors.firstName && (
-              <p className={'errorText'}>{fieldErrors.firstName}</p>
+              <p className={'errorText'} id="first-name-error">{fieldErrors.firstName}</p>
             )}
           </div>
           <div
@@ -213,9 +215,11 @@ const RegisterPage = () => {
               value={lastName}
               onChange={(e) => handleChange('lastName', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.lastName}
+              aria-describedby={fieldErrors.lastName ? 'last-name-error' : undefined}
             />
             {fieldErrors.lastName && (
-              <p className={'errorText'}>{fieldErrors.lastName}</p>
+              <p className={'errorText'} id="last-name-error">{fieldErrors.lastName}</p>
             )}
           </div>
           <div
@@ -227,9 +231,11 @@ const RegisterPage = () => {
               value={email}
               onChange={(e) => handleChange('email', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.email}
+              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
             />
             {fieldErrors.email && (
-              <p className={'errorText'}>{fieldErrors.email}</p>
+              <p className={'errorText'} id="email-error">{fieldErrors.email}</p>
             )}
           </div>
           <div
@@ -241,9 +247,11 @@ const RegisterPage = () => {
               value={password}
               onChange={(e) => handleChange('password', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.password}
+              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
             />
             {fieldErrors.password && (
-              <p className={'errorText'}>{fieldErrors.password}</p>
+              <p className={'errorText'} id="password-error">{fieldErrors.password}</p>
             )}
           </div>
           <div
@@ -255,14 +263,16 @@ const RegisterPage = () => {
               value={confirmPassword}
               onChange={(e) => handleChange('confirmPassword', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.confirmPassword}
+              aria-describedby={fieldErrors.confirmPassword ? 'confirm-password-error' : undefined}
             />
             {fieldErrors.confirmPassword && (
-              <p className={'errorText'}>{fieldErrors.confirmPassword}</p>
+              <p className={'errorText'} id="confirm-password-error">{fieldErrors.confirmPassword}</p>
             )}
           </div>
           <p className={'textLeft'}>* povinné údaje</p>
-          {error && <p className={'errorText'}>{error}</p>}
-          <Button type="submit" variant={'primary'} disabled={!isFormValid}>
+          {error && <p className={'errorText'} role="alert">{error}</p>}
+          <Button type="submit" variant={'primary'} isDisabled={!isFormValid}>
             vytvořit můj účet
           </Button>
         </form>

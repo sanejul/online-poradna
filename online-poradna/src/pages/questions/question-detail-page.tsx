@@ -420,7 +420,10 @@ const QuestionDetailPage = () => {
   const firstName = question.user?.displayName?.split(' ')[0] || 'Anonym';
 
   return (
-    <div className={`${styles.container} ${user ? '' : styles.marginBottom}`}>
+    <div className={`${styles.container} ${user ? '' : styles.marginBottom}`}
+         aria-labelledby="question-title"
+         aria-describedby="question-details"
+    >
       <Helmet>
         <title>Detail dotazu - Poradna Haaro Naturo</title>
         <meta name="description" content={`Detail dotazu ${question.title}`} />
@@ -428,11 +431,22 @@ const QuestionDetailPage = () => {
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      {isLoading && <LoadingSpinner />}
+      {isLoading && (
+        <div className="loadingContainer" role="alert" aria-live="polite">
+          <LoadingSpinner />
+          <div className="loadingText">
+            <p>
+              Probíhá odesílání zprávy. Pokud k ní byly přiloženy fotografie
+              jejich zpracování může chvilku trvat.
+            </p>
+            <p>Děkujeme, že čekáte.</p>
+          </div>
+        </div>
+      )}
 
       {isAdmin && (
         <div className={styles.deleteConversationButton}>
-          <Button type={'button'} onClick={deleteQuestion} variant="delete">
+          <Button type={'button'} onClick={deleteQuestion} variant="delete" aria-label="Smazat celou konverzaci">
             Smazat celou konverzaci
           </Button>
         </div>
@@ -440,7 +454,7 @@ const QuestionDetailPage = () => {
 
       <div className={styles.categoryList}>
         {selectedCategoryNames.length > 0 ? (
-          <span className={styles.categorySpan}>
+          <span className={styles.categorySpan} aria-label="Kategorie dotazu">
             {selectedCategoryNames.join(', ')}
           </span>
         ) : (
@@ -540,7 +554,7 @@ const QuestionDetailPage = () => {
             </div>
           </>
         ) : (
-          <h1>
+          <h1 id="question-title">
             {question.title}
             {isAdmin && (
               <button className={styles.editIconBtn}>
@@ -617,6 +631,9 @@ const QuestionDetailPage = () => {
           <div
             className={`${styles.bubble} ${isAuthor ? styles.rightBubble : styles.leftBubble}
           ${editingField === 'text' ? styles.bubbleEditMode : ''}`}
+            role="region"
+            aria-live="polite"
+            aria-labelledby="question-text"
           >
             {editingField === 'text' ? (
               <div
@@ -633,6 +650,7 @@ const QuestionDetailPage = () => {
               </div>
             ) : (
               <p
+                id="question-text"
                 className={styles.formattedText}
                 dangerouslySetInnerHTML={{ __html: question.questionText }}
               />
@@ -653,6 +671,8 @@ const QuestionDetailPage = () => {
                 alt={`Příloha ${index + 1}`}
                 className={styles.previewImage}
                 onClick={() => handleFileClick(question.files!, index)}
+                role="button"
+                aria-label={`Zobrazit přílohu ${index + 1}`}
               />
             ))}
           </div>
@@ -702,7 +722,7 @@ const QuestionDetailPage = () => {
 
       {user !== null ? (
         <div className={styles.answerContainer}>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p className="errorText" role="alert" aria-live="polite">{error}</p>}
 
           <div>
             <form onSubmit={handleSubmit}>
@@ -714,22 +734,25 @@ const QuestionDetailPage = () => {
                   onChange={(e) => handleChange('answerText', e.target.value)}
                   required
                   placeholder="Zadejte text vaší zprávy..."
+                  aria-invalid={!!fieldErrors.answerText}
+                  aria-describedby={fieldErrors.answerText ? 'answer-text-error' : undefined}
                 />
               </div>
               {fieldErrors.answerText && (
-                <p className={`errorText ${styles.errorTextAnswer}`}>
+                <p className={`errorText ${styles.errorTextAnswer}`} role="alert" id="answer-text-error">
                   {fieldErrors.answerText}
                 </p>
               )}
-              <AttachmentInput files={files} onFilesSelected={setFiles} />
-              {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
+              <AttachmentInput files={files} onFilesSelected={setFiles} aria-label="Připojit přílohy" />
+              {uploadProgress > 0 && <p aria-live="polite">Nahrávání: {uploadProgress}%</p>}
               <div className={styles.buttonContainer}>
                 <Button
                   variant="primary"
                   type="submit"
-                  disabled={isLoading || !fieldValid.answerText}
+                  isDisabled={isLoading || !fieldValid.answerText}
+                  aria-label="Odeslat zprávu"
                 >
-                  Odeslat odpověď
+                  Odeslat zprávu
                 </Button>
               </div>
             </form>

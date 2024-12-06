@@ -10,6 +10,11 @@
     text-transform: lowercase;
 }
 
+.btnContainer {
+    width: 100%;
+    display: block;
+}
+
 @media (min-width: 576px) {
     .button {
         width: max-content;
@@ -17,9 +22,14 @@
     }
 }
 
-.button:disabled {
+.button:disabled,
+.button.disabled {
     cursor: not-allowed;
     opacity: 0.8;
+}
+
+.button:focus {
+    border-radius: 1px;
 }
 
 .primary {
@@ -37,6 +47,11 @@
     color: var(--blue);
 }
 
+.secondary:focus,
+.primary:focus {
+    border: 2px solid var(--blue-darker);
+}
+
 .secondary:active:hover {
     background-color: var(--blue);
     color: var(--whitesmoke);
@@ -48,6 +63,10 @@
     border: 1px solid var(--orange);
 }
 
+.edit:focus{
+    border: 2px solid var(--orange);
+}
+
 .edit:active:hover {
     background-color: var(--orange);
     color: var(--whitesmoke);
@@ -57,6 +76,11 @@
     background-color: var(--whitesmoke);
     color: var(--red);
     border: 1px solid var(--red);
+}
+
+.delete:focus {
+    border: 2px solid var(--red);
+    border-radius: 1px;
 }
 
 .delete:active:hover {

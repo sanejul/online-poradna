@@ -22,11 +22,11 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
   const validCategories = category.filter((cat) => cat && cat.trim() !== '');
 
   return (
-    <li className={styles.listItem}>
+    <li className={styles.listItem} role="listitem" aria-labelledby={`question-title-${id}`}>
       <Link to={`/dotazy/${id}`} className={styles.title}>
         <h2>{title}</h2>
       </Link>
-      <p className={styles.category}>
+      <p className={styles.category} aria-label="Kategorie dotazu">
         {validCategories
           .map((cat, index) => (
             <span key={index} className={styles.categoryItem}>
@@ -40,14 +40,15 @@ const QuestionListItem: React.FC<QuestionListItemProps> = ({
       </p>
       <div className={styles.info}>
         <div>
-          <p className={styles.date}>
+          <p className={styles.date} aria-label="Datum vytvoření dotazu">
             {createdAt.toLocaleDateString('cs-CZ')}{' '}
           </p>
-          <p className={`${isAnswered ? styles.isAnswered : ''}`}>
+          <p className={`${isAnswered ? styles.isAnswered : ''}`}
+             aria-label={`Stav dotazu: ${isAnswered ? 'Zodpovězeno' : 'Čeká na odpověď'}`}>
             {isAnswered ? 'Zodpovězeno' : 'Čeká na odpověď'}
           </p>
         </div>
-        <Link to={`/dotazy/${id}`} className={styles.button}>
+        <Link to={`/dotazy/${id}`} className={styles.button} aria-label={`Prohlédnout dotaz s názvem: ${title}`}>
           prohlédnout
         </Link>
       </div>

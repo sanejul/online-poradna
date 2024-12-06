@@ -81,16 +81,16 @@ const Login = () => {
   return (
     <div className={styles.container}>
       <Helmet>
-        <title>Detail dotazu - Poradna Haaro Naturo</title>
+        <title>Přihlášení - Poradna Haaro Naturo</title>
         <meta
           name="description"
           content="Přihlášení do online poradny Haaro Naturo."
         />
         <meta name="robots" content="index, follow" />
       </Helmet>
-      <h1>Přihlášení</h1>
+      <h1 id="form-title">Přihlášení</h1>
       <div className={styles.formContainer}>
-        <form className={styles.form} onSubmit={handleSubmit} method="POST">
+        <form className={styles.form} onSubmit={handleSubmit} method="POST" aria-labelledby="form-title">
           <div className="captcha">
             <ReCAPTCHA
               sitekey="6LfcuT4jAAAAADrHwrSTR5_S19LYAUk-TMnZdF48"
@@ -108,9 +108,11 @@ const Login = () => {
               value={email}
               onChange={(e) => handleChange('email', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.email}
+              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
             />
             {fieldErrors.email && (
-              <p className="errorText">{fieldErrors.email}</p>
+              <p className="errorText" id="email-error">{fieldErrors.email}</p>
             )}
           </div>
 
@@ -123,18 +125,20 @@ const Login = () => {
               value={password}
               onChange={(e) => handleChange('password', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.password}
+              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
             />
             {fieldErrors.password && (
-              <p className="errorText">{fieldErrors.password}</p>
+              <p className="errorText" id="password-error">{fieldErrors.password}</p>
             )}
           </div>
 
           <p className={'textLeft'}>* povinné údaje</p>
-          {error && <p className="errorText">{error}</p>}
+          {error && <p className="errorText" role="alert">{error}</p>}
           <Button
             type="submit"
             variant={'primary'}
-            disabled={Object.values(fieldValid).some((valid) => !valid)}
+            isDisabled={Object.values(fieldValid).some((valid) => !valid)}
           >
             Přihlásit se
           </Button>

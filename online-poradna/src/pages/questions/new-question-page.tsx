@@ -115,7 +115,7 @@ const NewQuestionPage = () => {
       for (const file of files) {
         const fileData = await uploadAndTransformFiles(
           file,
-          `questions/${questionId}`
+          `questions/${questionId}`,
         );
         fileDataArray.push(fileData);
       }
@@ -128,7 +128,7 @@ const NewQuestionPage = () => {
       showNotification(
         <p>Dotaz se nepodařilo odeslat. Zkuste to prosím znovu.</p>,
         10,
-        'warning'
+        'warning',
       );
       setError('Chyba při odesílání dotazu: ' + (error as Error).message);
     } finally {
@@ -143,26 +143,28 @@ const NewQuestionPage = () => {
         <meta name="description" content="Položte nový dotaz." />
         <meta name="robots" content="index, follow" />
       </Helmet>
-      <h1>Položit nový dotaz</h1>
+      <h1 id="form-title">Položit nový dotaz</h1>
 
-      {!user ? (
-        <p className={styles.infoText}>
-          Pro položení dotazu se prosím <Link to="/prihlaseni">přihlaste</Link>.
-        </p>
-      ) : (
-        <div className={styles.infoTextContainer}>
+      <div id="form-instructions">
+        {!user ? (
           <p className={styles.infoText}>
-            U dotazu bude zveřejněno vaše křestní jméno, které jste uvedli při
-            registraci. Změnit ho můžete{' '}
-            <Link to="/profil">ve svém profilu</Link>, pokud zde chcete používat
-            např. přezdívku.
+            Pro položení dotazu se prosím <Link to="/prihlaseni">přihlaste</Link>.
           </p>
-          <p className={styles.infoText}>
-            Jakmile odpovíme, přijde vám upozornění{isMobile && <br />} na
-            e-mail.
-          </p>
-        </div>
-      )}
+        ) : (
+          <div className={styles.infoTextContainer}>
+            <p className={styles.infoText}>
+              U dotazu bude zveřejněno vaše křestní jméno, které jste uvedli při
+              registraci. Změnit ho můžete{' '}
+              <Link to="/profil">ve svém profilu</Link>, pokud zde chcete používat
+              např. přezdívku.
+            </p>
+            <p className={styles.infoText}>
+              Jakmile odpovíme, přijde vám upozornění{isMobile && <br />} na
+              e-mail.
+            </p>
+          </div>
+        )}
+      </div>
 
       {isLoading && (
         <div className="loadingContainer">
@@ -177,7 +179,11 @@ const NewQuestionPage = () => {
         </div>
       )}
 
-      <form className={styles.formContainer} onSubmit={handleSubmit}>
+      <form className={styles.formContainer}
+            onSubmit={handleSubmit}
+            aria-labelledby="form-title"
+            aria-describedby="form-instructions"
+      >
         <div>
           <div className="captcha">
             <ReCAPTCHA
@@ -190,32 +196,38 @@ const NewQuestionPage = () => {
           <div
             className={`input-container ${fieldErrors.title ? 'error' : fieldValid.title ? 'valid' : ''}`}
           >
-            <label>Název dotazu *</label>
+            <label htmlFor="question-title">Název dotazu *</label>
             <input
+              id="question-title"
               type="text"
               placeholder="Čeho se týká Váš problém?"
               value={title}
               onChange={(e) => handleChange('title', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.title}
+              aria-describedby={fieldErrors.title ? 'title-error' : undefined}
             />
             {fieldErrors.title && (
-              <p className="errorText">{fieldErrors.title}</p>
+              <p className="errorText" id="title-error">{fieldErrors.title}</p>
             )}
           </div>
 
           <div
             className={`input-container ${fieldErrors.questionText ? 'error' : fieldValid.questionText ? 'valid' : ''}`}
           >
-            <label>Text dotazu *</label>
+            <label htmlFor="question-text">Text dotazu *</label>
             <textarea
+              id="question-text"
               className={styles.textarea}
               placeholder="Sem prosím napište dotaz"
               value={questionText}
               onChange={(e) => handleChange('questionText', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.questionText}
+              aria-describedby={fieldErrors.questionText ? 'text-error' : undefined}
             />
             {fieldErrors.questionText && (
-              <p className="errorText">{fieldErrors.questionText}</p>
+              <p className="errorText" id="text-error">{fieldErrors.questionText}</p>
             )}
           </div>
 
@@ -224,11 +236,11 @@ const NewQuestionPage = () => {
         <AttachmentInput files={files} onFilesSelected={setFiles} />
         {uploadProgress > 0 && <p>Nahrávání: {uploadProgress}%</p>}
         <div className={styles.buttonContainer}>
-          {error && <p className="errorText">{error}</p>}
+          {error && <p className="errorText" role="alert" aria-live="assertive">{error}</p>}
           <Button
             variant="primary"
             type="submit"
-            disabled={
+            isDisabled={
               !user ||
               isLoading ||
               !Object.values(fieldValid).every((valid) => valid)

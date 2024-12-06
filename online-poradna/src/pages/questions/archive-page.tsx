@@ -148,7 +148,7 @@ const ArchivePage = () => {
   const totalPages = Math.ceil(filteredQuestions.length / itemsPerPage);
 
   return (
-    <div className={styles.archiveContainer}>
+    <div className={styles.archiveContainer} aria-label="Seznam všech dotazů">
       <Helmet>
         <title>Všechny dotazy - Poradna Haaro Naturo</title>
         <meta name="description" content="Seznam všech položených dotazů." />
@@ -163,23 +163,27 @@ const ArchivePage = () => {
             <SearchBar
               onSearch={handleSearch}
               placeholder={'Vyhledat dotaz...'}
+              aria-label="Vyhledávání dotazů"
             />
           </div>
 
-          <div className={styles.categoryContainer}>
+          <div className={styles.categoryContainer} tabIndex={0}>
             <Button
               type={'button'}
               variant={'secondary'}
               onClick={toggleCategoryDropdown}
+              aria-expanded={showCategoryDropdown ? 'true' : 'false'}
+              aria-controls="vyber-kategorie"
             >
               {showCategoryDropdown ? 'Skrýt kategorie' : 'Kategorie'}
               <span
+                aria-hidden="true"
                 className={`${styles.arrowIcon} ${showCategoryDropdown ? styles.arrowUp : styles.arrowDown}`}
               ></span>
             </Button>
 
             {showCategoryDropdown && (
-              <div className={styles.categoryDropdown}>
+              <div className={styles.categoryDropdown} id="vyber-kategorie" role="menu" aria-labelledby="vyber-kategorie">
                 {categories.map((category) => (
                   <div key={category.id}>
                     <input
@@ -189,9 +193,15 @@ const ArchivePage = () => {
                       onChange={() => handleCategorySelect(category.id)}
                     />
                     <label
+                      tabIndex={0}
                       htmlFor={`category-${category.id}`}
                       className={styles.categoryLabel}
-                    >
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          document.getElementById(`category-${category.id}`)?.click();
+                        }
+                      }}>
                       {category.name}
                     </label>
                   </div>
@@ -202,12 +212,14 @@ const ArchivePage = () => {
         </div>
 
         {loading ? (
+          <div role="status" aria-live="polite">
           <LoadingSpinner />
+          </div>
         ) : filteredQuestions.length === 0 ? (
-          <p>Zatím nejsou žádné dotazy.</p>
+          <p role="alert">Zatím nejsou žádné dotazy.</p>
         ) : (
           <div>
-            <ul className={styles.listItemContainerArchive}>
+            <ul className={styles.listItemContainerArchive} role="list">
               {currentItems.map((question) => (
                 <QuestionListItem
                   key={question.id}
@@ -229,8 +241,10 @@ const ArchivePage = () => {
               ))}
             </ul>
 
-            <div className={`${styles.pagination} custom-pagination`}>
+            <div className={`${styles.pagination} custom-pagination`} tabIndex={0}>
               <Pagination
+                aria-label="Navigace stránkování"
+                tabIndex={0}
                 shape="rounded"
                 count={totalPages}
                 page={currentPage}

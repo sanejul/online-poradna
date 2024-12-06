@@ -53,7 +53,15 @@ const AttachmentInput: React.FC<AttachmentInputProps> = ({
 
   return (
     <div className={styles.fileInputContainer}>
-      <label htmlFor="file-input" className={styles.customFileInput}>
+      <label htmlFor="file-input"
+             className={styles.customFileInput}
+             tabIndex={0}
+             onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          document.getElementById("file-input")?.click();
+        }
+      }}>
         vložit fotky
       </label>
       <input

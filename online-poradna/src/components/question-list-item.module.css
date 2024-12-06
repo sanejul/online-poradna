@@ -74,7 +74,6 @@
 
 @media (min-width: 768px) {
     .listItem {
-        width: 50rem;
         margin: 0 auto 1rem auto;
         padding: 1rem;
     }
@@ -87,9 +86,21 @@
 
 @media (min-width: 1024px) {
     .listItem {
-        width: 50rem;
+        width: 38rem;
         margin: 0;
         margin-left: auto !important;
         margin-bottom: 1rem;
+    }
+}
+
+@media (min-width: 1135px) {
+    .listItem {
+        width: 45rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .listItem {
+        width: 50rem;
     }
 }

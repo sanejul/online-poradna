@@ -33,7 +33,7 @@ function App() {
         ) : (
           <DesktopNav />
         )}
-        <div className="main-container">
+        <div className="main-container" tabIndex={0}>
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<HomePage />} />

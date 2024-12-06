@@ -286,7 +286,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className={styles.profileContainer}>
+    <div className={styles.profileContainer} aria-labelledby="profile-title">
       <Helmet>
         <title>Profil - Poradna Haaro Naturo</title>
         <meta
@@ -294,7 +294,7 @@ const ProfilePage: React.FC = () => {
           content="Uživatelský profil v poradně Haaro Naturo."
         />
       </Helmet>
-      <h1>Můj profil</h1>
+      <h1 id="profile-title">Můj profil</h1>
 
       {!isEditMode ? (
         <div className={styles.profileInfo}>
@@ -309,17 +309,18 @@ const ProfilePage: React.FC = () => {
               <strong>Email: </strong> <span>{email}</span>
             </p>
           </div>
-          <Button onClick={handleEditMode} type={'button'} variant={'edit'}>
+          <Button onClick={handleEditMode} type={'button'} variant={'edit'} aria-label="Upravit osobní údaje">
             Upravit osobní údaje
           </Button>
           <Button
             onClick={() => handleUserLogout()}
             type={'button'}
             variant={'delete'}
+            aria-label="Odhlásit se z apliakce"
           >
             odhlásit se
           </Button>
-          <Link className={styles.link} to="/obnoveni-hesla">
+          <Link className={styles.link} to="/obnoveni-hesla" aria-label="Zaslat email pro obnovení hesla">
             Zaslat email pro obnovení hesla
           </Link>
         </div>
@@ -328,68 +329,78 @@ const ProfilePage: React.FC = () => {
           <div
             className={`input-container ${fieldErrors.firstName ? 'error' : fieldValid.firstName ? 'valid' : ''}`}
           >
-            <label>Jméno:</label>
+            <label htmlFor="first-name">Jméno:</label>
             <input
+              id="first-name"
               type="text"
               defaultValue={firstName}
               onChange={(e) => handleChange('firstName', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.firstName}
+              aria-describedby={fieldErrors.firstName ? 'first-name-error' : undefined}
             />
             {fieldErrors.firstName && (
-              <p className="errorText">{fieldErrors.firstName}</p>
+              <p className="errorText" id="first-name-error">{fieldErrors.firstName}</p>
             )}
           </div>
 
           <div
             className={`input-container ${fieldErrors.lastName ? 'error' : fieldValid.lastName ? 'valid' : ''}`}
           >
-            <label>Příjmení:</label>
+            <label htmlFor="last-name">Příjmení:</label>
             <input
+              id="last-name"
               type="text"
               defaultValue={lastName}
               onChange={(e) => handleChange('lastName', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.lastName}
+              aria-describedby={fieldErrors.lastName ? 'last-name-error' : undefined}
             />
             {fieldErrors.lastName && (
-              <p className="errorText">{fieldErrors.lastName}</p>
+              <p className="errorText" id="last-name-error">{fieldErrors.lastName}</p>
             )}
           </div>
 
           <div
             className={`input-container ${fieldErrors.email ? 'error' : fieldValid.email ? 'valid' : ''}`}
           >
-            <label>Email:</label>
+            <label htmlFor="email">Email:</label>
             <input
+              id="email"
               type="email"
               defaultValue={email}
               onChange={(e) => handleChange('email', e.target.value)}
               required
+              aria-invalid={!!fieldErrors.email}
+              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
             />
             {fieldErrors.email && (
-              <p className="errorText">{fieldErrors.email}</p>
+              <p className="errorText" id="email-error">{fieldErrors.email}</p>
             )}
           </div>
 
-          {error && <p className="errorText">{error}</p>}
+          {error && <p className="errorText" role="alert" aria-live="assertive">{error}</p>}
 
           <Button
             type="button"
             onClick={handleCancelEdit}
             variant={'secondary'}
+            aria-label="Zrušit úpravy"
           >
             Zrušit
           </Button>
-          <Button type="submit" variant={'primary'} disabled={!isFormValid()}>
+          <Button type="submit" variant={'primary'} isDisabled={!isFormValid()} aria-label="Uložit změny">
             Uložit změny
           </Button>
         </form>
       )}
 
-      <h2 className={styles.h2}>Vaše dotazy</h2>
+      <h2 className={styles.h2} id="questions-title">Vaše dotazy</h2>
       {userQuestions.length === 0 ? (
         <p>Zatím jste nepoložili žádné dotazy.</p>
       ) : (
-        <ul className={styles.listItemContainer}>
+        <ul className={styles.listItemContainer} aria-labelledby="questions-title">
           {userQuestions.map((question) => (
             <QuestionListItem
               key={question.id}

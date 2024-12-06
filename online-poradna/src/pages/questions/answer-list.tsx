@@ -20,6 +20,7 @@ import {
 import Button from '../../components/buttons/button';
 import styles from './question-detail-page.module.css';
 import editPen from '../../assets/icons/edit-pen.png';
+import arrow from '../../assets/icons/arrow.png';
 
 interface AnswerListProps {
   questionId: string;
@@ -257,7 +258,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                           variant="primary"
                           type="submit"
                           onClick={() => handleSaveAnswer(answer.id)}
-                          disabled={
+                          isDisabled={
                             !fieldValid[answer.id] || !editedAnswerText.trim()
                           }
                         >
@@ -360,9 +361,26 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
             container: {
               backgroundColor: 'rgba(0, 0, 0, 0.8)',
               backdropFilter: 'blur(5px)',
+              color: '#F5F5F5FF !important',
             },
           }}
           render={{
+            buttonPrev: () => (
+              <button
+                className={`${styles.customArrow} ${styles.customArrowLeft}`}
+                onClick={() => setLightboxIndex(lightboxIndex - 1)}
+              >
+                <img src={arrow} alt="Šipka doleva" />
+              </button>
+            ),
+            buttonNext: () => (
+              <button
+                className={`${styles.customArrow} ${styles.customArrowRight}`}
+                onClick={() => setLightboxIndex(lightboxIndex + 1)}
+              >
+                <img src={arrow} alt="Šipka doprava" />
+              </button>
+            ),
             buttonClose: () => (
               <CustomCloseIcon onClick={() => setIsLightboxOpen(false)} />
             ),

@@ -51,10 +51,19 @@ const Notification: React.FC<NotificationProps> = ({
       : styles.notificationContainer;
 
   return (
-    <div className={notificationClass}>
+    <div
+      className={notificationClass}
+      role="alert"
+      aria-live={type === 'warning' ? 'assertive' : 'polite'}
+      aria-atomic="true"
+    >
       <div className={styles.header}>
-        <div className={styles.content}>{children}</div>
-        <button onClick={handleClose} className={styles.closeButton}>
+        <div className={styles.content}
+             aria-label={type === 'warning' ? 'Varování' : 'Úspěch'}
+        >
+          {children}
+        </div>
+        <button onClick={handleClose} className={styles.closeButton} aria-label="Zavřít notifikaci">
           {type === 'warning' ? (
             <CustomCloseIconRed />
           ) : (
@@ -65,6 +74,10 @@ const Notification: React.FC<NotificationProps> = ({
       <div
         className={styles.timerBar}
         style={{ width: `${(remainingTime / (timeout * 1000)) * 100}%` }}
+        role="progressbar"
+        aria-valuenow={(remainingTime / (timeout * 1000)) * 100}
+        aria-valuemin={0}
+        aria-valuemax={100}
       />
     </div>
   );

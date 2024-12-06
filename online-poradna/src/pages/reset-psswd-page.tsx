@@ -66,19 +66,23 @@ const ResetPasswordPage: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <h1>Obnova hesla</h1>
-      <p className={styles.infoText}>
-        Zadejte e-mail, kterým jste se registrovali.
-      </p>
-      <p className={styles.infoText}>
-        Přijde vám odkaz, kde si zvolíte nové heslo a poté se s ním můžete
-        přihlásit do aplikace.
-      </p>
+      <h1 id="form-title">Obnova hesla</h1>
+      <div id="form-description">
+        <p className={styles.infoText}>
+          Zadejte e-mail, kterým jste se registrovali.
+        </p>
+        <p className={styles.infoText}>
+          Přijde vám odkaz, kde si zvolíte nové heslo a poté se s ním můžete
+          přihlásit do aplikace.
+        </p>
+      </div>
 
       <form
         className={styles.form}
         onSubmit={handlePasswordReset}
         method="POST"
+        aria-labelledby="form-title"
+        aria-describedby="form-description"
       >
         <div className="captcha">
           <ReCAPTCHA
@@ -92,11 +96,17 @@ const ResetPasswordPage: React.FC = () => {
           className={`input-container ${fieldError ? 'error' : isValid ? 'valid' : ''}`}
         >
           <label>Email *</label>
-          <input type="email" value={email} onChange={handleChange} required />
-          {fieldError && <p className="errorText">{fieldError}</p>}
+          <input type="email"
+                 value={email}
+                 onChange={handleChange}
+                 required
+                 aria-invalid={!!fieldError}
+                 aria-describedby={fieldError ? 'email-error' : undefined}
+          />
+          {fieldError && <p id="email-error" className="errorText">{fieldError}</p>}
         </div>
-        {error && <p className="errorText">{error}</p>}
-        <Button variant={'primary'} type="submit" disabled={!isValid}>
+        {error && <p role="alert" className="errorText">{error}</p>}
+        <Button variant={'primary'} type="submit" isDisabled={!isValid}>
           Odeslat odkaz pro obnovu hesla
         </Button>
       </form>
