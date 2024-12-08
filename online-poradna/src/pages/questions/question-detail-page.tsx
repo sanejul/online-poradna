@@ -108,8 +108,6 @@ const QuestionDetailPage = () => {
       }
     };
 
-    console.warn('user:', user);
-
     checkAdminRole();
   }, [user]);
 
@@ -120,7 +118,6 @@ const QuestionDetailPage = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const questionData = docSnap.data();
-        console.warn('Fetched question data:', questionData);
 
         const transformedFiles =
           questionData.files?.map((file: any) => ({
@@ -145,7 +142,7 @@ const QuestionDetailPage = () => {
           ({
             id: doc.id,
             ...doc.data(),
-          }) as Category
+          }) as Category,
       );
       setAllCategories(categoryList);
     };
@@ -165,12 +162,11 @@ const QuestionDetailPage = () => {
 
   const handleChange = (
     field: 'title' | 'questionText' | 'answerText',
-    value: string
+    value: string,
   ) => {
     let error = '';
     let isValid = false;
 
-    // Validace podle pole
     if (field === 'title') {
       error = validateQuestionTitle(value.trim());
       isValid = !error;
@@ -185,7 +181,6 @@ const QuestionDetailPage = () => {
       setAnswerText(value);
     }
 
-    // Aktualizace stavů pro chyby a validitu
     setFieldErrors((prev) => ({ ...prev, [field]: error }));
     setFieldValid((prev) => ({ ...prev, [field]: isValid }));
   };
@@ -221,8 +216,12 @@ const QuestionDetailPage = () => {
       });
       setEditingField(null);
       setShowCategoryDropdown(false);
-    } catch (error) {
-      console.error('Error while saving categories:', error);
+    } catch {
+      showNotification(
+        <p>Změny se nepodařilo uložit. Zkuste to prosím znovu.</p>,
+        10,
+        'warning',
+      );
     }
   };
 
@@ -230,7 +229,7 @@ const QuestionDetailPage = () => {
     setSelectedCategoryIds((prevSelected) =>
       prevSelected.includes(categoryId)
         ? prevSelected.filter((id) => id !== categoryId)
-        : [...prevSelected, categoryId]
+        : [...prevSelected, categoryId],
     );
   };
 
@@ -269,14 +268,14 @@ const QuestionDetailPage = () => {
             smazat
           </Button>
         </div>
-      </div>
+      </div>,
     );
     setIsModalOpen(true);
   };
 
   const handleFileClick = (files: FileData[], index: number) => {
     const imageUrls = files.map(
-      (file) => file.fullImageUrl || file.originalUrl
+      (file) => file.fullImageUrl || file.originalUrl,
     );
     setCurrentAttachments(imageUrls);
     setLightboxIndex(index);
@@ -297,11 +296,9 @@ const QuestionDetailPage = () => {
     if (!id || !tempQuestion) return;
 
     if (fieldErrors.title || fieldErrors.questionText) {
-      console.error('Nelze uložit, dokud nejsou vyřešeny chyby.');
+      setError('Nelze uložit, dokud nejsou vyřešeny chyby.');
       return;
     }
-
-    console.log('Saving title:', tempQuestion.title);
 
     try {
       await updateDoc(doc(db, 'questions', id), {
@@ -316,9 +313,12 @@ const QuestionDetailPage = () => {
       setEditingField(null);
       setFieldErrors({ title: '', questionText: '', answerText: '' });
       setFieldValid({ title: false, questionText: false, answerText: false });
-      console.log('Změny úspěšně uloženy.');
     } catch (error) {
-      console.error('Chyba při ukládání:', error);
+      showNotification(
+        <p>Změny se nepodařilo uložit. Zkuste to prosím znovu.</p>,
+        10,
+        'warning',
+      );
     }
   };
 
@@ -333,10 +333,10 @@ const QuestionDetailPage = () => {
   };
 
   const checkIfAnsweredByAdmin = async (
-    questionId: string
+    questionId: string,
   ): Promise<boolean> => {
     const answersSnapshot = await getDocs(
-      collection(db, 'questions', questionId, 'answers')
+      collection(db, 'questions', questionId, 'answers'),
     );
     for (const answer of answersSnapshot.docs) {
       const authorUid = answer.data().author.uid;
@@ -352,7 +352,7 @@ const QuestionDetailPage = () => {
     e.preventDefault();
 
     if (!fieldValid.answerText) {
-      console.error('Odpověď musí obsahovat nějaký text.');
+      setError('Odpověď musí obsahovat nějaký text.');
       return;
     }
 
@@ -388,9 +388,8 @@ const QuestionDetailPage = () => {
         attachments: fileURLs,
       });
 
-      console.log('Odpověď odeslána.');
       setAnswerText('');
-      setFieldErrors((prev) => ({ ...prev, answerText: '' })); // Resetování chyb
+      setFieldErrors((prev) => ({ ...prev, answerText: '' }));
       setFieldValid((prev) => ({ ...prev, answerText: false }));
       setFiles([]);
       setUploadProgress(0);
@@ -398,19 +397,14 @@ const QuestionDetailPage = () => {
 
       if (isCurrentUserAdmin) {
         await updateDoc(doc(db, 'questions', id!), { isAnswered: true });
-        console.log(`Question ${id} marked as answered: true`);
-      } else {
-        console.log(
-          `Question ${id} remains unanswered as the responder is not an admin.`
-        );
       }
+
     } catch (error) {
       showNotification(
         <p>Odpověď se nepodařilo odeslat. Zkuste to prosím znovu.</p>,
         10,
-        'warning'
+        'warning',
       );
-      console.error('Chyba při odesílání odpovědi:', error);
       setError('Chyba při odesílání odpovědi: ' + (error as Error).message);
     } finally {
       setIsLoading(false);
@@ -576,15 +570,15 @@ const QuestionDetailPage = () => {
         <p className={styles.date}>
           {question.createdAt && question.createdAt.seconds
             ? new Date(question.createdAt.seconds * 1000).toLocaleString(
-                'cs-CZ',
-                {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                }
-              )
+              'cs-CZ',
+              {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              },
+            )
             : 'Datum není k dispozici'}
         </p>
       </div>

@@ -74,7 +74,6 @@ const CategoryManagementPage = () => {
         10,
         'warning'
       );
-      console.error('Error adding category:', e);
     }
   };
 
@@ -118,7 +117,6 @@ const CategoryManagementPage = () => {
         10,
         'warning'
       );
-      console.error('Error deleting category:', e);
     }
   };
 
@@ -150,7 +148,6 @@ const CategoryManagementPage = () => {
         10,
         'warning'
       );
-      console.error('Error updating category:', e);
     }
   };
 

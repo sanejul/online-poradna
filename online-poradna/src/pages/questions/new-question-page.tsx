@@ -81,15 +81,13 @@ const NewQuestionPage = () => {
 
     try {
       if (!user) {
-        setError('Pro položení dotazu musíte být přihlášeni.');
-        /*showNotification(<p>Pro odeslání dotazu se prosím přihlaste.</p>, 10, 'warning');*/
+        setError("Pro položení dotazu musíte být přihlášeni.");
         setIsLoading(false);
         return;
       }
 
       if (!captchaVerified) {
         setError('Pro odeslání dotazu prosím potvrďte, že nejste robot.');
-        /*showNotification(<p>Pro odeslání dotazu prosím potvrďte, že nejste robot.</p>, 10, 'warning');*/
         setIsLoading(false);
         return;
       }
@@ -241,7 +239,6 @@ const NewQuestionPage = () => {
             variant="primary"
             type="submit"
             isDisabled={
-              !user ||
               isLoading ||
               !Object.values(fieldValid).every((valid) => valid)
             }

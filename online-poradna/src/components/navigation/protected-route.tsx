@@ -23,11 +23,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           const currentUserData = userDocSnap.data();
           setIsAdmin(currentUserData?.role === 'admin');
         } else {
-          console.error('Uživatelský dokument nebyl nalezen.');
           setIsAdmin(false);
         }
       } catch (error) {
-        console.error('Chyba při ověřování role uživatele:', error);
         setIsAdmin(false);
       } finally {
         setLoading(false);

@@ -31,7 +31,6 @@ export const useAuthLogic = () => {
         5,
         'warning'
       );
-      console.error('Chyba při odhlašování:', error);
     }
   };
 

@@ -13,7 +13,6 @@ export const handleLogout = async (showNotification: any) => {
       10,
       'warning'
     );
-    console.log('Chyba při odhlašování', error);
   }
 };
 

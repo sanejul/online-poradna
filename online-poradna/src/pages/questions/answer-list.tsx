@@ -21,6 +21,7 @@ import Button from '../../components/buttons/button';
 import styles from './question-detail-page.module.css';
 import editPen from '../../assets/icons/edit-pen.png';
 import arrow from '../../assets/icons/arrow.png';
+import { useNotification } from '../../contexts/notification-context';
 
 interface AnswerListProps {
   questionId: string;
@@ -49,11 +50,12 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
   const [currentAttachments, setCurrentAttachments] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [questionAuthorUid, setQuestionAuthorUid] = useState<string | null>(
-    null
+    null,
   );
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [fieldValid, setFieldValid] = useState<{ [key: string]: boolean }>({});
   const currentUserUid = auth.currentUser?.uid;
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -80,7 +82,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
   useEffect(() => {
     const q = query(
       collection(db, 'questions', questionId, 'answers'),
-      orderBy('createdAt')
+      orderBy('createdAt'),
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const answersList: Answer[] = [];
@@ -91,7 +93,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
             thumbnailUrl: attachment.thumbnailUrl || '',
             fullImageUrl: attachment.fullImageUrl || '',
             originalUrl: attachment.originalUrl || '',
-          })
+          }),
         );
         answersList.push({
           ...data,
@@ -99,7 +101,6 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
           attachments: transformedAttachments,
         } as Answer);
       });
-      console.warn('Transformed answers with attachments:', answersList);
       setAnswers(answersList);
     });
 
@@ -124,19 +125,14 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
     const questionRef = doc(db, 'questions', questionId);
 
     try {
-      // Kontrola, zda existuje odpověď od administrátora
       const adminAnswerExists = await Promise.all(
         answers.map(async (answer) => {
           return await isAdminRole(answer.author.uid);
-        })
+        }),
       ).then((results) => results.some((isAdmin) => isAdmin));
 
       await updateDoc(questionRef, { isAnswered: adminAnswerExists });
-      console.log(
-        `Question ${questionId} marked as answered: ${adminAnswerExists}`
-      );
-    } catch (error) {
-      console.error('Error updating isAnswered field:', error);
+    } catch {
     }
   };
 
@@ -145,10 +141,8 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
       (attachment) =>
         attachment.fullImageUrl ||
         attachment.originalUrl ||
-        attachment.thumbnailUrl
+        attachment.thumbnailUrl,
     );
-    console.warn('Attachments passed to handleAttachmentClick:', attachments);
-    console.warn('imageUrls for Lightbox:', imageUrls);
     setCurrentAttachments(imageUrls);
     setLightboxIndex(index);
     setIsLightboxOpen(true);
@@ -171,7 +165,6 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
 
   const handleSaveAnswer = async (answerId: string) => {
     if (fieldErrors[answerId]) {
-      console.error('Prázdnou odpověď nelze uložit.');
       return;
     }
 
@@ -184,8 +177,12 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
       setEditedAnswerText('');
       setFieldErrors((prev) => ({ ...prev, [answerId]: '' }));
       setFieldValid((prev) => ({ ...prev, [answerId]: false }));
-    } catch (error) {
-      console.error('Chyba při ukládání odpovědi:', error);
+    } catch {
+      showNotification(
+        <p>Změny se nepodařilo uložit. Zkuste to prosím znovu.</p>,
+        10,
+        'warning',
+      );
     }
   };
 
@@ -237,7 +234,7 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                       year: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit',
-                    }
+                    },
                   )}
                 </p>
               </div>
@@ -280,13 +277,13 @@ const AnswerList: React.FC<AnswerListProps> = ({ questionId }) => {
                 <div
                   className={`${styles.bubble} 
                     ${
-                      (answer.author.uid !== currentUserUid &&
-                        currentUserUid !== undefined) ||
-                      (currentUserUid === undefined &&
-                        answer.author.uid === questionAuthorUid)
-                        ? styles.leftBubble
-                        : styles.rightBubble
-                    } 
+                    (answer.author.uid !== currentUserUid &&
+                      currentUserUid !== undefined) ||
+                    (currentUserUid === undefined &&
+                      answer.author.uid === questionAuthorUid)
+                      ? styles.leftBubble
+                      : styles.rightBubble
+                  } 
                     ${editingAnswerId === answer.id ? styles.bubbleEditMode : ''}`}
                 >
                   {editingAnswerId === answer.id ? (

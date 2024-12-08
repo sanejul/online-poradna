@@ -82,7 +82,6 @@ const ProfilePage: React.FC = () => {
         'warning'
       );
       setError('Nepodařilo se načíst uživatelská data.');
-      console.error('Chyba při načítání uživatelských dat:', error);
     } finally {
       setLoading(false);
     }
@@ -109,10 +108,8 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleChange = (field: string, value: string) => {
-    // Označit pole jako upravené
     setTouchedFields((prev) => ({ ...prev, [field]: true }));
 
-    // Nastavit hodnotu
     switch (field) {
       case 'firstName':
         setFirstName(value);
@@ -127,7 +124,6 @@ const ProfilePage: React.FC = () => {
         break;
     }
 
-    // Validace
     let error = '';
     let isValid = false;
 
@@ -144,7 +140,6 @@ const ProfilePage: React.FC = () => {
         error = validateEmail(value);
         isValid = !error;
 
-        // Asynchronní kontrola jedinečnosti e-mailu
         if (!error && value !== originalData?.email) {
           isEmailUnique(value).then((unique) => {
             if (!unique) {
@@ -179,7 +174,6 @@ const ProfilePage: React.FC = () => {
 
       const updates: Partial<Record<string, string>> = {};
 
-      // Přidat pouze změněná pole
       if (touchedFields.firstName && firstName !== originalData?.firstName) {
         updates.firstName = firstName;
       }
@@ -193,7 +187,6 @@ const ProfilePage: React.FC = () => {
         }
       }
 
-      // Aktualizace Firebase dat
       if (Object.keys(updates).length > 0) {
         const userDocRef = doc(db, 'users', userId);
         await updateDoc(userDocRef, updates);
@@ -212,7 +205,6 @@ const ProfilePage: React.FC = () => {
       resetValidation();
     } catch (error) {
       setError('Nepodařilo se aktualizovat údaje.');
-      console.error('Chyba při aktualizaci údajů:', error);
       showNotification(
         <p>Osobní údaje se nepodařilo aktualizovat. Zkuste to prosím znovu.</p>,
         10,
@@ -225,7 +217,7 @@ const ProfilePage: React.FC = () => {
 
   const handleEditMode = () => {
     setIsEditMode(true);
-    resetValidation(); // Reset validací
+    resetValidation();
     if (originalData) {
       setFirstName(originalData.firstName || '');
       setLastName(originalData.lastName || '');
@@ -234,7 +226,6 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleCancelEdit = () => {
-    // Obnovit původní hodnoty a reset validací
     if (originalData) {
       setFirstName(originalData.firstName);
       setLastName(originalData.lastName);
@@ -245,9 +236,9 @@ const ProfilePage: React.FC = () => {
   };
 
   const resetValidation = () => {
-    setFieldErrors({ firstName: '', lastName: '', email: '' }); // Vyčistit chyby
-    setFieldValid({ firstName: false, lastName: false, email: false }); // Pole nejsou validní
-    setTouchedFields({ firstName: false, lastName: false, email: false }); // Pole nejsou dotknutá
+    setFieldErrors({ firstName: '', lastName: '', email: '' });
+    setFieldValid({ firstName: false, lastName: false, email: false });
+    setTouchedFields({ firstName: false, lastName: false, email: false });
   };
 
   useEffect(() => {

@@ -168,7 +168,6 @@ const UsersListPage = () => {
         error = validateEmail(value);
         isValid = !error;
 
-        // Kontrola jedinečnosti e-mailu
         if (isValid && editingUser?.email !== value) {
           const emailQuery = query(
             collection(db, 'users'),
@@ -196,8 +195,8 @@ const UsersListPage = () => {
 
   const isFormValid = () => {
     return (
-      Object.values(fieldValid).some((valid) => valid) && // Alespoň jedno pole je validní
-      !Object.values(fieldErrors).some((error) => error) // Žádné pole nemá chybu
+      Object.values(fieldValid).some((valid) => valid) &&
+      !Object.values(fieldErrors).some((error) => error)
     );
   };
 
@@ -229,7 +228,6 @@ const UsersListPage = () => {
 
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, dataToUpdate);
-      console.log('Uživatel úspěšně aktualizován:', dataToUpdate);
       showNotification(
         <p>
           Osobní údaje {userToDelete?.firstName} {userToDelete?.lastName} byly
@@ -252,7 +250,6 @@ const UsersListPage = () => {
         10,
         'warning'
       );
-      console.error('Chyba při ukládání dat:', e);
       setError('Chyba při ukládání dat.');
     }
   };
@@ -261,7 +258,6 @@ const UsersListPage = () => {
     try {
       const userDocRef = doc(db, 'users', userId);
       await deleteDoc(userDocRef);
-      console.log('Uživatel úspěšně smazán:', userId);
 
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
       await fetchUsers();
@@ -283,7 +279,6 @@ const UsersListPage = () => {
         10,
         'warning'
       );
-      console.error('Chyba při mazání uživatele:', e);
       setError('Chyba při mazání uživatele.');
     }
   };
@@ -295,7 +290,6 @@ const UsersListPage = () => {
         10,
         'warning'
       );
-      console.error('Neplatný uživatel předaný do openDeleteModal.');
       return;
     }
 

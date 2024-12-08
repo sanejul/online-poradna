@@ -147,7 +147,6 @@ const RegisterPage = () => {
         uid: user.uid,
       });
 
-      console.log('Uživatel úspěšně registrován a uložen do db.');
       showNotification(
         <p>Registrace proběhla úspěšně. Nyní se můžete přihlásit.</p>,
         5
@@ -164,7 +163,11 @@ const RegisterPage = () => {
           setError('Došlo k neočekávané chybě. Zkuste to prosím znovu.');
           break;
       }
-      console.error('Chyba při registraci:', error.message);
+      showNotification(
+        <p>Při registraci nastal problém. Zkuste to prosím znovu.</p>,
+        10,
+        'warning',
+      );
     }
   };
 
